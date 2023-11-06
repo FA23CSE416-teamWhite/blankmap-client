@@ -13,7 +13,8 @@ const App = function () {
 	// 		.catch((err) => console.log(err));
 	// }, []);
 
-	function submitForm() {
+	function submitForm(event) {
+    event.preventDefault();
 		if (username === "") {
 			alert("Please fill the username field");
 			return;
@@ -22,16 +23,20 @@ const App = function () {
 			alert("Please fill the email field");
 			return;
 		}
+    // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
 		axios
-			.post("https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users", {
+			.post("https://blankmap-server-6de6d45e4291.herokuapp.com/api/users", {
 				name: username,
 				email: email,
-			})// https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
+			})
 			.then(function () {
 				alert("Account created successfully");
-				window.location.reload();
+        setUsername("");
+        setEmail("");
+				// window.location.reload();
 			})
 			.catch(function () {
+        console.log("Error creating account");
 				alert("Could not creat account. Please try again");
 			});
 	}
