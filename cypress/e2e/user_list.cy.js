@@ -5,7 +5,7 @@ describe('user_list.cy.js', () => {
     // Ensure the user list is displayed after loading
     // cy.get('h2').should('contain', 'Available Users');
     // wrong
-    cy.get('h2').should('contain', 'Available ');
+    cy.get('h2').should('contain', 'Available123');
 
     // Verify that at least one user is listed
     cy.get('li').should('have.length.gt', 0);
