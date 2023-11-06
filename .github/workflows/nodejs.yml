@@ -33,7 +33,7 @@ jobs:
               run: npm install
       
             - name: Run Cypress Tests
-              run: npx cypress run --spec "cypress-tests/integration/*.js"
+              run: npx cypress run
 
       
 
