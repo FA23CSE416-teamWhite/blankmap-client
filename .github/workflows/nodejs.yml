@@ -1,0 +1,30 @@
+#information: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+jobs:
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Change working directory to the client subfolder
+        run: |
+          ls
+          cd client
+          ls
+        shell: bash
+
+      - uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: blankmap-front
+          heroku_email: junhao.xia@stonybrook.edu
+        
