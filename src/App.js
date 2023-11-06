@@ -2,16 +2,16 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 
 const App = function () {
-	const [users, setUsers] = useState(null);
+	const [users, setUsers] = useState([]);
 
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
-	// useEffect(() => {
-	// 	axios
-	// 		.get("http://localhost:8000/api/users")
-	// 		.then((users) => setUsers(users))
-	// 		.catch((err) => console.log(err));
-	// }, []);
+	useEffect(() => {
+		axios
+			.get("https://blankmap-server-6de6d45e4291.herokuapp.com/api/users")
+			.then((users) => setUsers(users.data))
+			.catch((err) => console.log(err));
+	}, []);
 
 	function submitForm(event) {
     event.preventDefault();
@@ -31,12 +31,10 @@ const App = function () {
 			})
 			.then(function () {
 				alert("Account created successfully");
-        setUsername("");
-        setEmail("");
+        window.location.reload();
 				// window.location.reload();
 			})
 			.catch(function () {
-        console.log("Error creating account");
 				alert("Could not creat account. Please try again");
 			});
 	}
