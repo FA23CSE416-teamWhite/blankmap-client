@@ -17,5 +17,5 @@ jobs:
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: blankmap-front
-          heroku_email: junhao.xia@stonybrook.edu
+          heroku_email: zqqyoung@gmail.com
         
