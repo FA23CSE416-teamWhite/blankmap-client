@@ -7,20 +7,21 @@ import{
 	AppBanner,
     LoginScreen,
     RegisterScreen,
+    HomeScreen
 } from './components'
 
 const App = () => {   
     return (
         <BrowserRouter>
             <AuthContextProvider>
-                <GlobalStoreContextProvider>
-                    <h1>BlankMap</h1>              
+                <GlobalStoreContextProvider>            
                     <AppBanner />
 						{/* <Router> */}
 							<Routes>
                                 <Route index element={<LoginScreen />} />
 								<Route path="/login" element={<LoginScreen />} />
 								<Route path="/register" element={<RegisterScreen />} />
+                                <Route path="/home" element={<HomeScreen />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
