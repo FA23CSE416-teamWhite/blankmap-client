@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import MapOverview from "./MapOverview";
+import SearchBar from "./SearchBar";
+import { useNavigate } from "react-router-dom";
 
 const HomeScreen = () => {
   // Assuming you have an array of map information
+  const navigate = useNavigate();
   const mapList = [
     {
       title: "Map 1",
@@ -24,9 +27,10 @@ const HomeScreen = () => {
   const [mapsPerPage] = useState(3); // Adjust the number of maps per page as needed
   const [sortOption, setSortOption] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState(null);
-
+  
   const handleCreateMap = () => {
     console.log("create map");
+    navigate("/create");
   }
   const handleSortChange = (option) => {
     setSortOption(option);
@@ -60,7 +64,7 @@ const HomeScreen = () => {
   return (
     <div className="home-screen">
       {/* <h1>Home Screen</h1> */}
-
+      <SearchBar/>
       <button onClick={handleCreateMap}>Create Map</button>
 
       {/* Sort Options */}

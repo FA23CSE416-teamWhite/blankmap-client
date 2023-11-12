@@ -7,7 +7,8 @@ import{
 	AppBanner,
     LoginScreen,
     RegisterScreen,
-    HomeScreen
+    HomeScreen,
+    MapCreationPage
 } from './components'
 
 const App = () => {   
@@ -22,6 +23,7 @@ const App = () => {
 								<Route path="/login" element={<LoginScreen />} />
 								<Route path="/register" element={<RegisterScreen />} />
                                 <Route path="/home" element={<HomeScreen />} />
+                                <Route path="/create" element={<MapCreationPage />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
