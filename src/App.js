@@ -1,6 +1,6 @@
 import './App.css';
 import { React } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter,Router,Routes, Route} from 'react-router-dom'
 import { AuthContextProvider } from './auth';
 import { GlobalStoreContextProvider } from './store'
 import{
@@ -15,10 +15,12 @@ const App = () => {
             <AuthContextProvider>
                 <GlobalStoreContextProvider>              
                     <AppBanner />
-                    <Switch>
-                        <Route path="/login/" exact component={LoginScreen} />
-                        <Route path="/register/" exact component={RegisterScreen} />
-                    </Switch>
+						<Router>
+							<Routes>
+								<Route path="/login" element={<LoginScreen />} />
+								<Route path="/register" element={<RegisterScreen />} />
+							</Routes>
+						</Router>
                 </GlobalStoreContextProvider>
             </AuthContextProvider>
         </BrowserRouter>
