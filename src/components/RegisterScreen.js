@@ -4,8 +4,6 @@ import Grid from '@mui/material/Grid';
 export default function RegisterScreen() {
 
     return(
-        <Grid container component="main" sx={{ height: '100vh' }}>
-            
-        </Grid>
+        <h1>Register Screen</h1>
     );
 }

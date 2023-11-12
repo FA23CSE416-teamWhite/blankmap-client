@@ -7,7 +7,11 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {}
 
 function GlobalStoreContextProvider(props) {
-
+    return (
+        <GlobalStoreContext.Provider value={{}}>
+            {props.children}
+        </GlobalStoreContext.Provider>
+    );
 }
 
 export default GlobalStoreContext;

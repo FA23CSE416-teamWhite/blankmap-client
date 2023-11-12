@@ -13,14 +13,16 @@ const App = () => {
     return (
         <BrowserRouter>
             <AuthContextProvider>
-                <GlobalStoreContextProvider>              
+                <GlobalStoreContextProvider>
+                    <h1>BlankMap</h1>              
                     <AppBanner />
-						<Router>
+						{/* <Router> */}
 							<Routes>
+                                <Route index element={<LoginScreen />} />
 								<Route path="/login" element={<LoginScreen />} />
 								<Route path="/register" element={<RegisterScreen />} />
 							</Routes>
-						</Router>
+						{/* </Router> */}
                 </GlobalStoreContextProvider>
             </AuthContextProvider>
         </BrowserRouter>
