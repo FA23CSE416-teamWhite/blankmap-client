@@ -8,14 +8,18 @@ import{
     LoginScreen,
     RegisterScreen,
     HomeScreen,
-    MapCreationPage
+    MapCreationPage,
 } from './components'
+import IconBanner from './components/IconBanner';
+import PasswordRecovery from './components/PasswordRecovery';
+
 
 const App = () => {   
     return (
         <BrowserRouter>
             <AuthContextProvider>
-                <GlobalStoreContextProvider>            
+                <GlobalStoreContextProvider> 
+                    <IconBanner/>           
                     <AppBanner />
 						{/* <Router> */}
 							<Routes>
@@ -24,6 +28,7 @@ const App = () => {
 								<Route path="/register" element={<RegisterScreen />} />
                                 <Route path="/home" element={<HomeScreen />} />
                                 <Route path="/create" element={<MapCreationPage />} />
+                                <Route path="/forgot" element={<PasswordRecovery />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
