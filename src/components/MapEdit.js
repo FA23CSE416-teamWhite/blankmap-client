@@ -78,7 +78,7 @@ const MapEdit = () => {
                 >
                     Map Title
                 </Typography>
-                <img src={tempMap} alt="fireSpot" height="480" width="700" />
+                <img src={tempMap} alt="fireSpot" style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%'}}height="480" width="700" />
                 <Button variant="contained">
                     Add a New Region
                 </Button>
