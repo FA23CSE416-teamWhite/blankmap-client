@@ -149,7 +149,6 @@ const renderMapCards = () => {
       <CardContent>
         <MapOverview mapInfo={mapInfo} />
       </CardContent>
-      
     </Card>
   ));
 };

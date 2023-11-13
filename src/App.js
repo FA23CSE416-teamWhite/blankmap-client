@@ -9,7 +9,9 @@ import{
     RegisterScreen,
     HomeScreen,
     MapCreationPage,
-    MapDetailScreen
+    MapDetailScreen,
+    MyMapScreen,
+    MyInfoScreen
 } from './components'
 
 const sampleMapDetails = {
@@ -45,6 +47,9 @@ const App = () => {
                                 <Route path="/home" element={<HomeScreen />} />
                                 <Route path="/create" element={<MapCreationPage />} />
                                 <Route path="/detail" element={<MapDetailScreen mapDetails={sampleMapDetails["1"]} />} />
+                                <Route path="/profile" element={<MyMapScreen />} />
+                                <Route path="/profile/my-maps" element={<MyMapScreen />} />
+                                <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
