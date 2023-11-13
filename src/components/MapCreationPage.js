@@ -24,20 +24,25 @@ const MapCreationPage = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const navigate = useNavigate();
     const handleStartWithBlank = () => {
-        navigate("/edit")
+        navigate("/"+selectedCategory)
         // Logic to handle starting with a blank map
         console.log("Start with Blank Map");
     };
 
     const handleLoadFromMap = () => {
-        navigate("/edit")
+        navigate("/"+selectedCategory)
         console.log("Load from Map");
     };
 
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
-        setSelectedCategory(event.target.value);
-    };
+        const selectedValue = event.target.value;
+      
+        // Set the appropriate edit value based on the selected category
+        const editValue = (selectedValue === 'Choropleth'|| selectedValue ==='') ? 'edit' : selectedValue === 'HeatMap' ? 'edit-heat' : 'edit';
+      
+        setSelectedCategory(editValue);
+      };
     const handleToggleSwitch = () => {
         setIsPublic(!isPublic);
     };
@@ -138,8 +143,8 @@ const MapCreationPage = () => {
                             size="small"
                         >
                             <MenuItem value="">-- Select --</MenuItem>
-                            <MenuItem value="category1">Category 1</MenuItem>
-                            <MenuItem value="category2">Category 2</MenuItem>
+                            <MenuItem value="Choropleth">Choropleth</MenuItem>
+                            <MenuItem value="HeatMap">Heat Map</MenuItem>
                             {/* Add more categories as needed */}
                         </Select>
                     </Grid>

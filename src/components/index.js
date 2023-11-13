@@ -9,6 +9,7 @@ import MyMapScreen from './MyMapScreen'
 import MyInfoScreen from './MyInfoScreen'
 import MessageCenter from './MessageCenter'
 import MapEdit from './MapEdit'
+import MapEditHeat from './MapEditHeat'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -25,5 +26,6 @@ export {
     MyMapScreen,
     MyInfoScreen,
     MessageCenter,
-    MapEdit
+    MapEdit,
+    MapEditHeat
 }
