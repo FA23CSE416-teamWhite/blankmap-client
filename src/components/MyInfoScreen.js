@@ -25,7 +25,7 @@ const MyInfoScreen = () => {
         flexDirection: 'column',
         alignItems: 'center',
         flex: 1,
-        marginLeft: '300px',
+        marginLeft: '225px',
       }}
     >
       <div className="avatar-section">

@@ -26,7 +26,7 @@ export default function IconBanner() {
                             noWrap
                             component="div"
                             color="blue"
-                            sx={{ display: { xs: 'none', sm: 'block' }, mr: 3, cursor: 'pointer' }}
+                            sx={{ display: { xs: 'none', sm: 'block' }, mr: 3, cursor: 'pointer',fontFamily: 'Helvetica', }}
                         >
                             BlankMap
                         </Typography>
