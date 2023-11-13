@@ -15,7 +15,8 @@ import{
     MessageCenter,
     MapEdit
 } from './components'
-
+import IconBanner from './components/IconBanner';
+import PasswordRecovery from './components/PasswordRecovery';
 const sampleMapDetails = {
     "1": {
       title: "Map 1",
@@ -39,7 +40,8 @@ const App = () => {
     return (
         <BrowserRouter>
             <AuthContextProvider>
-                <GlobalStoreContextProvider>            
+                <GlobalStoreContextProvider> 
+                    <IconBanner/>           
                     <AppBanner />
 						{/* <Router> */}
 							<Routes>
@@ -54,6 +56,7 @@ const App = () => {
                                 <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
                                 <Route path="/profile/message-center" element ={<MessageCenter />} />
                                 <Route path="/edit" element ={<MapEdit />} />
+                                <Route path="/forgot" element={<PasswordRecovery />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>

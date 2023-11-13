@@ -9,7 +9,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import { Link } from "react-router-dom";
 import { CardHeader, CardContent, Button } from '@mui/material';
 
-export default function LoginScreen() {
+export default function PasswordRecovery() {
 
     return(
         <Grid container justifyContent="flex-start" alignItems="flex-start" sx={{height:"100%", width:"min-content", margin:"auto",  padding:"50px"}}>
@@ -25,27 +25,11 @@ export default function LoginScreen() {
                             <AccountCircle sx = {{padding:1}}/>
                             <TextField label = "Username" fullWidth/>
                         </Box>
-    
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <LockIcon sx = {{padding:1}}/>
-                            <TextField label = "Password" fullWidth/>
-                        </Box>
 
                         <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Button variant="contained" to="/" sx={{ml:"25%"}}>
-                                <Link to="/Home"> Login</Link>
-                            </Button>
-                            <Button variant="contained" to="/" sx={{ml:"20%"}}>
-                                <Link to="/Home">Guest Login</Link>
-                            </Button>
+                            <Button variant="contained" to="/" sx={{ml:"15%"}}>Back to Login</Button>
+                            <Button variant="contained" to="/" sx={{ml:"25%"}}>Retrieve</Button>
                         </Box>    
-                    </Box>
-
-                    <Box sx={{pr:"50%"}}> 
-                        <Link to="/register">Register Account</Link>
-                    </Box>
-                    <Box > 
-                        <Link to="/forgot">Forgot Password</Link>
                     </Box>
                 </CardContent>
             </Card>
