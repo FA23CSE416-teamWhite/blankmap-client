@@ -41,7 +41,7 @@ describe('Forgot Screen', () => {
 
 
     // Click the "Forgot Password" link
-    cy.contains('Forgot Password').click();
+    cy.contains('/ sfkoek Forgot Password').click();
 
     // Assert that the URL includes '/forgot'
     cy.url().should('include', '/forgot');

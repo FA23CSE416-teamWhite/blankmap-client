@@ -33,7 +33,7 @@ export default function IconBanner() {
                                 fontFamily: 'Helvetica, sans-serif', // Change to the desired font family
                             }}
                         >
-                            BlankMap
+                            Blank Map
                         </Typography>
                     </Link>
                     <Box sx={{ flexGrow: 1 }} />
