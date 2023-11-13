@@ -19,12 +19,13 @@ import IconBanner from './components/IconBanner';
 import PasswordRecovery from './components/PasswordRecovery';
 const sampleMapDetails = {
     "1": {
-      title: "Map 1",
-      description: "Description for Map 1",
-      author: "Author 1",
+      title: "Cat's Masterpiece",
+      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
+      author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
-      mapImage: "url-to-map-image-1.jpg",
+      mapImage: './components/images/temp_map.png',
       comments: ["Comment 1", "Comment 2"],
+      createdDate: "10/25/2015",
     },
     "2": {
       title: "Map 2",

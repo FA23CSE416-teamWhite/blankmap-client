@@ -12,6 +12,8 @@ import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 
 const Comment = ({ comment, onReply, onUpvote, onDownvote, showReplyInput, replyText, setReplyText, handleAddReply }) => {
   return (
@@ -65,14 +67,14 @@ const MapDetailScreen = ({ mapDetails }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', marginTop: 2 }}>
-      <Box sx={{ flex: 1, marginRight: 2 }}>
-        <Box sx={{ marginBottom: 2 }}>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={4}>
+        <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
           <Typography variant="h6">Description</Typography>
           <Typography>{description}</Typography>
-        </Box>
+        </Paper>
 
-        <Box sx={{ marginBottom: 2 }}>
+        <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
           <Typography variant="h6">Tags</Typography>
           <div className="tags">
             {tags.map((tag, index) => (
@@ -81,10 +83,9 @@ const MapDetailScreen = ({ mapDetails }) => {
               </span>
             ))}
           </div>
-        </Box>
+        </Paper>
 
-        <Box sx={{ marginBottom: 2 }}>
-          <Typography variant="h6">Actions</Typography>
+        <Box>
           <Button variant="contained" onClick={() => console.log('Button 1 clicked')}>
             Open Edit As My Map
           </Button>
@@ -92,27 +93,26 @@ const MapDetailScreen = ({ mapDetails }) => {
             Export Data
           </Button>
         </Box>
-      </Box>
+      </Grid>
 
-      <Box sx={{ flex: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-          <Typography variant="h4">{title}</Typography>
-          <IconButton onClick={() => console.log('download button clicked')}>
-            <DownloadIcon />
-          </IconButton>
-          <IconButton onClick={() => console.log('upvote button clicked')}>
-            <UpvoteIcon />
-          </IconButton>
-          <IconButton onClick={() => console.log('downvote button clicked')}>
-            <DownvoteIcon />
-          </IconButton>
-        </Box>
-
-        <Box sx={{ marginBottom: 2 }}>
+      <Grid item xs={12} md={8}>
+        <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+            <Typography variant="h4">{title}</Typography>
+            <IconButton onClick={() => console.log('download button clicked')}>
+              <DownloadIcon />
+            </IconButton>
+            <IconButton onClick={() => console.log('upvote button clicked')}>
+              <UpvoteIcon />
+            </IconButton>
+            <IconButton onClick={() => console.log('downvote button clicked')}>
+              <DownvoteIcon />
+            </IconButton>
+          </Box>
           <img src={mapImage} alt="Map" style={{ width: '100%', height: 'auto' }} />
-        </Box>
+        </Paper>
 
-        <Box sx={{ marginBottom: 2 }}>
+        <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
           <Typography variant="h6">Comments</Typography>
           <List>
             {commentList.map((comment, index) => (
@@ -131,9 +131,9 @@ const MapDetailScreen = ({ mapDetails }) => {
               Add Comment
             </Button>
           </Box>
-        </Box>
-      </Box>
-    </Box>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
