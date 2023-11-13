@@ -21,7 +21,7 @@ const MapCreationPage = () => {
     const [isPublic, setIsPublic] = useState(true);
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("edit");
     const navigate = useNavigate();
     const handleStartWithBlank = () => {
         navigate("/"+selectedCategory)
