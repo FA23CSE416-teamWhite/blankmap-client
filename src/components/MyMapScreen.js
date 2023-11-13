@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import ProfileMenu from "./ProfileMenu";
 import MapOverview from "./MapOverview";
 import SearchBar from "./SearchBar";
-import {Button, Card, CardContent} from "@mui/material";
+import { Button, Card, CardContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const MyMapScreen = ({userMaps }) => {
+const MyMapScreen = ({ userMaps }) => {
   const [mapFilter, setMapFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const mapList = [
@@ -86,12 +86,12 @@ const MyMapScreen = ({userMaps }) => {
         {/* Map Overviews */}
         <div className="map-overviews">
           {filteredMaps.map((mapInfo, index) => (
-    <Card key={index} style={{ marginBottom: '20px' }}>
-      <CardContent>
-        <MapOverview mapInfo={mapInfo} />
-      </CardContent>
-      
-    </Card>))}  
+            <Card key={index} style={{ marginBottom: '20px' }}>
+              <CardContent>
+                <MapOverview mapInfo={mapInfo} />
+              </CardContent>
+
+            </Card>))}
         </div>
       </div>
     </div>

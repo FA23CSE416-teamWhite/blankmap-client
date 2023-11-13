@@ -47,7 +47,7 @@ const App = () => {
                                 <Route path="/home" element={<HomeScreen />} />
                                 <Route path="/create" element={<MapCreationPage />} />
                                 <Route path="/detail" element={<MapDetailScreen mapDetails={sampleMapDetails["1"]} />} />
-                                <Route path="/profile" element={<MyMapScreen />} />
+                                <Route path="/profile" element={<MyInfoScreen />} />
                                 <Route path="/profile/my-maps" element={<MyMapScreen />} />
                                 <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
 							</Routes>
