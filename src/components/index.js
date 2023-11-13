@@ -4,6 +4,7 @@ import LoginScreen from './LoginScreen'
 import RegisterScreen from './RegisterScreen'
 import HomeScreen from './HomeScreen'
 import MapCreationPage from './MapCreationPage'
+import MapDetailScreen from './MapDetailScreen'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -15,5 +16,6 @@ export {
     LoginScreen,
     RegisterScreen,
     HomeScreen,
-    MapCreationPage
+    MapCreationPage,
+    MapDetailScreen
 }
