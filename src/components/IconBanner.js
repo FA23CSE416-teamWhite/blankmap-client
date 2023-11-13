@@ -26,7 +26,12 @@ export default function IconBanner() {
                             noWrap
                             component="div"
                             color="blue"
-                            sx={{ display: { xs: 'none', sm: 'block' }, mr: 3, cursor: 'pointer',fontFamily: 'Helvetica', }}
+                            sx={{
+                                display: { xs: 'none', sm: 'block' },
+                                mr: 3,
+                                cursor: 'pointer',
+                                fontFamily: 'Helvetica, sans-serif', // Change to the desired font family
+                            }}
                         >
                             BlankMap
                         </Typography>
@@ -35,7 +40,7 @@ export default function IconBanner() {
                     <Link to="/Login">SignIn/SignOut</Link>
 
                     <Link to="/profile" style={{ textDecoration: "none" }}>
-                        <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }}/>
+                        <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
                     </Link>
 
                 </Toolbar>

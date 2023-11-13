@@ -15,6 +15,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import temp_map from './images/temp_map.png'
+import { useNavigate } from 'react-router';
 
 const Comment = ({ comment, onReply, onUpvote, onDownvote, showReplyInput, replyText, setReplyText, handleAddReply }) => {
     return (
@@ -57,6 +58,7 @@ const MapDetailScreen = ({ mapDetails }) => {
     const { title, description, tags, mapImage, comments } = mapDetails;
     const [newComment, setNewComment] = useState('');
     const [commentList, setCommentList] = useState(comments);
+    const navigate = useNavigate();
 
     const handleAddComment = () => {
         // Implement logic to add a comment (you may want to update your data structure)
@@ -88,7 +90,7 @@ const MapDetailScreen = ({ mapDetails }) => {
                     </Paper>
 
                     <Box>
-                        <Button variant="contained" onClick={() => console.log('Button 1 clicked')} sx = {{height: '40px'}}>
+                        <Button variant="contained" onClick={() => navigate('/edit')} sx = {{height: '40px'}}>
                             Open Edit As My Map
                         </Button>
                         <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx = {{height: '40px', marginLeft:'20px'}}>
