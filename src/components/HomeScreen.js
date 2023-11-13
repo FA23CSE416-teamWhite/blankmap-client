@@ -127,7 +127,7 @@ const HomeScreen = () => {
 
 const renderMapCards = () => {
   return currentMapList.map((mapInfo, index) => (
-    <Card key={index} style={{ marginBottom: '20px', backgroundColor: 'aliceblue', marginTop: '15px'}}>  <CardContent>
+    <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>  <CardContent>
         <MapOverview mapInfo={mapInfo} />
       </CardContent>
     </Card>

@@ -107,7 +107,7 @@ const MyMapScreen = ({ userMaps }) => {
       {/* Map Overviews */}
       <div className="map-overviews">
         {filteredMaps.map((mapInfo, index) => (
-          <Card key={index} style={{ marginBottom: '20px' }}>
+          <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>
             <CardContent>
               <MapOverview mapInfo={mapInfo} />
             </CardContent>
