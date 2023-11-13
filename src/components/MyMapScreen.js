@@ -46,7 +46,6 @@ const MyMapScreen = ({ userMaps }) => {
 
   return (
     <div className="profile-page" style={{ display: 'flex',padding:"20px"}}>
-      <NavBar />
       <ProfileMenu />
       <div className="content-container" style={{ marginLeft: '500px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

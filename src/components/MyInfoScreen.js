@@ -13,7 +13,6 @@ const MyInfoScreen = () => {
 
  return (
     <div className="info-screen" style={{ display: 'flex',padding:"20px"}}>
-        <NavBar />
       <ProfileMenu />
       <div className="content-container" style={{ marginLeft: '250px' }}>
       <div className="avatar-section">

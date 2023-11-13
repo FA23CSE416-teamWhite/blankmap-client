@@ -9,7 +9,7 @@ const NavBar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Button color="inherit" component={RouterLink} to="/">
+        <Button color="inherit" component={RouterLink} to="/home">
           Home
         </Button>
         <Button color="inherit" component={RouterLink} to="/profile/my-maps">

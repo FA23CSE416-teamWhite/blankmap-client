@@ -13,7 +13,6 @@ const MessageCenter = () => {
 
   return (
     <div className="message-center">
-        <NavBar />
       <ProfileMenu />
 
       <div className="messages">
