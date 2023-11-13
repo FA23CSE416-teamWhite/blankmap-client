@@ -9,7 +9,10 @@ const MessageCenter = () => {
     const messages = [
         {
             id:1,
-            message:"Hello World",
+            user: "Dog",
+            message:"Nice map!",
+            map: "World GDP",
+            dateCreated: "8/02/2015"
         }
     ]
 
@@ -25,7 +28,7 @@ const MessageCenter = () => {
               Message Center
             </Typography>
             {messages.map((msg) => (
-              <Message key={msg.id} message={msg.message} />
+              <Message key={msg.id} message={msg} />
             ))}
           </Box>
         </Grid>

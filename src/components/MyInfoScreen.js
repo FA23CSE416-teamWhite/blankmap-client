@@ -8,8 +8,8 @@ const MyInfoScreen = () => {
     const username = "testuser";
     const email = "email@email.email";
     const phone = "123-456-7890";
-    const memberSince = "1/1/2024";
-    const numberOfMaps = "0";
+    const memberSince = "1/1/2014";
+    const numberOfMaps = "2";
     const bio = "Nice to meet you!";
     const avatarUrl = avatar;
 
@@ -48,7 +48,7 @@ const MyInfoScreen = () => {
             <strong>Phone:</strong> {phone}
           </div>
           <div>
-            <strong>Password:</strong> {/* Display password securely or provide an option to reset */}
+            <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
             {/* Ideally, avoid displaying passwords for security reasons */}
           </div>
           <div>
