@@ -1,6 +1,7 @@
 import React from "react";
 import ProfileMenu from "./ProfileMenu";
 import Message from "./Message";
+import NavBar from "./NavBar";
 
 const MessageCenter = () => {
     const messages = [
@@ -12,6 +13,7 @@ const MessageCenter = () => {
 
   return (
     <div className="message-center">
+        <NavBar />
       <ProfileMenu />
 
       <div className="messages">

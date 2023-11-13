@@ -1,18 +1,22 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 const NavBar = () => {
   return (
-    <nav className="navbar">
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/profile/my-maps">My Maps</Link>
-        </li>
-      </ul>
-    </nav>
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit" component={RouterLink} to="/">
+          Home
+        </Button>
+        <Button color="inherit" component={RouterLink} to="/profile/my-maps">
+          My Maps
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 

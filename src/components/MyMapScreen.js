@@ -5,6 +5,8 @@ import SearchBar from "./SearchBar";
 import { Button, Card, CardContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
+import temp_map from './images/temp_map.png';
+import NavBar from "./NavBar";
 
 const MyMapScreen = ({ userMaps }) => {
   const [mapFilter, setMapFilter] = useState("all");
@@ -15,14 +17,14 @@ const MyMapScreen = ({ userMaps }) => {
       description: "Description for Map 1",
       author: "Author 1",
       tags: ["tag1", "tag2", "tag3"],
-      mapSnapshot: "url-to-map-snapshot-1.jpg",
+      mapSnapshot: temp_map,
     },
     {
       title: "Map 2",
       description: "Description for Map 2",
       author: "Author 2",
       tags: ["tag4", "tag5", "tag6"],
-      mapSnapshot: "url-to-map-snapshot-2.jpg",
+      mapSnapshot: temp_map,
     },
     // Add more map information objects as needed
   ];
@@ -44,6 +46,7 @@ const MyMapScreen = ({ userMaps }) => {
 
   return (
     <div className="profile-page" style={{ display: 'flex',padding:"20px"}}>
+      <NavBar />
       <ProfileMenu />
       <div className="content-container" style={{ marginLeft: '500px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

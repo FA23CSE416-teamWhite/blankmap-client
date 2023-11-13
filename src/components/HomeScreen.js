@@ -76,27 +76,34 @@ const HomeScreen = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  let searchBar=
+  let searchBar =
   <Box>
-      <AppBar position="sticky" sx={{ display: 'flex', alignItems: 'center' }}>
-      <form>
+  <AppBar position="sticky" sx={{ display: 'flex', alignItems: 'center' }}>
+    <form>
       <TextField
-      id="search-bar"
-      className="text"
-      onInput={(e) => {
-      }}
-      label="What map are you looking for?"
-      variant="outlined"
-      placeholder="Search..."
-      size="medium"
-      sx={{ backgroundColor: 'white', width: '500px', borderRadius: '5px', }}
-    />
-    <IconButton type="submit" aria-label="search">
-      <SearchIcon style={{ fill: "white" }} />
-    </IconButton>
+        id="search-bar"
+        className="text"
+        onInput={(e) => {
+          // Handle input if needed
+        }}
+        label="What map are you looking for?"
+        variant="outlined"
+        placeholder="Search..."
+        size="small" // Adjusted to "small" size
+        sx={{
+          backgroundColor: 'white',
+          width: '300px', // Adjusted width
+          borderRadius: '5px',
+          padding: '8px', // Added padding to the TextField
+        }}
+      />
+      <IconButton type="submit" aria-label="search">
+        <SearchIcon style={{ fill: "white" }} />
+      </IconButton>
     </form>
-      </AppBar>
-    </Box>
+  </AppBar>
+</Box>
+
 
   let sorts=
   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
