@@ -14,7 +14,8 @@ import{
     MyInfoScreen,
     MessageCenter,
     MapEdit,
-    MapEditHeat
+    MapEditHeat,
+    RegionalEdit,
 } from './components'
 import IconBanner from './components/IconBanner';
 import PasswordRecovery from './components/PasswordRecovery';
@@ -61,6 +62,7 @@ const App = () => {
                                 <Route path="/forgot" element={<PasswordRecovery />} />
                                 <Route path="/sign-out" element={<LoginScreen />} />
                                 <Route path="/edit-heat" element={<MapEditHeat />} />
+                                <Route path="/regional-edit" element={<RegionalEdit />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>

@@ -39,7 +39,14 @@ const MapCreationPage = () => {
         const selectedValue = event.target.value;
       
         // Set the appropriate edit value based on the selected category
-        const editValue = (selectedValue === 'Choropleth'|| selectedValue ==='') ? 'edit' : selectedValue === 'HeatMap' ? 'edit-heat' : 'edit';
+        const editValue =
+          selectedValue === 'Choropleth' || selectedValue === ''
+            ? 'edit'
+            : selectedValue === 'HeatMap'
+            ? 'edit-heat'
+            : selectedValue === 'Regional'
+            ? 'regional-edit'
+            : 'edit';
       
         setSelectedCategory(editValue);
       };
@@ -145,6 +152,7 @@ const MapCreationPage = () => {
                             <MenuItem value="">-- Select --</MenuItem>
                             <MenuItem value="Choropleth">Choropleth</MenuItem>
                             <MenuItem value="HeatMap">Heat Map</MenuItem>
+                            <MenuItem value="Regional">Regional Map</MenuItem>
                             {/* Add more categories as needed */}
                         </Select>
                     </Grid>
