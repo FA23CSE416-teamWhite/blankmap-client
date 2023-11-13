@@ -32,8 +32,12 @@ export default function LoginScreen() {
                         </Box>
 
                         <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Button variant="contained" to="/" sx={{ml:"20%"}}>Login</Button>
-                            <Button variant="contained" to="/" sx={{ml:"25%"}}>Guest Login</Button>
+                            <Button variant="contained" to="/" sx={{ml:"25%"}}>
+                                <Link to="/Home"> Login</Link>
+                            </Button>
+                            <Button variant="contained" to="/" sx={{ml:"20%"}}>
+                                <Link to="/Home">Guest Login</Link>
+                            </Button>
                         </Box>    
                     </Box>
 

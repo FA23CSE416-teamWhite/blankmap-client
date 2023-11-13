@@ -46,7 +46,9 @@ export default function RegisterScreen() {
                         </Box>
 
                         <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Button variant="contained" to="/" sx={{ml:"40%"}}>Register</Button>
+                            <Button variant="contained" to="/" sx={{ml:"40%"}}>
+                                <Link to="/Home" > REGISTER</Link>
+                            </Button>
                         </Box>    
                     </Box>
 
