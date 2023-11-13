@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import ProfileMenu from "./ProfileMenu";
 import MapOverview from "./MapOverview";
 import SearchBar from "./SearchBar";
-import { Button, Card, CardContent } from "@mui/material";
+import { Button, Card, CardContent} from "@mui/material";
+import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import temp_map from './images/temp_map.png';
@@ -45,64 +46,72 @@ const MyMapScreen = ({ userMaps }) => {
   // });
 
   return (
-    <div className="profile-page" style={{ display: 'flex',padding:"20px"}}>
-      <ProfileMenu />
-      <div className="content-container" style={{ marginLeft: '500px' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Filter Switch */}
-          <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
-            <label>
-              <input
-                type="radio"
-                value="all"
-                checked={mapFilter === "all"}
-                onChange={() => setMapFilter("all")}
-              />
-              All
-            </label>
+    <Box sx={{ display: 'flex', padding: '20px' }}>
+    <ProfileMenu />
 
-            <label>
-              <input
-                type="radio"
-                value="public"
-                checked={mapFilter === "public"}
-                onChange={() => setMapFilter("public")}
-              />
-              Public
-            </label>
+    <Box sx={{ marginLeft: '225px', width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        {/* Filter Switch */}
+        <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
+          <label>
+            <input
+              type="radio"
+              value="all"
+              checked={mapFilter === 'all'}
+              onChange={() => setMapFilter('all')}
+            />
+            All
+          </label>
 
-            <label>
-              <input
-                type="radio"
-                value="private"
-                checked={mapFilter === "private"}
-                onChange={() => setMapFilter("private")}
-              />
-              Private
-            </label>
-          </div>
+          <label>
+            <input
+              type="radio"
+              value="public"
+              checked={mapFilter === 'public'}
+              onChange={() => setMapFilter('public')}
+            />
+            Public
+          </label>
 
-          {/* Search Bar */}
-          <SearchBar onSearch={setSearchTerm} style={{ marginBottom: '10px' }} />
+          <label>
+            <input
+              type="radio"
+              value="private"
+              checked={mapFilter === 'private'}
+              onChange={() => setMapFilter('private')}
+            />
+            Private
+          </label>
+        </div>
 
-          {/* Create Map Button */}
-          <Button variant="contained" onClick={() => navigate("/create")} style={{ marginBottom: '20px' }}>
-            Create Map
-          </Button>
-        </Box>
-        {/* Map Overviews */}
-        <div className="map-overviews">
-            {filteredMaps.map((mapInfo, index) => (
-              <Card key={index} style={{ marginBottom: '20px' }}>
-                <CardContent>
-                  <MapOverview mapInfo={mapInfo} />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        {/* Search Bar */}
+        <TextField
+            label="Search"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ marginBottom: '10px' }}
+          />
 
+        {/* Create Map Button */}
+        <Button variant="contained" onClick={() => navigate('/create')} style={{ marginBottom: '20px' }}>
+          Create Map
+        </Button>
+      </Box>
+
+      {/* Map Overviews */}
+      <div className="map-overviews">
+        {filteredMaps.map((mapInfo, index) => (
+          <Card key={index} style={{ marginBottom: '20px' }}>
+            <CardContent>
+              <MapOverview mapInfo={mapInfo} />
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </div>
+    </Box>
+  </Box>
   );
 };
 
