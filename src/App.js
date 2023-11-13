@@ -58,6 +58,7 @@ const App = () => {
                                 <Route path="/profile/message-center" element ={<MessageCenter />} />
                                 <Route path="/edit" element ={<MapEdit />} />
                                 <Route path="/forgot" element={<PasswordRecovery />} />
+                                <Route path="/sign-out" element={<LoginScreen />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
