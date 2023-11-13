@@ -4,6 +4,7 @@ import MapOverview from "./MapOverview";
 import SearchBar from "./SearchBar";
 import { Button, Card, CardContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 
 const MyMapScreen = ({ userMaps }) => {
   const [mapFilter, setMapFilter] = useState("all");
@@ -42,57 +43,62 @@ const MyMapScreen = ({ userMaps }) => {
   // });
 
   return (
-    <div className="profile-page">
+    <div className="profile-page" style={{ display: 'flex',padding:"20px"}}>
       <ProfileMenu />
+      <div className="content-container" style={{ marginLeft: '500px' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Filter Switch */}
+          <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
+            <label>
+              <input
+                type="radio"
+                value="all"
+                checked={mapFilter === "all"}
+                onChange={() => setMapFilter("all")}
+              />
+              All
+            </label>
 
-      <div className="main-content">
+            <label>
+              <input
+                type="radio"
+                value="public"
+                checked={mapFilter === "public"}
+                onChange={() => setMapFilter("public")}
+              />
+              Public
+            </label>
 
-        {/* Filter Switch */}
-        <div className="filter-switch">
-          <label>
-            <input
-              type="radio"
-              value="all"
-              checked={mapFilter === "all"}
-              onChange={() => setMapFilter("all")}
-            />
-            All
-          </label>
+            <label>
+              <input
+                type="radio"
+                value="private"
+                checked={mapFilter === "private"}
+                onChange={() => setMapFilter("private")}
+              />
+              Private
+            </label>
+          </div>
 
-          <label>
-            <input
-              type="radio"
-              value="public"
-              checked={mapFilter === "public"}
-              onChange={() => setMapFilter("public")}
-            />
-            Public
-          </label>
+          {/* Search Bar */}
+          <SearchBar onSearch={setSearchTerm} style={{ marginBottom: '10px' }} />
 
-          <label>
-            <input
-              type="radio"
-              value="private"
-              checked={mapFilter === "private"}
-              onChange={() => setMapFilter("private")}
-            />
-            Private
-          </label>
-        </div>
-
-        {/* Search Bar */}
-        <SearchBar onSearch={setSearchTerm} />
-        <Button variant="contained" onClick={() => navigate("/create")}>Create Map</Button>
+          {/* Create Map Button */}
+          <Button variant="contained" onClick={() => navigate("/create")} style={{ marginBottom: '20px' }}>
+            Create Map
+          </Button>
+        </Box>
         {/* Map Overviews */}
         <div className="map-overviews">
-          {filteredMaps.map((mapInfo, index) => (
-            <Card key={index} style={{ marginBottom: '20px' }}>
-              <CardContent>
-                <MapOverview mapInfo={mapInfo} />
-              </CardContent>
+            {filteredMaps.map((mapInfo, index) => (
+              <Card key={index} style={{ marginBottom: '20px' }}>
+                <CardContent>
+                  <MapOverview mapInfo={mapInfo} />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-            </Card>))}
-        </div>
       </div>
     </div>
   );
