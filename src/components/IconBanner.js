@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import blankMapicon from '../assets/blankMapIcon.png'
+import { Link } from "react-router-dom";
 
 export default function IconBanner() {
 
@@ -26,6 +27,8 @@ export default function IconBanner() {
                     BlankMap
                 </Typography>
                 <Box sx={{ flexGrow: 1 }} />
+                <Link to="/Login">SignIn/SignOut</Link>
+                <AccountCircle color="gray" sx={{ml:1}}/>
                 </Toolbar>
             </AppBar>
         </Box>
