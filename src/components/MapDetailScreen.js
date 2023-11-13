@@ -14,6 +14,7 @@ import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import temp_map from './images/temp_map.png'
 
 const Comment = ({ comment, onReply, onUpvote, onDownvote, showReplyInput, replyText, setReplyText, handleAddReply }) => {
   return (
@@ -67,6 +68,7 @@ const MapDetailScreen = ({ mapDetails }) => {
   };
 
   return (
+    <Box sx={{ marginTop: 2 }}>
     <Grid container spacing={2}>
       <Grid item xs={12} md={4}>
         <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
@@ -109,7 +111,7 @@ const MapDetailScreen = ({ mapDetails }) => {
               <DownvoteIcon />
             </IconButton>
           </Box>
-          <img src={mapImage} alt="Map" style={{ width: '100%', height: 'auto' }} />
+          <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} />
         </Paper>
 
         <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
@@ -134,6 +136,7 @@ const MapDetailScreen = ({ mapDetails }) => {
         </Paper>
       </Grid>
     </Grid>
+    </Box>
   );
 };
 

@@ -1,6 +1,8 @@
 import React from "react";
 import ProfileMenu from "./ProfileMenu";
 import NavBar from "./NavBar";
+import  avatar from "./images/avatar.png";
+import { Paper, Typography, Box, Button } from "@mui/material";
 
 const MyInfoScreen = () => {
     const username = "testuser";
@@ -9,18 +11,29 @@ const MyInfoScreen = () => {
     const memberSince = "1/1/2024";
     const numberOfMaps = "0";
     const bio = "Nice to meet you!";
-    const avatarUrl = "avatarUrl";
+    const avatarUrl = avatar;
 
  return (
-    <div className="info-screen" style={{ display: 'flex',padding:"20px"}}>
+    <Box sx={{ display: 'flex', padding: '20px' }}>
       <ProfileMenu />
-      <div className="content-container" style={{ marginLeft: '250px' }}>
+      <Paper
+      elevation={3}
+      sx={{
+        p: 2,
+        borderRadius: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        flex: 1,
+        marginLeft: '300px',
+      }}
+    >
       <div className="avatar-section">
-        <img src={avatarUrl} alt="User Avatar" className="avatar" />
+        <img src={avatarUrl} alt="User Avatar" className="avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
       </div>
 
-      <div className="user-info">
-        <h2>User Information</h2>
+      <div className="user-info" style={{ marginTop: '20px' }}>
+        <Typography variant="h5">User Information</Typography>
         <div>
           <strong>Username:</strong> {username}
         </div>
@@ -44,9 +57,9 @@ const MyInfoScreen = () => {
           <strong>Bio:</strong> {bio}
         </div>
       </div>
-      <button onClick={() => console.log("Edit button clicked")}>Edit</button>
-    </div>
-    </div>
+      <Button variant="contained" onClick={() => console.log('Edit button clicked')} style={{ marginTop: '20px' }}>Edit</Button>
+    </Paper>
+    </Box>
   );
 };
 
