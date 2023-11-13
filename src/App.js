@@ -8,9 +8,29 @@ import{
     LoginScreen,
     RegisterScreen,
     HomeScreen,
-    MapCreationPage
+    MapCreationPage,
+    MapDetailScreen
 } from './components'
 
+const sampleMapDetails = {
+    "1": {
+      title: "Map 1",
+      description: "Description for Map 1",
+      author: "Author 1",
+      tags: ["tag1", "tag2", "tag3"],
+      mapImage: "url-to-map-image-1.jpg",
+      comments: ["Comment 1", "Comment 2"],
+    },
+    "2": {
+      title: "Map 2",
+      description: "Description for Map 2",
+      author: "Author 2",
+      tags: ["tag4", "tag5", "tag6"],
+      mapImage: "url-to-map-image-2.jpg",
+      comments: ["Comment 3", "Comment 4"],
+    },
+    // Add more map details as needed
+  };
 const App = () => {   
     return (
         <BrowserRouter>
@@ -24,6 +44,7 @@ const App = () => {
 								<Route path="/register" element={<RegisterScreen />} />
                                 <Route path="/home" element={<HomeScreen />} />
                                 <Route path="/create" element={<MapCreationPage />} />
+                                <Route path="/detail" element={<MapDetailScreen mapDetails={sampleMapDetails["1"]} />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
