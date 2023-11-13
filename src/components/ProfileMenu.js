@@ -4,7 +4,7 @@ import {Card, ListItemButton, ListItemText, List,ListItem , Typography } from '@
 
 const ProfileMenu = () => {
   return (
-    <Card sx={{ width: '200px', position: 'fixed', borderRadius: 3 }}>
+    <Card sx={{ width: '200px', height: '210px', position: 'flex', borderRadius: 3 }}>
        <List>
           <ListItem disablePadding>
             <ListItemButton href="/profile/personal-information">

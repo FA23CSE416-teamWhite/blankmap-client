@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ProfileMenu from './ProfileMenu'; // Import your ProfileMenu component
 import Message from './Message';
+import Grid from "@mui/material/Grid";
 
 const MessageCenter = () => {
     const messages = [
@@ -14,18 +15,21 @@ const MessageCenter = () => {
 
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
-      {/* ProfileMenu on the left */}
-      <ProfileMenu />
-
-      {/* Content on the right */}
-      <Box sx={{ marginLeft: '225px', flex: 1, marginRight: '20' }}>
-        <Typography variant="h4" gutterBottom>
-          Message Center
-        </Typography>
-        {messages.map((msg) => (
-          <Message key={msg.id} message={msg.message} />
-        ))}
-      </Box>
+      <Grid container>
+        <Grid item xs={12} sm={3}>
+          <ProfileMenu />
+        </Grid>
+        <Grid item xs={12} sm={9}>
+          <Box sx={{ flex: 1, marginRight: '20' }}>
+            <Typography variant="h4" gutterBottom>
+              Message Center
+            </Typography>
+            {messages.map((msg) => (
+              <Message key={msg.id} message={msg.message} />
+            ))}
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

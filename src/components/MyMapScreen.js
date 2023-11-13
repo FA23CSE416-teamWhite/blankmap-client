@@ -5,7 +5,7 @@ import SearchBar from "./SearchBar";
 import { Button, Card, CardContent} from "@mui/material";
 import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Grid} from "@mui/material";
 import temp_map from './images/temp_map.png';
 import NavBar from "./NavBar";
 import Typography from '@mui/material/Typography';
@@ -50,87 +50,92 @@ const MyMapScreen = ({ userMaps }) => {
 
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
-    <ProfileMenu />
+    <Grid container>
+      <Grid item xs={12} sm={3}>
+        <ProfileMenu />
+      </Grid>
+      <Grid item xs={12} sm={9}>
+        <Box sx={{ width: '100%' }}>
+        <Typography variant="h4" gutterBottom>
+              My Maps
+            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+            {/* Filter Switch */}
+            <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
+              <label>
+                <input
+                  type="radio"
+                  value="all"
+                  checked={mapFilter === 'all'}
+                  onChange={() => setMapFilter('all')}
+                />
+                All
+              </label>
 
-    <Box sx={{ marginLeft: '225px', width: '100%' }}>
-    <Typography variant="h4" gutterBottom>
-          My Maps
-        </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        {/* Filter Switch */}
-        <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
-          <label>
-            <input
-              type="radio"
-              value="all"
-              checked={mapFilter === 'all'}
-              onChange={() => setMapFilter('all')}
-            />
-            All
-          </label>
+              <label>
+                <input
+                  type="radio"
+                  value="public"
+                  checked={mapFilter === 'public'}
+                  onChange={() => setMapFilter('public')}
+                />
+                Public
+              </label>
 
-          <label>
-            <input
-              type="radio"
-              value="public"
-              checked={mapFilter === 'public'}
-              onChange={() => setMapFilter('public')}
-            />
-            Public
-          </label>
+              <label>
+                <input
+                  type="radio"
+                  value="private"
+                  checked={mapFilter === 'private'}
+                  onChange={() => setMapFilter('private')}
+                />
+                Private
+              </label>
+            </div>
 
-          <label>
-            <input
-              type="radio"
-              value="private"
-              checked={mapFilter === 'private'}
-              onChange={() => setMapFilter('private')}
-            />
-            Private
-          </label>
-        </div>
+            {/* Search Bar */}
+            <TextField
+                label="Search"
+                variant="outlined"
+                size="small"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginBottom: '10px' }}
+              />
 
-        {/* Search Bar */}
-        <TextField
-            label="Search"
-            variant="outlined"
-            size="small"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ marginBottom: '10px' }}
-          />
+            {/* Create Map Button */}
+            <Button variant="contained" onClick={() => navigate('/create')} style={{ marginBottom: '20px' }}>
+              Create Map
+            </Button>
+          </Box>
 
-        {/* Create Map Button */}
-        <Button variant="contained" onClick={() => navigate('/create')} style={{ marginBottom: '20px' }}>
-          Create Map
-        </Button>
-      </Box>
-
-      {/* Map Overviews */}
-      <div className="map-overviews">
-        {filteredMaps.map((mapInfo, index) => (
-          <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>
-            <CardContent>
-              <MapOverview mapInfo={mapInfo} />
-              <Box sx={{justifyContent: 'right',}}>
-                <Button 
-                  // onClick={()} for future purposes
-                  sx={{
-                    fontSize: '10px',
-                    backgroundColor: 'red',
-                    color: 'white',
-                    padding: '5px',
-                    borderRadius: '4px', // Set border-radius for rounded corners
-                    margin: '0 4px',
-                }}>Delete
-                </Button>
-              </Box>
-              
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Box>
+          {/* Map Overviews */}
+          <div className="map-overviews">
+            {filteredMaps.map((mapInfo, index) => (
+              <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>
+                <CardContent>
+                  <MapOverview mapInfo={mapInfo} />
+                  <Box sx={{justifyContent: 'right',}}>
+                    <Button 
+                      // onClick={()} for future purposes
+                      sx={{
+                        fontSize: '10px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        padding: '5px',
+                        borderRadius: '4px', // Set border-radius for rounded corners
+                        margin: '0 4px',
+                    }}>Delete
+                    </Button>
+                  </Box>
+                  
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </Box>
+      </Grid>
+    </Grid>
   </Box>
   );
 };
