@@ -76,34 +76,6 @@ const HomeScreen = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  let searchBar =
-  <Box>
-  <AppBar position="sticky" sx={{ display: 'flex', alignItems: 'center' }}>
-    <form>
-      <TextField
-        id="search-bar"
-        className="text"
-        onInput={(e) => {
-          // Handle input if needed
-        }}
-        label="What map are you looking for?"
-        variant="outlined"
-        placeholder="Search..."
-        size="small" // Adjusted to "small" size
-        sx={{
-          backgroundColor: 'white',
-          width: '300px', // Adjusted width
-          borderRadius: '5px',
-          padding: '8px', // Added padding to the TextField
-        }}
-      />
-      <IconButton type="submit" aria-label="search">
-        <SearchIcon style={{ fill: "white" }} />
-      </IconButton>
-    </form>
-  </AppBar>
-</Box>
-
 
   let sorts=
   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -164,7 +136,6 @@ const renderMapCards = () => {
 
   return (
     <div>
-      {searchBar}
       <div className="home-screen" style={{ paddingTop: '20px', paddingRight: '50px', paddingBottom: '30px', paddingLeft: '50px' }}>
       {/* <h1>Home Screen</h1> */}
       
