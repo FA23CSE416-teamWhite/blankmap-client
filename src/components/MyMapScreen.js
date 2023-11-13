@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import temp_map from './images/temp_map.png';
 import NavBar from "./NavBar";
+import Typography from '@mui/material/Typography';
 
 const MyMapScreen = ({ userMaps }) => {
   const [mapFilter, setMapFilter] = useState("all");
@@ -50,6 +51,9 @@ const MyMapScreen = ({ userMaps }) => {
     <ProfileMenu />
 
     <Box sx={{ marginLeft: '225px', width: '100%' }}>
+    <Typography variant="h4" gutterBottom>
+          My Maps
+        </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         {/* Filter Switch */}
         <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>

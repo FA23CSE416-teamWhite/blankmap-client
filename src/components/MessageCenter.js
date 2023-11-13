@@ -1,7 +1,8 @@
-import React from "react";
-import ProfileMenu from "./ProfileMenu";
-import Message from "./Message";
-import NavBar from "./NavBar";
+import React from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import ProfileMenu from './ProfileMenu'; // Import your ProfileMenu component
+import Message from './Message';
 
 const MessageCenter = () => {
     const messages = [
@@ -12,16 +13,20 @@ const MessageCenter = () => {
     ]
 
   return (
-    <div className="message-center">
+    <Box sx={{ display: 'flex', padding: '20px' }}>
+      {/* ProfileMenu on the left */}
       <ProfileMenu />
 
-      <div className="messages">
-        <h2>Message Center</h2>
+      {/* Content on the right */}
+      <Box sx={{ marginLeft: '225px', flex: 1, marginRight: '20' }}>
+        <Typography variant="h4" gutterBottom>
+          Message Center
+        </Typography>
         {messages.map((msg) => (
           <Message key={msg.id} message={msg.message} />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
