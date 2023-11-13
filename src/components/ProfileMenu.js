@@ -1,24 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {Card, ListItemButton, ListItemText, List,ListItem , Typography } from '@mui/material';
 
 const ProfileMenu = () => {
   return (
-    <div className="menu">
-      <ul>
-        <li>
-          <Link to="/profile/personal-information">Personal Information</Link>
-        </li>
-        <li>
-          <Link to="/profile/my-maps">My Maps</Link>
-        </li>
-        <li>
-          <Link to="/profile/message-center">Message Center</Link>
-        </li>
-        <li>
-          <Link to="/sign-out">Sign Out</Link>
-        </li>
-      </ul>
-    </div>
+    <Card sx={{ width: '200px', position: 'fixed'}}>
+       <List>
+          <ListItem disablePadding>
+            <ListItemButton href="/profile/personal-information">
+              <ListItemText primary="Personal Information" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton href="/profile/my-maps">
+              <ListItemText primary="My Maps" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton href="/profile/message-center">
+              <ListItemText primary="Message Center" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton href="/sign-out">
+              <ListItemText primary="Sign Out" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+    </Card>
   );
 };
 

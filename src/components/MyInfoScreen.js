@@ -10,9 +10,10 @@ const MyInfoScreen = () => {
     const bio = "Nice to meet you!";
     const avatarUrl = "avatarUrl";
 
-  return (
-    <div className="info-screen">
-        <ProfileMenu />
+ return (
+    <div className="info-screen" style={{ display: 'flex',padding:"20px"}}>
+      <ProfileMenu />
+      <div className="content-container" style={{ marginLeft: '250px' }}>
       <div className="avatar-section">
         <img src={avatarUrl} alt="User Avatar" className="avatar" />
       </div>
@@ -42,7 +43,9 @@ const MyInfoScreen = () => {
           <strong>Bio:</strong> {bio}
         </div>
       </div>
-    </div>
+      </div>
+      
+    </div> 
   );
 };
 
