@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MapCreationPage = () => {
   // State for form inputs
@@ -7,18 +8,19 @@ const MapCreationPage = () => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-
+  const navigate = useNavigate();
   const handleStartWithBlank = () => {
     // Logic to handle starting with a blank map
     console.log("Start with Blank Map");
   };
 
   const handleLoadFromMap = () => {
-    // Logic to handle loading from an existing map
+    navigate("/edit")
     console.log("Load from Map");
   };
 
   const handleCategoryChange = (event) => {
+    navigate("/edit")
     // Update the selected category when the user chooses from the dropdown
     setSelectedCategory(event.target.value);
   };

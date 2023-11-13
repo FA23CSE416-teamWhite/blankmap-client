@@ -12,7 +12,8 @@ import{
     MapDetailScreen,
     MyMapScreen,
     MyInfoScreen,
-    MessageCenter
+    MessageCenter,
+    MapEdit
 } from './components'
 
 const sampleMapDetails = {
@@ -52,6 +53,7 @@ const App = () => {
                                 <Route path="/profile/my-maps" element={<MyMapScreen />} />
                                 <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
                                 <Route path="/profile/message-center" element ={<MessageCenter />} />
+                                <Route path="/edit" element ={<MapEdit />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>
