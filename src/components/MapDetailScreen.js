@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {useState} from 'react';
+import NavBar from "./NavBar";
 const Comment = ({ comment, onReply, onUpvote, onDownvote }) => {
     const [replyText, setReplyText] = useState("");
     const [showReplyInput, setShowReplyInput] = useState(false);
@@ -55,6 +56,7 @@ const MapDetailScreen = ({ mapDetails }) => {
   };
   return (
     <div className="map-detail-screen">
+        <NavBar/>
       <div className="left-side">
         <div className="description-box">
           <h2>Description</h2>

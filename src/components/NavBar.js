@@ -9,7 +9,7 @@ const NavBar = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/mymaps">My Maps</Link>
+          <Link to="/profile/my-maps">My Maps</Link>
         </li>
       </ul>
     </nav>
