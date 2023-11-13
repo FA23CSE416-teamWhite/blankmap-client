@@ -14,24 +14,27 @@ import { Button, Card, CardContent} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
+import temp_map from './images/temp_map.png'
 
 const HomeScreen = () => {
   // Assuming you have an array of map information
   const navigate = useNavigate();
   const mapList = [
     {
-      title: "Map 1",
-      description: "Description for Map 1",
-      author: "Author 1",
+      title: "Cat's Masterpiece",
+      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
+      author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
-      mapSnapshot: "url-to-map-snapshot-1.jpg",
+      mapSnapshot: temp_map,
+      createdDate: "10/25/2015",
     },
     {
-      title: "Map 2",
-      description: "Description for Map 2",
-      author: "Author 2",
+      title: "Dog is better",
+      description: "Dogs > Cats Ratio",
+      author: "Dog",
       tags: ["tag4", "tag5", "tag6"],
-      mapSnapshot: "url-to-map-snapshot-2.jpg",
+      mapSnapshot: temp_map,
+      createdDate: "12/12/2002",
     },
     // Add more map information objects as needed
   ];
@@ -145,8 +148,7 @@ const HomeScreen = () => {
 
 const renderMapCards = () => {
   return currentMapList.map((mapInfo, index) => (
-    <Card key={index} style={{ marginBottom: '20px' }}>
-      <CardContent>
+    <Card key={index} style={{ marginBottom: '20px', backgroundColor: 'aliceblue', marginTop: '15px'}}>  <CardContent>
         <MapOverview mapInfo={mapInfo} />
       </CardContent>
     </Card>
