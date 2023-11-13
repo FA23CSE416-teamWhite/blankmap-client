@@ -10,14 +10,26 @@ import { Link } from "react-router-dom";
 
 const MapOverview = ({ mapInfo }) => {
   const { title, description, author, tags, mapSnapshot, createdDate } = mapInfo;
-  let tag_buttons= tags.map((tag, index) => (
-    <IconButton sx={{ fontSize: '10px', backgroundColor: 'blue', color: 'white', padding: '5px'}}>{tags[index]}</IconButton>                
-)) 
+  let tag_buttons = tags.map((tag, index) => (
+    <IconButton
+      key={index}
+      sx={{
+        fontSize: '10px',
+        backgroundColor: 'blue',
+        color: 'white',
+        padding: '5px',
+        borderRadius: '4px', // Set border-radius for rounded corners
+        margin: '0 4px',
+      }}
+    >
+      {tag}
+    </IconButton>
+  ));
 
   return (
     <Link to={`/detail`} style={{ textDecoration: "none" }}>
     <ListItem
-      sx={{borderRadius:"25px", p: "10px", bgcolor: '#8000F00F', marginTop: '15px', display: 'flex', p: 1 }}
+      sx={{borderRadius:"25px", p: "10px", bgcolor: 'aliceblue', display: 'flex', p: 1 }}
       style={{transform:"translate(1%,0%)", width: '98%', fontSize: '32pt' }}
       onClick={(event) => {
           
