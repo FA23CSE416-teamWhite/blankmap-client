@@ -7,6 +7,7 @@ import MapCreationPage from './MapCreationPage'
 import MapDetailScreen from './MapDetailScreen'
 import MyMapScreen from './MyMapScreen'
 import MyInfoScreen from './MyInfoScreen'
+import MessageCenter from './MessageCenter'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -21,5 +22,6 @@ export {
     MapCreationPage,
     MapDetailScreen,
     MyMapScreen,
-    MyInfoScreen
+    MyInfoScreen,
+    MessageCenter
 }
