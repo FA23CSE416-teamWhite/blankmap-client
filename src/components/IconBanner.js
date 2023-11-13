@@ -15,7 +15,7 @@ export default function IconBanner() {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ bgcolor: '#C6D6D6' }}>
-                <Toolbar>
+                <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Link to="/home" style={{ textDecoration: "none" }}>
                         <img src={blankMapicon} alt="fireSpot" width="48" height="48" />
                     </Link>

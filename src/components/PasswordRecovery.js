@@ -8,12 +8,22 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import { Link } from "react-router-dom";
 import { CardHeader, CardContent, Button } from '@mui/material';
+import backgroundImage from './images/login-background.png';
 
 export default function PasswordRecovery() {
 
     return(
-        <Grid container justifyContent="flex-start" alignItems="flex-start" sx={{height:"100%", width:"min-content", margin:"auto",  padding:"50px"}}>
-        <Grid item xs={1} spacing={1.5}>
+        <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          height: 'calc(100vh - 128px)',
+          background: `url(${backgroundImage}) center/cover no-repeat fixed`,
+          padding: '20px', // Adjust padding as needed
+          boxSizing: 'border-box',
+        }}
+      ><Grid item xs={12} sm={8} md={6} lg={4}>
             <Card variant="outlined" sx={{ minWidth: 600 }}>
                 <CardHeader color="blue"
                             title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
