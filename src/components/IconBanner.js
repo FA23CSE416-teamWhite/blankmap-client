@@ -12,22 +12,20 @@ export default function IconBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" sx={{bgcolor:'#C6D6D6'}}>
                 <Toolbar>
-                <img  src={blankMapicon} alt="fireSpot"/>
+                <img  src={blankMapicon} alt="fireSpot" width="48" height="48" />
                 <Box sx ={{flexGrow: 1}}/>
                 <Typography
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ display: { xs: 'none', sm: 'block' } }}
+                    color="blue"
+                    sx={{ display: { xs: 'none', sm: 'block' }, mr:3 }}
                 >
                     BlankMap
                 </Typography>
                 <Box sx={{ flexGrow: 1 }} />
-                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    <AccountCircle />
-                </Box>
                 </Toolbar>
             </AppBar>
         </Box>
