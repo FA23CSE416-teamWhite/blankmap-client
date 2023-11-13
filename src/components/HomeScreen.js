@@ -89,7 +89,7 @@ const HomeScreen = () => {
       variant="outlined"
       placeholder="Search..."
       size="medium"
-      sx={{ backgroundColor: 'white' }}
+      sx={{ backgroundColor: 'white', width: '500px', borderRadius: '5px', }}
     />
     <IconButton type="submit" aria-label="search">
       <SearchIcon style={{ fill: "white" }} />
