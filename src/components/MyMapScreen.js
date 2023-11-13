@@ -15,18 +15,20 @@ const MyMapScreen = ({ userMaps }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const mapList = [
     {
-      title: "Map 1",
-      description: "Description for Map 1",
-      author: "Author 1",
+      title: "Cat's Masterpiece",
+      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
+      author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
       mapSnapshot: temp_map,
+      createdDate: "10/25/2015",
     },
     {
-      title: "Map 2",
-      description: "Description for Map 2",
-      author: "Author 2",
+      title: "Dog is better",
+      description: "Dogs > Cats Ratio",
+      author: "Dog",
       tags: ["tag4", "tag5", "tag6"],
       mapSnapshot: temp_map,
+      createdDate: "12/12/2002",
     },
     // Add more map information objects as needed
   ];
@@ -110,6 +112,20 @@ const MyMapScreen = ({ userMaps }) => {
           <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>
             <CardContent>
               <MapOverview mapInfo={mapInfo} />
+              <Box sx={{justifyContent: 'right',}}>
+                <Button 
+                  // onClick={()} for future purposes
+                  sx={{
+                    fontSize: '10px',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '5px',
+                    borderRadius: '4px', // Set border-radius for rounded corners
+                    margin: '0 4px',
+                }}>Delete
+                </Button>
+              </Box>
+              
             </CardContent>
           </Card>
         ))}
