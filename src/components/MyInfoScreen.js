@@ -42,6 +42,7 @@ const MyInfoScreen = () => {
           <strong>Bio:</strong> {bio}
         </div>
       </div>
+      <button onClick={() => console.log("Edit button clicked")}>Edit</button>
     </div>
   );
 };
