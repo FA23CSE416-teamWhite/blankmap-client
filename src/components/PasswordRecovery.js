@@ -37,7 +37,11 @@ export default function PasswordRecovery() {
                         </Box>
 
                         <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Button variant="contained" to="/login" sx={{ml:"15%"}} href='/login'>Back to Login</Button>
+                            <Link to="/login" underline="none">
+                                <Button variant="contained" sx={{ ml: "15%", width: '150px'}}>
+                                    Back to Login
+                                </Button>
+                            </Link>
                             <Button variant="contained" to="/" sx={{ml:"25%"}}>Retrieve</Button>
                         </Box>    
                     </Box>
