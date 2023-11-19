@@ -51,7 +51,7 @@ const MyMapScreen = ({ userMaps }) => {
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
     <Grid container>
-      <Grid item xs={12} sm={3}>
+      <Grid item xs={12} sm={2}>
         <ProfileMenu />
       </Grid>
       <Grid item xs={12} sm={9}>

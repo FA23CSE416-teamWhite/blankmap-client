@@ -18,13 +18,13 @@ export default function RegisterScreen() {
         justifyContent="center"
         alignItems="center"
         sx={{
-          height: 'calc(100vh - 128px)',
+          height: 'calc(100vh )',
           background: `url(${backgroundImage}) center/cover no-repeat fixed`,
           padding: '20px', // Adjust padding as needed
           boxSizing: 'border-box',
         }}
       ><Grid item xs={12} sm={8} md={6} lg={4}>
-            <Card variant="outlined" sx={{ minWidth: 600 }}>
+            <Card variant="outlined" sx={{ minWidth: 600,boxShadow:3,borderRadius: 3  }}>
                 <CardHeader color="blue"
                             title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>REGISTER</Typography>}
                             sx = {{bgcolor:"CornflowerBlue"}}

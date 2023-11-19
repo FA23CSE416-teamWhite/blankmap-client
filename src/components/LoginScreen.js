@@ -18,14 +18,14 @@ export default function LoginScreen() {
         justifyContent="center"
         alignItems="center"
         sx={{
-          height: 'calc(100vh - 128px)',
+          height: 'calc(100vh)',
           background: `url(${backgroundImage}) center/cover no-repeat fixed`,
           padding: '20px', // Adjust padding as needed
           boxSizing: 'border-box',
         }}
       >
         <Grid item xs={12} sm={8} md={6} lg={4}>
-            <Card variant="outlined" sx={{ width: 600 }}>
+            <Card variant="outlined" sx={{ width: 600,boxShadow:3,borderRadius: 3 }}>
                 <CardHeader color="blue"
                             title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
                             sx = {{bgcolor:"CornflowerBlue"}}
@@ -44,10 +44,10 @@ export default function LoginScreen() {
 
                         <Box sx = {{mt:3, mb:4,display: 'flex', }}>
                             {/* <Button variant="contained" to="/" sx={{ml:"25%"}}>
-                                <Link to="/Home"> Login</Link>
+                                <Link to="/home"> Login</Link>
                             </Button> */}
                             <Button variant="contained" to="/" sx={{ml:"20%"}}>
-                                <Link to="/Home">Guest Login</Link>
+                                <Link to="/home">Guest Login</Link>
                             </Button>
                         </Box>    
                     </Box>
