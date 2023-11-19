@@ -5,9 +5,10 @@ import { AuthContextProvider } from './auth';
 import { GlobalStoreContextProvider } from './store'
 import{
 	AppBanner,
+    HomeScreen,
     LoginScreen,
     RegisterScreen,
-    HomeScreen,
+    PasswordRecovery,
     MapCreationPage,
     MapDetailScreen,
     MyMapScreen,
@@ -18,7 +19,6 @@ import{
     RegionalEdit,
 } from './components'
 import IconBanner from './components/IconBanner';
-import PasswordRecovery from './components/PasswordRecovery';
 const sampleMapDetails = {
     "1": {
       title: "Cat's Masterpiece",

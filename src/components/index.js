@@ -1,7 +1,8 @@
 import AppBanner from './AppBanner'
 
-import LoginScreen from './LoginScreen'
-import RegisterScreen from './RegisterScreen'
+import LoginScreen from './Users/LoginScreen'
+import RegisterScreen from './Users/RegisterScreen'
+import PasswordRecovery from './Users/PasswordRecovery'
 import HomeScreen from './HomeScreen'
 import MapCreationPage from './MapCreationPage'
 import MapDetailScreen from './MapDetailScreen'
@@ -21,6 +22,7 @@ export {
     AppBanner,  
     LoginScreen,
     RegisterScreen,
+    PasswordRecovery,
     HomeScreen,
     MapCreationPage,
     MapDetailScreen,
