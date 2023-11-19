@@ -14,17 +14,20 @@ import{
     MyMapScreen,
     MyInfoScreen,
     MessageCenter,
-    MapEdit
+    MapEdit,
+    MapEditHeat,
+    RegionalEdit,
 } from './components'
 import IconBanner from './components/IconBanner';
 const sampleMapDetails = {
     "1": {
-      title: "Map 1",
-      description: "Description for Map 1",
-      author: "Author 1",
+      title: "Cat's Masterpiece",
+      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
+      author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
-      mapImage: "url-to-map-image-1.jpg",
+      mapImage: './components/images/temp_map.png',
       comments: ["Comment 1", "Comment 2"],
+      createdDate: "10/25/2015",
     },
     "2": {
       title: "Map 2",
@@ -57,6 +60,9 @@ const App = () => {
                                 <Route path="/profile/message-center" element ={<MessageCenter />} />
                                 <Route path="/edit" element ={<MapEdit />} />
                                 <Route path="/forgot" element={<PasswordRecovery />} />
+                                <Route path="/sign-out" element={<LoginScreen />} />
+                                <Route path="/edit-heat" element={<MapEditHeat />} />
+                                <Route path="/regional-edit" element={<RegionalEdit />} />
 							</Routes>
 						{/* </Router> */}
                 </GlobalStoreContextProvider>

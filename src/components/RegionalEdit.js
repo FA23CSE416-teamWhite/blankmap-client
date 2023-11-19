@@ -15,14 +15,14 @@ import {
     Button,
     CardContent,
 } from "@mui/material";
-import tempMap from '../assets/tempMap.png'
+import tempMap from '../assets/regional.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
 import Card from "@mui/material/Card";
 import SquareIcon from '@mui/icons-material/Square';
 
-const MapEdit = () => {
+const RegionalEdit = () => {
     const [features, setFeatures] = useState([]);
 
     const [selectedFeatureType, setSelectedFeatureType] = useState("");
@@ -76,7 +76,7 @@ const MapEdit = () => {
                         alignItems: "left",
                     }}
                 >
-                    Map Title
+                    Simple Regional Maps Example
                 </Typography>
                 <img src={tempMap} alt="fireSpot" style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%'}}height="480" width="700" />
                 <Button variant="contained">
@@ -101,7 +101,7 @@ const MapEdit = () => {
                                     alignItems: "center",
                                 }}
                             >
-                                Category: Choropleth Map
+                                Category: Regional Map
                             </Typography>
                         </Box>
                     </Grid>
@@ -148,7 +148,7 @@ const MapEdit = () => {
                 <Box>
                     <Button variant="contained" sx={{ paddingY: 1, paddinX: 1 }}> Rank It</Button>
                     <Button variant="contained" sx={{ paddingY: 1, marginLeft: 2 } } href="/create">
-                        Render as Choropleth Map
+                        Render as Regional Map
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
@@ -156,4 +156,4 @@ const MapEdit = () => {
     );
 };
 
-export default MapEdit;
+export default RegionalEdit;

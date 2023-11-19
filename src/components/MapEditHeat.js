@@ -15,14 +15,14 @@ import {
     Button,
     CardContent,
 } from "@mui/material";
-import tempMap from '../assets/tempMap.png'
+import tempMap from '../assets/heat.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
 import Card from "@mui/material/Card";
 import SquareIcon from '@mui/icons-material/Square';
 
-const MapEdit = () => {
+const MapEditHeat = () => {
     const [features, setFeatures] = useState([]);
 
     const [selectedFeatureType, setSelectedFeatureType] = useState("");
@@ -76,9 +76,9 @@ const MapEdit = () => {
                         alignItems: "left",
                     }}
                 >
-                    Map Title
+                    A Heat Map Example
                 </Typography>
-                <img src={tempMap} alt="fireSpot" style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%'}}height="480" width="700" />
+                <img src={tempMap} alt="fireSpot" height="480" width="700" />
                 <Button variant="contained">
                     Add a New Region
                 </Button>
@@ -101,7 +101,7 @@ const MapEdit = () => {
                                     alignItems: "center",
                                 }}
                             >
-                                Category: Choropleth Map
+                                Category: Heat Map
                             </Typography>
                         </Box>
                     </Grid>
@@ -113,29 +113,10 @@ const MapEdit = () => {
                     </Grid>
                 </Grid>
 
-                <Box sx={{ paddingY: 2 }} />
-                <Box>
-                    <Typography>
-                        Features: Name, Population
-                    </Typography>
-                    <Link>edit</Link>
-                </Box>
-
-                <Box sx={{ paddingY: 2 }} />
-
-                <Card>
-                    <CardContent>
-                        <Typography>Feature Name:</Typography>
-                        <TextField fullWidth label="Population"></TextField>
-                    </CardContent>
-                </Card>
-                <Button variant="contained" sx={{ paddingY: 1 }}> Add More Features</Button>
-                <Box sx={{ paddingY: 2 }} />
-
                 <Typography>
-                    Feature for Choropleth
+                    Intensity Name:
                 </Typography>
-                <TextField label="Choose a Feature"></TextField>
+                <TextField label="Name"></TextField>
                 <Typography> Choose a Color</Typography>
                 <Box sx={{ paddingY: 1 }}>
                     <SquareIcon sx={{ color: "red", paddingX: 1 }} />
@@ -146,9 +127,9 @@ const MapEdit = () => {
                 </Box>
 
                 <Box>
-                    <Button variant="contained" sx={{ paddingY: 1, paddinX: 1 }}> Rank It</Button>
+
                     <Button variant="contained" sx={{ paddingY: 1, marginLeft: 2 } } href="/create">
-                        Render as Choropleth Map
+                        Render as Heat Map
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
@@ -156,4 +137,4 @@ const MapEdit = () => {
     );
 };
 
-export default MapEdit;
+export default MapEditHeat;
