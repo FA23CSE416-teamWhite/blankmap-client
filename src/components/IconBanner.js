@@ -17,7 +17,7 @@ export default function IconBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" sx={{ bgcolor: '#F5F5F5' }}>
+            <AppBar position="static" sx={{ bgcolor: '#D6D6D6' }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Link to="/main" style={{ textDecoration: "none" }}>
                         <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
@@ -40,8 +40,8 @@ export default function IconBanner() {
                         </Typography>
                     </Link> */}
                     <Box sx={{ flexGrow: 1 }} />
-                    <Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
-                    <Link to="/profile" style={{ textDecoration: "none", color: 'cornflowerblue'}}>
+                    <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
+                    <Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
                         <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
                     </Link>
 

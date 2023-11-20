@@ -259,7 +259,15 @@ const HomeScreen = () => {
       </div>
 
       {/* Typography Button on the right */}
-      <Button variant="contained" onClick={handleCreateMap}>
+      <Button
+        variant="contained"
+        onClick={handleCreateMap}
+        sx={{
+          borderRadius: '10px',
+          backgroundColor: '#0844A4', // Replace with your desired color
+          color: 'white', // Text color
+        }}
+      >
         Create Map
       </Button>
     </Box>
@@ -267,10 +275,7 @@ const HomeScreen = () => {
 
   const renderMapCards = () => {
     return currentMapList.map((mapInfo, index) => (
-      <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px' }}>  <CardContent>
-        <MapOverview mapInfo={mapInfo} />
-      </CardContent>
-      </Card>
+      <MapOverview key={index} mapInfo={mapInfo} />
     ));
   };
 
