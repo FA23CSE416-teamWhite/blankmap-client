@@ -6,7 +6,7 @@ describe('Normal Login', () => {
     cy.contains('Login').click();
 
     // Assert that the login was successful
-    cy.url().should('include', '/Home');
+    cy.url().should('include', '/home');
   });
 });
 describe('Guest login', () => {
@@ -17,7 +17,7 @@ describe('Guest login', () => {
     cy.contains('Guest Login').click();
 
     // Assert that the guest login was successful
-    cy.url().should('include', '/Home');
+    cy.url().should('include', '/home');
   });
 });
 
