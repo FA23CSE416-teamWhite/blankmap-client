@@ -5,7 +5,7 @@ import { Container, Typography, Button, Grid } from '@mui/material';
 const MainPage = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '120vh' }}>
-      <div style={{ backgroundColor: '#2E8B57', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ backgroundColor: 'navy', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Container maxWidth="md">
           <Typography variant="h3"  gutterBottom style={{ color: 'white' }}>
             Build Your Own Maps
