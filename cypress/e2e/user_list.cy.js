@@ -3,7 +3,7 @@ describe('Normal Login', () => {
     cy.visit('https://blankmap-front-1626f242c2d7.herokuapp.com/login'); // Assuming your app is served at http://localhost:3000/
 
     // Click the login button
-    cy.contains('Login').click();
+    cy.contains('Log in').click();
 
     // Assert that the login was successful
     cy.url().should('include', '/home');
