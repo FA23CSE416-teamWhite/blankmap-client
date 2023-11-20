@@ -25,25 +25,27 @@ export default function PasswordRecovery() {
         }}
       ><Grid item xs={12} sm={8} md={6} lg={4}>
             <Card variant="outlined" sx={{ minWidth: 600 ,boxShadow:3,borderRadius: 3 }}>
-                <CardHeader color="blue"
-                            title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
-                            sx = {{bgcolor:"CornflowerBlue"}}
-                            />
                 <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
                     <Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <AccountCircle sx = {{padding:1}}/>
-                            <TextField label = "Username" fullWidth/>
+                        <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2 }}>
+                            <span style={{ fontWeight: 'bold', fontSize: '1.4em' }}>Password Recovery</span>
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Username
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Link to="/login" underline="none">
-                                <Button variant="contained" sx={{ ml: "15%", width: '150px'}}>
-                                    Back to Login
-                                </Button>
-                            </Link>
-                            <Button variant="contained" to="/" sx={{ml:"25%"}}>Retrieve</Button>
-                        </Box>    
+                        <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
+                            <Button variant="contained" to="/" sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
+                                <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none',fontSize: '1rem'  }}>Retrieve</Link>
+                            </Button>
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
+                       
+                        <Link to="/login">Back to login</Link>
+                        </Box>
                     </Box>
                 </CardContent>
             </Card>
