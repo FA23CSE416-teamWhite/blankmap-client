@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import blankMapicon from '../assets/blankMapIcon.png'
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import blankmap_font from './images/blankMap.png'
 
 const menu =<Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
 
@@ -39,6 +40,7 @@ export default function IconBanner() {
                             Blank Map
                         </Typography>
                     </Link> */}
+                    <img src={blankmap_font} alt="fireSpot" width="120" height="100%" />
                     <Box sx={{ flexGrow: 1 }} />
                     <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
                     <Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
