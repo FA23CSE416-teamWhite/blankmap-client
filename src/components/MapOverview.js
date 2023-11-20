@@ -44,11 +44,26 @@ const MapOverview = ({ mapInfo }) => {
           }}
         >
           <Grid container>
-            <Grid sx={{
-              p: 1,
-              flexGrow: 1,
-            }} item xs={12} sm={3}>
-              <img style={{ borderRadius: '10px', border: '2px solid #ccc', }} src={mapSnapshot} alt="map_preview" width='150px' />
+            <Grid
+              sx={{
+                p: 1,
+                flexGrow: 1,
+              }}
+              item
+              xs={12}
+              sm={2}
+            >
+              <img
+                style={{
+                  borderRadius: '10px',
+                  border: '2px solid #0844A4',
+                  width: '150px',
+                  height: '110px', // Set the desired height
+                  objectFit: 'cover', // Crop the image to fit the specified dimensions
+                }}
+                src={mapSnapshot}
+                alt="map_preview"
+              />
             </Grid>
             <Grid item xs={12} sm={9}>
               <Box sx={{ p: 1, flexGrow: 1 }}>
