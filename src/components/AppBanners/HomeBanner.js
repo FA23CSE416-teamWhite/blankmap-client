@@ -16,7 +16,7 @@ export default function HomeBanner() {
             padding: '0.5rem',
             borderRadius: '0.5rem',
             border: '1px solid #ccc', 
-            width: '50%',
+            width: '30%',
           }}
         />
         <SearchIcon sx={{ ml: '1rem' }} />

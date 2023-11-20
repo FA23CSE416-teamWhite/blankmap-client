@@ -258,19 +258,6 @@ const HomeScreen = () => {
         />
       </div>
 
-      {/* Pagination Controls */}
-      <div className="pagination">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Pagination
-            count={Math.ceil(filteredMapList.length / mapsPerPage)}
-            page={currentPage}
-            variant="outlined"
-            shape="rounded"
-            onChange={(event, page) => handlePageChange(page)}
-          />
-        </Stack>
-      </div>
-
       {/* Typography Button on the right */}
       <Button variant="contained" onClick={handleCreateMap}>
         Create Map
@@ -292,7 +279,18 @@ const HomeScreen = () => {
       <div className="home-screen" style={{ paddingTop: '20px', paddingRight: '50px', paddingBottom: '30px', paddingLeft: '50px' }}>
         {sorts}
         {renderMapCards()}
-
+        {/* Pagination Controls */}
+        <div className="pagination" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Pagination
+              count={Math.ceil(filteredMapList.length / mapsPerPage)}
+              page={currentPage}
+              variant="outlined"
+              shape="rounded"
+              onChange={(event, page) => handlePageChange(page)}
+            />
+          </Stack>
+        </div>
 
       </div>
     </div>
