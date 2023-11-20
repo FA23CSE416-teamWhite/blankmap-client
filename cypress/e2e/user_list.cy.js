@@ -39,9 +39,9 @@ describe('Forgot Screen', () => {
   it('successfully loads', () => {
     cy.visit('https://blankmap-front-1626f242c2d7.herokuapp.com'); // Assuming your app is served at http://localhost:3000/
 
-
+    
     // Click the "Forgot Password" link
-    cy.contains('/Forgot Password').click();
+    cy.contains('Forgot Password').click();
 
     // Assert that the URL includes '/forgot'
     cy.url().should('include', '/forgot');
