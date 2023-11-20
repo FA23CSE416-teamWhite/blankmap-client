@@ -10,6 +10,8 @@ import { Button, Card, CardContent } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import temp_map from './images/temp_map.png';
 import Autocomplete from '@mui/material/Autocomplete';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 const HomeScreen = () => {
   // Assuming you have an array of map information
   const navigate = useNavigate();
@@ -216,64 +218,65 @@ const HomeScreen = () => {
     setCurrentPage(pageNumber);
   };
 
-  let sorts =
+  const sorts = (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-<div style={{ display: 'flex', justifyContent: 'space-between', gap: '2px', alignItems: 'center' }}>
-  {/* Sort By */}
-  <FormControl style={{ minWidth: '120px', marginRight: '2px' }} size="small">
-    <InputLabel id="sort-label">Sort By:</InputLabel>
-    <Select
-      labelId="sort-label"
-      id="sort-select"
-      onChange={(e) => handleSortChange(e.target.value)}
-      label="Sort By"
-      inputProps={{
-        style: { height: '36px' },
-      }}
-    >
-      <MenuItem value="">
-        <em>-- Select --</em>
-      </MenuItem>
-      <MenuItem value="title">Title</MenuItem>
-    </Select>
-  </FormControl>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2px', alignItems: 'center' }}>
+        {/* Sort By */}
+        <FormControl style={{ minWidth: '120px', marginRight: '2px' }} size="small">
+          <InputLabel id="sort-label">Sort By:</InputLabel>
+          <Select
+            labelId="sort-label"
+            id="sort-select"
+            value={sortOption}
+            onChange={(e) => handleSortChange(e.target.value)}
+            label="Sort By"
+            inputProps={{
+              style: { height: '36px' },
+            }}
+          >
+            <MenuItem value="">
+              <em>-- Select --</em>
+            </MenuItem>
+            <MenuItem value="title">Title</MenuItem>
+          </Select>
+        </FormControl>
 
-  {/* Category */}
-  <Autocomplete
-    value={sortOption}
-    onChange={handleCategoryFilter}
-    options={Array.from(new Set(mapList.flatMap((map) => map.tags)))}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Category"
-        size="small"
-        fullWidth
-      />
-    )}
-    style={{ minWidth: '120px', flex: 1 }}
-  />
-</div>
+        {/* Category */}
+        <Autocomplete
+          value={categoryFilter}
+          onChange={(e, value) => handleCategoryFilter(value)}
+          options={Array.from(new Set(mapList.flatMap((map) => map.tags)))}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Category"
+              size="small"
+              fullWidth
+            />
+          )}
+          style={{ minWidth: '120px', flex: 1 }}
+        />
+      </div>
 
       {/* Pagination Controls */}
-      <div className="pagination" >
-        {Array.from({ length: Math.ceil(filteredMapList.length / mapsPerPage) }, (_, index) => (
-          <Button
+      <div className="pagination">
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Pagination
+            count={Math.ceil(filteredMapList.length / mapsPerPage)}
+            page={currentPage}
             variant="outlined"
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-          >
-            {index + 1}
-          </Button>
-
-        ))}
+            shape="rounded"
+            onChange={(event, page) => handlePageChange(page)}
+          />
+        </Stack>
       </div>
 
       {/* Typography Button on the right */}
-      {/* <Typography> */}
-      <Button variant="contained" onClick={handleCreateMap}>Create Map</Button>
-      {/* </Typography> */}
+      <Button variant="contained" onClick={handleCreateMap}>
+        Create Map
+      </Button>
     </Box>
+  );
 
   const renderMapCards = () => {
     return currentMapList.map((mapInfo, index) => (
@@ -287,14 +290,7 @@ const HomeScreen = () => {
   return (
     <div>
       <div className="home-screen" style={{ paddingTop: '20px', paddingRight: '50px', paddingBottom: '30px', paddingLeft: '50px' }}>
-        {/* <h1>Home Screen</h1> */}
-
         {sorts}
-
-
-        {/* {currentMapList.map((mapInfo, index) => (
-          <MapOverview key={index} mapInfo={mapInfo} />
-        ))} */}
         {renderMapCards()}
 
 
