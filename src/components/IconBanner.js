@@ -10,6 +10,9 @@ import blankMapicon from '../assets/blankMapIcon.png'
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
+const menu =<Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
+
+
 export default function IconBanner() {
 
     return (
