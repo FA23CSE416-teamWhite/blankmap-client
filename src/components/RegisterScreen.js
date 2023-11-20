@@ -32,6 +32,18 @@ export default function RegisterScreen() {
                             <span style={{ fontWeight: 'bold', fontSize: '1.4em' }}>Register</span>
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            First Name
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Last Name
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Username
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
