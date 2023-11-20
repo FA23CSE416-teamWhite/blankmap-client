@@ -10,7 +10,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import { Button, Card, CardContent} from "@mui/material";
+import { Button, Card, CardContent } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
@@ -36,13 +36,158 @@ const HomeScreen = () => {
       mapSnapshot: temp_map,
       createdDate: "12/12/2002",
     },
-    // Add more map information objects as needed
+    {
+      title: "Bird's Eye View",
+      description: "Explore the world from above with our bird's eye view map",
+      author: "BirdWatcher",
+      tags: ["bird", "aerial", "landscape"],
+      mapSnapshot: temp_map,
+      createdDate: "05/08/2018",
+    },
+    {
+      title: "Underwater Wonderland",
+      description: "Discover the wonders of the ocean depths in this underwater map",
+      author: "OceanExplorer",
+      tags: ["underwater", "marine", "coral"],
+      mapSnapshot: temp_map,
+      createdDate: "08/17/2021",
+    },
+    {
+      title: "Space Odyssey",
+      description: "Embark on a cosmic journey with this space-themed map",
+      author: "GalaxyExplorer",
+      tags: ["space", "galaxy", "astronomy"],
+      mapSnapshot: temp_map,
+      createdDate: "03/02/2019",
+    },
+    {
+      title: "Historical Heritage",
+      description: "Explore the historical heritage of ancient civilizations in this map",
+      author: "HistoryBuff",
+      tags: ["history", "ancient", "heritage"],
+      mapSnapshot: temp_map,
+      createdDate: "06/14/2005",
+    },
+    {
+      title: "Fantasy Kingdom",
+      description: "Immerse yourself in a fantastical realm with this fantasy-themed map",
+      author: "FantasyEnthusiast",
+      tags: ["fantasy", "magic", "kingdom"],
+      mapSnapshot: temp_map,
+      createdDate: "09/30/2017",
+    },
+    {
+      title: "Mountain Trek",
+      description: "Embark on a challenging trek through breathtaking mountain landscapes",
+      author: "MountainExplorer",
+      tags: ["mountain", "hiking", "adventure"],
+      mapSnapshot: temp_map,
+      createdDate: "07/08/2014",
+    },
+    {
+      title: "City Lights",
+      description: "Experience the vibrant city life with this city lights map",
+      author: "UrbanExplorer",
+      tags: ["city", "urban", "nightlife"],
+      mapSnapshot: temp_map,
+      createdDate: "11/19/2019",
+    },
+    {
+      title: "Enchanted Forest",
+      description: "Get lost in the magic of an enchanted forest with this mystical map",
+      author: "NatureLover",
+      tags: ["forest", "nature", "enchanted"],
+      mapSnapshot: temp_map,
+      createdDate: "04/27/2016",
+    },
+    {
+      title: "Cat's Masterpiece",
+      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
+      author: "Cat",
+      tags: ["tag1", "tag2", "tag3"],
+      mapSnapshot: temp_map,
+      createdDate: "10/25/2015",
+    },
+    {
+      title: "Dog is better",
+      description: "Dogs > Cats Ratio",
+      author: "Dog",
+      tags: ["tag4", "tag5", "tag6"],
+      mapSnapshot: temp_map,
+      createdDate: "12/12/2002",
+    },
+    {
+      title: "Bird's Eye View",
+      description: "Explore the world from above with our bird's eye view map",
+      author: "BirdWatcher",
+      tags: ["bird", "aerial", "landscape"],
+      mapSnapshot: temp_map,
+      createdDate: "05/08/2018",
+    },
+    {
+      title: "Underwater Wonderland",
+      description: "Discover the wonders of the ocean depths in this underwater map",
+      author: "OceanExplorer",
+      tags: ["underwater", "marine", "coral"],
+      mapSnapshot: temp_map,
+      createdDate: "08/17/2021",
+    },
+    {
+      title: "Space Odyssey",
+      description: "Embark on a cosmic journey with this space-themed map",
+      author: "GalaxyExplorer",
+      tags: ["space", "galaxy", "astronomy"],
+      mapSnapshot: temp_map,
+      createdDate: "03/02/2019",
+    },
+    {
+      title: "Historical Heritage",
+      description: "Explore the historical heritage of ancient civilizations in this map",
+      author: "HistoryBuff",
+      tags: ["history", "ancient", "heritage"],
+      mapSnapshot: temp_map,
+      createdDate: "06/14/2005",
+    },
+    {
+      title: "Fantasy Kingdom",
+      description: "Immerse yourself in a fantastical realm with this fantasy-themed map",
+      author: "FantasyEnthusiast",
+      tags: ["fantasy", "magic", "kingdom"],
+      mapSnapshot: temp_map,
+      createdDate: "09/30/2017",
+    },
+    {
+      title: "Mountain Trek",
+      description: "Embark on a challenging trek through breathtaking mountain landscapes",
+      author: "MountainExplorer",
+      tags: ["mountain", "hiking", "adventure"],
+      mapSnapshot: temp_map,
+      createdDate: "07/08/2014",
+    },
+    {
+      title: "City Lights",
+      description: "Experience the vibrant city life with this city lights map",
+      author: "UrbanExplorer",
+      tags: ["city", "urban", "nightlife"],
+      mapSnapshot: temp_map,
+      createdDate: "11/19/2019",
+    },
+    {
+      title: "Enchanted Forest",
+      description: "Get lost in the magic of an enchanted forest with this mystical map",
+      author: "NatureLover",
+      tags: ["forest", "nature", "enchanted"],
+      mapSnapshot: temp_map,
+      createdDate: "04/27/2016",
+    },
+    // ... add more map information objects as needed
   ];
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [mapsPerPage] = useState(3); // Adjust the number of maps per page as needed
+  const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
   const [sortOption, setSortOption] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState(null);
-  
+
   const handleCreateMap = () => {
     console.log("create map");
     navigate("/create");
@@ -77,12 +222,20 @@ const HomeScreen = () => {
     setCurrentPage(pageNumber);
   };
 
-  let sorts=
-  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+  let sorts =
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <div sx={{ display: 'flex', gap: 2 }}>
-        <FormControl sx={{ minWidth: 120, marginRight: 2  }}>
+        <FormControl sx={{ minWidth: 120, marginRight: 2 }}>
           <InputLabel id="sort-label">Sort By:</InputLabel>
-          <Select labelId="sort-label" id="sort-select" onChange={(e) => handleSortChange(e.target.value)}>
+          <Select
+            labelId="sort-label"
+            id="sort-select"
+            onChange={(e) => handleSortChange(e.target.value)}
+            label="Sort By"
+            inputProps={{
+              style: { height: '36px' }, // Set the height here
+            }}
+          >
             <MenuItem value="">
               <em>-- Select --</em>
             </MenuItem>
@@ -97,6 +250,7 @@ const HomeScreen = () => {
             id="demo-simple-select-helper"
             value={sortOption}
             onChange={(e) => handleCategoryFilter(e.target.value)}
+            label="Category"
           >
             <MenuItem value="">
               <em>-- Select --</em>
@@ -108,49 +262,57 @@ const HomeScreen = () => {
             ))}
           </Select>
         </FormControl>
+
+
       </div>
 
       {/* Pagination Controls */}
       <div className="pagination" >
         {Array.from({ length: Math.ceil(filteredMapList.length / mapsPerPage) }, (_, index) => (
-          <Button variant="outlined" key={index} onClick={() => handlePageChange(index + 1)}>
+          <Button
+            variant="outlined"
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            sx={{ height: '50px' }} // Set the height here
+          >
             {index + 1}
           </Button>
+
         ))}
       </div>
 
       {/* Typography Button on the right */}
-      <Typography>
+      {/* <Typography> */}
         <Button variant="contained" onClick={handleCreateMap}>Create Map</Button>
-      </Typography>
-    </Box> 
+      {/* </Typography> */}
+    </Box>
 
-const renderMapCards = () => {
-  return currentMapList.map((mapInfo, index) => (
-    <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>  <CardContent>
+  const renderMapCards = () => {
+    return currentMapList.map((mapInfo, index) => (
+      <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px' }}>  <CardContent>
         <MapOverview mapInfo={mapInfo} />
       </CardContent>
-    </Card>
-  ));
-};
+      </Card>
+    ));
+  };
 
   return (
     <div>
       <div className="home-screen" style={{ paddingTop: '20px', paddingRight: '50px', paddingBottom: '30px', paddingLeft: '50px' }}>
-      {/* <h1>Home Screen</h1> */}
-      
-      {sorts}
+        {/* <h1>Home Screen</h1> */}
 
-      
+        {sorts}
+
+
         {/* {currentMapList.map((mapInfo, index) => (
           <MapOverview key={index} mapInfo={mapInfo} />
         ))} */}
-      {renderMapCards()}
+        {renderMapCards()}
 
 
+      </div>
     </div>
-    </div>
-    
+
   );
 };
 

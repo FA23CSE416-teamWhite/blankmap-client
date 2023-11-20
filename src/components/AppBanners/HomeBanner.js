@@ -7,9 +7,19 @@ import { Box } from '@mui/material';
 export default function HomeBanner() {
 
     return (
-        <Box width="100%" sx={{display:'flex', alignItems:'center'}}>
-            <SearchIcon sx={{ml:"27%"}} />
-            <TextField label="Search Maps" sx={{bgcolor:"white", minWidth:"40%",ml:2}}> </TextField>
-        </Box>
+        <Box width="100%" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <input
+          type="text"
+          placeholder="Search Maps"
+          style={{
+            marginLeft: '1rem',
+            padding: '0.5rem',
+            borderRadius: '0.5rem',
+            border: '1px solid #ccc', 
+            width: '50%',
+          }}
+        />
+        <SearchIcon sx={{ ml: '1rem' }} />
+      </Box>
     );
 }
