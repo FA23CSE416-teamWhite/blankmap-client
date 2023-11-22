@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Box,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  Button,
+  TextField,
+  Autocomplete,
+  Pagination,
+  Stack,
+} from "@mui/material";
 import MapOverview from "./MapOverview";
-import { useNavigate } from "react-router-dom";
-import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import { Button, Card, CardContent } from "@mui/material";
-import TextField from "@mui/material/TextField";
 import temp_map from './images/temp_map.png';
-import Autocomplete from '@mui/material/Autocomplete';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 const HomeScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -356,7 +356,6 @@ const HomeScreen = () => {
               onChange={(event, page) => handlePageChange(page)}
             />
           </Stack>
-          <p>112</p>
         </div>
 
       </div>
