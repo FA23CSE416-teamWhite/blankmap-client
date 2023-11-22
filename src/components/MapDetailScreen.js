@@ -17,17 +17,16 @@ import DownvoteIcon from '@mui/icons-material/ThumbDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 
-const Comment = ({ comment, onReply, showReplyInput, replyText, setReplyText, handleAddReply }) => {
+const Comment = ({ comment }) => {
     const [likes, setLikes] = useState(0);
     const [dislikes, setDislikes] = useState(0);
-    const handleUpvote = () => {
+    const [showReplyInput, setShowReplyInput] = useState(false);
+    const [replyText, setReplyText] = useState('')
+    const [replyList, setReplyList] = useState(comment.replys);
 
-    };
-    const handleDownvote = () => {
-
-    };
-    const handleReply = () => {
-
+    const onReply = () => {
+        const showInput = showReplyInput === true ? false : true;
+        setShowReplyInput(showInput);
     };
     const onUpvote = () => {
         setLikes(likes + 1)
@@ -35,10 +34,23 @@ const Comment = ({ comment, onReply, showReplyInput, replyText, setReplyText, ha
     const onDownvote = () => {
         setDislikes(dislikes + 1)
     }
+    const handleAddReply = () => {
+        if (replyText == ''){
+            console.log("Empty comment")
+        }
+        else {
+            // Implement logic to add a comment (you may want to update your data structure)
+            console.log('Adding reply:', replyText);
+            // Clear the comment input
+            setReplyText('');
+            // Update the comment list
+            setReplyList([...replyList, replyText]);
+        }
+    }
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                <Typography>{comment}</Typography>
+                <Typography>{comment.comment}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <div className="comment-actions">
                         <Button onClick={onReply} color="primary" size="small">
@@ -52,20 +64,36 @@ const Comment = ({ comment, onReply, showReplyInput, replyText, setReplyText, ha
                         </Button>
                     </div>
                     {showReplyInput && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
-                            <TextField
-                                type="text"
-                                placeholder="Add a reply..."
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                size="small"
-                            />
-                            <Button onClick={handleAddReply} variant="contained" size="small">
-                                Add Reply
-                            </Button>
+                        <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
+                                <TextField
+                                    type="text"
+                                    placeholder="Add a reply..."
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    size="small"
+                                />
+                                <Button onClick={handleAddReply} variant="contained" size="small">
+                                    Add Reply
+                                </Button>
+                            </Box>
                         </Box>
+                        
                     )}
                 </Box>
+                {showReplyInput && (
+                    <Box sx={{ marginLeft: '20px' }}>
+                        <Typography style={{ fontSize: '15px' }}>Replies</Typography>
+                        <List>
+                            {replyList.map((reply, index) => (
+                                <Typography style={{ fontSize: '12px' }}>
+                                    {reply}
+                                </Typography>
+                            ))}
+                        </List>
+                    </Box>
+                )}
+
             </Box>
         </ListItem>
     );
@@ -76,7 +104,7 @@ const MapDetailScreen = ({ mapDetails }) => {
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
     const [commentList, setCommentList] = useState(comments);
-    const [newDescription, setDescription] = useState(description);
+    // const [newDescription, setDescription] = useState(description);
     const [tagList, setTagList] = useState(tags);
     const [likeColor, setLikeColor] = useState('grey');
     const [dislikeColor, setDislikeColor] = useState('grey');
@@ -92,15 +120,24 @@ const MapDetailScreen = ({ mapDetails }) => {
             // Clear the comment input
             setNewComment('');
             // Update the comment list
-            setCommentList([...commentList, newComment]);
+            const newCommentObject = {comment: newComment, replys: []}
+            setCommentList([...commentList, newCommentObject]);
         }
     };
-    const handleUpdateDescription = () => {
-        console.log('Updating description:', newDescription);
-    }
+    // const handleUpdateDescription = () => {
+    //     console.log('Updating description:', newDescription);
+    // }
     const handleAddTag = () => {
-        console.log('Adding tag:', newTags);
-        setNewTags('');
+        if (newTags == ''){
+            console.log("Empty tag")
+        }
+        else {
+            // Implement logic to add a comment (you may want to update your data structure)
+            console.log('Adding tag:', newTags);
+            setNewTags('');
+            // Update the comment list
+            setTagList([...tagList, newTags]);
+        }
     }
     const handleDeleteTag = () => {
         console.log('Deleting Tag:', newTags)
@@ -127,7 +164,7 @@ const MapDetailScreen = ({ mapDetails }) => {
                 <Grid item xs={12} md={4}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Description</Typography>
-                        <TextField
+                        {/* <TextField
                                 type="description"
                                 placeholder="Add a description..."
                                 value={newDescription}
@@ -135,7 +172,8 @@ const MapDetailScreen = ({ mapDetails }) => {
                                 multiline
                                 rows = {10}
                                 sx={{ height: '100%', width: '100%' }} 
-                            />
+                            /> */}
+                        <Typography>{description}</Typography>
                     </Paper>
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>

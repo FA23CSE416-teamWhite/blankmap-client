@@ -27,7 +27,15 @@ const sampleMapDetails = {
       author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
       mapImage: './components/images/temp_map.png',
-      comments: ["Comment 1", "Comment 2"],
+      comments: [
+        {
+          comment: "Comment 1",
+          replys: ["nice comment"]
+        },
+        {
+          comment: "Comment 2",
+          replys: ["nice"],
+        }],
       createdDate: "10/25/2015",
     },
     "2": {
