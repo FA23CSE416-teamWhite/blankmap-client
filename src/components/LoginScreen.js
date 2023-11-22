@@ -7,12 +7,20 @@ import TextField from '@mui/material/TextField';
 // import AccountCircle from '@mui/icons-material/AccountCircle';
 // import LockIcon from '@mui/icons-material/Lock';
 import { Link } from "react-router-dom";
+import { useContext } from 'react';
 import { CardHeader, CardContent, Button } from '@mui/material';
 import backgroundImage from './images/login-background.png';
 import blankMapicon from '../assets/blankMapIcon.png'
+import AuthContext from '../auth';
 
 export default function LoginScreen() {
+    const { auth } = useContext(AuthContext);
+    const handleLogin = (event) => {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        auth.loginUser(username,password);
 
+    };
     return(
         <Grid
         container
@@ -31,7 +39,7 @@ export default function LoginScreen() {
                             title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
                             sx = {{bgcolor:"CornflowerBlue"}}
                             /> */}
-                <CardContent  sx={{paddingY: 3,  alignItems:  "center"}}>
+                <CardContent onSubmit={handleLogin} sx={{paddingY: 3,  alignItems:  "center"}}>
                     <Box>
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px' }}>
                             <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
@@ -43,7 +51,7 @@ export default function LoginScreen() {
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Username
                         </Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                        <Box id="username" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
                             {/* <AccountCircle sx = {{padding:1}}/> */}
                             <TextField  fullWidth/>
                         </Box>
@@ -51,14 +59,15 @@ export default function LoginScreen() {
                             Password
                             <Link to="/forgot" style={{ marginLeft: 'auto' }}>Forgot Password</Link>
                         </Box>
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",marginTop:'3px',marginBottom:'3px', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box id="password" sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",marginTop:'3px',marginBottom:'3px', alignItems: 'center', justifyContent: 'center'}}>
                             {/* <LockIcon sx = {{padding:1}}/> */}
                             <TextField  fullWidth/>
                         </Box>
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 3, alignItems: 'center', justifyContent: 'center' }}>
                             
                             <Link to="/home" style={{  textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none',fontSize: '1rem'   }}>
-                                <Button variant="contained" sx={{width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '50px'}}>
+                                <Button variant="contained" onClick={handleLogin}
+                                sx={{width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '50px'}}>
                                     Log in
                                 </Button>
                             </Link>

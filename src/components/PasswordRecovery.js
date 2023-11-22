@@ -38,9 +38,12 @@ export default function PasswordRecovery() {
                         </Box>
 
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
-                            <Button variant="contained" to="/" sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
-                                <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none',fontSize: '1rem'  }}>Retrieve</Link>
+                        <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none', fontSize: '1rem' }}>
+                            <Button variant="contained" sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
+                                Retrieve
                             </Button>
+                        </Link>
+
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
                        
