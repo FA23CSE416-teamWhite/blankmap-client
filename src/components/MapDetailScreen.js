@@ -44,13 +44,14 @@ const Comment = ({ comment }) => {
             // Clear the comment input
             setReplyText('');
             // Update the comment list
-            setReplyList([...replyList, replyText]);
+            const newReply = { user: "Guest", reply: replyText };
+            setReplyList([...replyList, newReply]);
         }
     }
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                <Typography>{comment.comment}</Typography>
+                <Typography><span style={{ color: 'steelblue' }}>{comment.user}</span> says: {comment.comment}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <div className="comment-actions">
                         <Button onClick={onReply} color="primary" size="small">
@@ -83,11 +84,11 @@ const Comment = ({ comment }) => {
                 </Box>
                 {showReplyInput && (
                     <Box sx={{ marginLeft: '20px' }}>
-                        <Typography style={{ fontSize: '15px' }}>Replies</Typography>
+                        <Typography style={{ fontSize: '15px', color: "blue"}}>Replies</Typography>
                         <List>
                             {replyList.map((reply, index) => (
                                 <Typography style={{ fontSize: '12px' }}>
-                                    {reply}
+                                    <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
                                 </Typography>
                             ))}
                         </List>
@@ -120,7 +121,7 @@ const MapDetailScreen = ({ mapDetails }) => {
             // Clear the comment input
             setNewComment('');
             // Update the comment list
-            const newCommentObject = {comment: newComment, replys: []}
+            const newCommentObject = { user: "Guest", comment: newComment, replys: []}
             setCommentList([...commentList, newCommentObject]);
         }
     };

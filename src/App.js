@@ -29,12 +29,14 @@ const sampleMapDetails = {
       mapImage: './components/images/temp_map.png',
       comments: [
         {
-          comment: "Comment 1",
-          replys: ["nice comment"]
+          user: "cat2",
+          comment: "cats on top always",
+          replys: [{ user: "cat42", reply: "always!!"}]
         },
         {
-          comment: "Comment 2",
-          replys: ["nice"],
+          user: "totallynotDOG",
+          comment: "could be better tho",
+          replys: [{ user: "cat69", reply: "stay hating"}],
         }],
       createdDate: "10/25/2015",
     },
