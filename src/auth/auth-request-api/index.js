@@ -4,9 +4,9 @@ const api = axios.create({
     baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`);
-export const loginUser = (email, password) => {
+export const loginUser = (userName, password) => {
     return api.post(`/login/`, {
-        email : email,
+        userName : userName,
         password : password
     })
 }
