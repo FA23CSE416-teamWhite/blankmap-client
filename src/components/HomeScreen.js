@@ -13,9 +13,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 const HomeScreen = () => {
-  // Assuming you have an array of map information
   const navigate = useNavigate();
-  const mapList = [
+  const [mapList, setMaplist] = useState( [
     {
       title: "Cat's Masterpiece",
       description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
@@ -23,6 +22,8 @@ const HomeScreen = () => {
       tags: ["tag1", "tag2", "tag3"],
       mapSnapshot: temp_map,
       createdDate: "10/25/2015",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Dog is better",
@@ -31,6 +32,8 @@ const HomeScreen = () => {
       tags: ["tag4", "tag5", "tag6"],
       mapSnapshot: temp_map,
       createdDate: "12/12/2002",
+      upVotes: 9,
+      numberOfComments: 27,
     },
     {
       title: "Bird's Eye View",
@@ -39,6 +42,8 @@ const HomeScreen = () => {
       tags: ["bird", "aerial", "landscape"],
       mapSnapshot: temp_map,
       createdDate: "05/08/2018",
+      upVotes: 9,
+      numberOfComments: 33,
     },
     {
       title: "Underwater Wonderland",
@@ -47,6 +52,8 @@ const HomeScreen = () => {
       tags: ["underwater", "marine", "coral"],
       mapSnapshot: temp_map,
       createdDate: "08/17/2021",
+      upVotes: 10,
+      numberOfComments: 45,
     },
     {
       title: "Space Odyssey",
@@ -55,6 +62,8 @@ const HomeScreen = () => {
       tags: ["space", "galaxy", "astronomy"],
       mapSnapshot: temp_map,
       createdDate: "03/02/2019",
+      upVotes: 13,
+      numberOfComments: 23,
     },
     {
       title: "Historical Heritage",
@@ -63,6 +72,8 @@ const HomeScreen = () => {
       tags: ["history", "ancient", "heritage"],
       mapSnapshot: temp_map,
       createdDate: "06/14/2005",
+      upVotes: 7,
+      numberOfComments: 16,
     },
     {
       title: "Fantasy Kingdom",
@@ -71,6 +82,8 @@ const HomeScreen = () => {
       tags: ["fantasy", "magic", "kingdom"],
       mapSnapshot: temp_map,
       createdDate: "09/30/2017",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Mountain Trek",
@@ -79,6 +92,8 @@ const HomeScreen = () => {
       tags: ["mountain", "hiking", "adventure"],
       mapSnapshot: temp_map,
       createdDate: "07/08/2014",
+      upVotes: 11,
+      numberOfComments: 23,
     },
     {
       title: "City Lights",
@@ -87,6 +102,8 @@ const HomeScreen = () => {
       tags: ["city", "urban", "nightlife"],
       mapSnapshot: temp_map,
       createdDate: "11/19/2019",
+      upVotes: 1,
+      numberOfComments: 70,
     },
     {
       title: "Enchanted Forest",
@@ -95,6 +112,8 @@ const HomeScreen = () => {
       tags: ["forest", "nature", "enchanted"],
       mapSnapshot: temp_map,
       createdDate: "04/27/2016",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Cat's Masterpiece",
@@ -103,6 +122,8 @@ const HomeScreen = () => {
       tags: ["tag1", "tag2", "tag3"],
       mapSnapshot: temp_map,
       createdDate: "10/25/2015",
+      upVotes: 14,
+      numberOfComments: 20,
     },
     {
       title: "Dog is better",
@@ -111,6 +132,8 @@ const HomeScreen = () => {
       tags: ["tag4", "tag5", "tag6"],
       mapSnapshot: temp_map,
       createdDate: "12/12/2002",
+      upVotes: 12,
+      numberOfComments: 24,
     },
     {
       title: "Bird's Eye View",
@@ -119,6 +142,8 @@ const HomeScreen = () => {
       tags: ["bird", "aerial", "landscape"],
       mapSnapshot: temp_map,
       createdDate: "05/08/2018",
+      upVotes: 10,
+      numberOfComments: 27,
     },
     {
       title: "Underwater Wonderland",
@@ -127,6 +152,8 @@ const HomeScreen = () => {
       tags: ["underwater", "marine", "coral"],
       mapSnapshot: temp_map,
       createdDate: "08/17/2021",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Space Odyssey",
@@ -135,6 +162,8 @@ const HomeScreen = () => {
       tags: ["space", "galaxy", "astronomy"],
       mapSnapshot: temp_map,
       createdDate: "03/02/2019",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Historical Heritage",
@@ -143,6 +172,8 @@ const HomeScreen = () => {
       tags: ["history", "ancient", "heritage"],
       mapSnapshot: temp_map,
       createdDate: "06/14/2005",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Fantasy Kingdom",
@@ -151,6 +182,8 @@ const HomeScreen = () => {
       tags: ["fantasy", "magic", "kingdom"],
       mapSnapshot: temp_map,
       createdDate: "09/30/2017",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Mountain Trek",
@@ -159,6 +192,8 @@ const HomeScreen = () => {
       tags: ["mountain", "hiking", "adventure"],
       mapSnapshot: temp_map,
       createdDate: "07/08/2014",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "City Lights",
@@ -167,6 +202,8 @@ const HomeScreen = () => {
       tags: ["city", "urban", "nightlife"],
       mapSnapshot: temp_map,
       createdDate: "11/19/2019",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     {
       title: "Enchanted Forest",
@@ -175,9 +212,11 @@ const HomeScreen = () => {
       tags: ["forest", "nature", "enchanted"],
       mapSnapshot: temp_map,
       createdDate: "04/27/2016",
+      upVotes: 10,
+      numberOfComments: 30,
     },
     // ... add more map information objects as needed
-  ];
+  ])
 
   const [currentPage, setCurrentPage] = useState(1);
   const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
@@ -190,16 +229,22 @@ const HomeScreen = () => {
   }
   const handleSortChange = (option) => {
     setSortOption(option);
+    setCurrentPage(1);
   };
 
   const handleCategoryFilter = (category) => {
     setCategoryFilter(category);
+    setCurrentPage(1);
   };
 
   // Apply sort
   const sortedMapList = [...mapList].sort((a, b) => {
     if (sortOption === "title") {
       return a.title.localeCompare(b.title);
+    } else if (sortOption === "Hight Upvotes") {
+      return b.upVotes - a.upVotes;
+    } else if (sortOption === "Popular") {
+      return b.numberOfComments - a.numberOfComments;
     }
     // Add more sorting options as needed
     return 0;
@@ -212,7 +257,7 @@ const HomeScreen = () => {
 
   const indexOfLastMap = currentPage * mapsPerPage;
   const indexOfFirstMap = indexOfLastMap - mapsPerPage;
-  const currentMapList = mapList.slice(indexOfFirstMap, indexOfLastMap);
+  const currentMapList = filteredMapList.slice(indexOfFirstMap, indexOfLastMap);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -235,9 +280,11 @@ const HomeScreen = () => {
             }}
           >
             <MenuItem value="">
-              <em>-- Select --</em>
+              <em>Select</em>
             </MenuItem>
             <MenuItem value="title">Title</MenuItem>
+            <MenuItem value="Hight Upvotes">Hight Upvotes</MenuItem>
+            <MenuItem value="Popular">Popular</MenuItem>
           </Select>
         </FormControl>
 
