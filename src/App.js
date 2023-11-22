@@ -5,9 +5,10 @@ import { AuthContextProvider } from './auth';
 import { GlobalStoreContextProvider } from './store'
 import{
 	AppBanner,
+    HomeScreen,
     LoginScreen,
     RegisterScreen,
-    HomeScreen,
+    PasswordRecovery,
     MapCreationPage,
     MapDetailScreen,
     MyMapScreen,
@@ -19,7 +20,6 @@ import{
     MainPage
 } from './components'
 import IconBanner from './components/IconBanner';
-import PasswordRecovery from './components/PasswordRecovery';
 const sampleMapDetails = {
     "1": {
       title: "Cat's Masterpiece",
@@ -27,7 +27,15 @@ const sampleMapDetails = {
       author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
       mapImage: './components/images/temp_map.png',
-      comments: ["Comment 1", "Comment 2"],
+      comments: [
+        {
+          comment: "Comment 1",
+          replys: ["nice comment"]
+        },
+        {
+          comment: "Comment 2",
+          replys: ["nice"],
+        }],
       createdDate: "10/25/2015",
     },
     "2": {
