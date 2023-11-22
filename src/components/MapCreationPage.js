@@ -21,35 +21,36 @@ const MapCreationPage = () => {
     const [isPublic, setIsPublic] = useState(true);
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("edit");
+    const [selectedCategory, setSelectedCategory] = useState("Choropleth");
+    const [routerAdd, setRouterAdd] = useState("edit")
     const navigate = useNavigate();
     const handleStartWithBlank = () => {
-        navigate("/"+selectedCategory)
+        navigate("/" + routerAdd)
         // Logic to handle starting with a blank map
         console.log("Start with Blank Map");
     };
 
     const handleLoadFromMap = () => {
-        navigate("/"+selectedCategory)
+        navigate("/" + routerAdd)
         console.log("Load from Map");
     };
 
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
         const selectedValue = event.target.value;
-      
+
         // Set the appropriate edit value based on the selected category
         const editValue =
-          selectedValue === 'Choropleth' || selectedValue === ''
-            ? 'edit'
-            : selectedValue === 'HeatMap'
-            ? 'edit-heat'
-            : selectedValue === 'Regional'
-            ? 'regional-edit'
-            : 'edit';
-      
-        setSelectedCategory(editValue);
-      };
+            selectedValue === 'Choropleth' || selectedValue === ''
+                ? 'edit'
+                : selectedValue === 'HeatMap'
+                    ? 'edit-heat'
+                    : selectedValue === 'Regional'
+                        ? 'regional-edit'
+                        : 'edit';
+        setSelectedCategory(selectedValue);
+        setRouterAdd(editValue);
+    };
     const handleToggleSwitch = () => {
         setIsPublic(!isPublic);
     };
@@ -63,7 +64,7 @@ const MapCreationPage = () => {
                 </Typography> */}
                 <FormControl sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
-              
+
                         id="mapName"
                         type="text"
                         value={mapName}
@@ -80,26 +81,26 @@ const MapCreationPage = () => {
                     />
                 </FormControl>
                 <Box>
-      <FormControlLabel
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          '& .MuiSwitch-thumb': {
-            color: isPublic ? '#0844A4' : '#D6D6D6', // Change thumb color based on the switch state
-          },
-          '& .MuiSwitch-track': {
-            backgroundColor: isPublic ? '#99ff99' : '#D6D6D6', // Change track color based on the switch state
-          },
-        }}
-        control={<Switch checked={isPublic} onChange={handleToggleSwitch} />}
-        label={
-          <Typography variant="body1">
-            {isPublic ? 'Public' : 'Private'}
-          </Typography>
-        }
-        labelPlacement="start"
-      />
-    </Box>
+                    <FormControlLabel
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            '& .MuiSwitch-thumb': {
+                                color: isPublic ? '#0844A4' : '#D6D6D6', // Change thumb color based on the switch state
+                            },
+                            '& .MuiSwitch-track': {
+                                backgroundColor: isPublic ? '#99ff99' : '#D6D6D6', // Change track color based on the switch state
+                            },
+                        }}
+                        control={<Switch checked={isPublic} onChange={handleToggleSwitch} />}
+                        label={
+                            <Typography variant="body1">
+                                {isPublic ? 'Public' : 'Private'}
+                            </Typography>
+                        }
+                        labelPlacement="start"
+                    />
+                </Box>
                 <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
                         id="mapDescription"
@@ -146,10 +147,13 @@ const MapCreationPage = () => {
             <Grid item xs={12} sm={7}>
                 <Box sx={{ height: '40px' }}></Box>
                 <Grid container>
-                    <Grid item xs={12} sm={5}>
-                        <Typography variant="body1" sx={{ color: 'blue', display: 'flex', justifyContent: 'left', alignItems: 'center', }}>Your Map:</Typography>
+                    <Grid item xs={12} sm={5} sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="h6" sx={{ color: '#0844A4', display: 'flex', justifyContent: 'left' }}>
+                            How do you want to start:
+                        </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={5}>
+                    <Grid item xs={12} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                        <Box>
                         <InputLabel sx={{ justifyContent: 'right', alignItems: 'center' }} htmlFor="selectedCategory">Choose a Category:</InputLabel>
                         <Select
                             id="selectedCategory"
@@ -158,21 +162,38 @@ const MapCreationPage = () => {
                             sx={{ width: '200px', display: 'flex', justifyContent: 'right', alignItems: 'center', }}
                             size="small"
                         >
-                            <MenuItem value="">-- Select --</MenuItem>
+                            {/* <MenuItem value="">-- Select --</MenuItem> */}
                             <MenuItem value="Choropleth">Choropleth</MenuItem>
                             <MenuItem value="HeatMap">Heat Map</MenuItem>
                             <MenuItem value="Regional">Regional Map</MenuItem>
                             {/* Add more categories as needed */}
                         </Select>
+                        </Box>
                     </Grid>
                 </Grid>
-                <Box sx={{ display: 'flex', alignItems: 'center', }}>
-                    <Button variant="contained" color="primary" onClick={handleStartWithBlank}>
-                        Start with Blank
+                <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "20px", borderRadius: '10px' }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleStartWithBlank}
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                        }}
+                    >
+                        Load From Map
                     </Button>
                     <Box sx={{ width: '10px' }}></Box>
-                    <Button variant="contained" color="primary" onClick={handleLoadFromMap}>
-                        Load from Map
+                    <Button
+                        variant="contained"
+                        onClick={handleLoadFromMap}
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                        }}
+                    >
+                        Load From Map
                     </Button>
                 </Box>
             </Grid>
