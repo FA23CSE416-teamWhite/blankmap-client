@@ -15,11 +15,11 @@ export default function HomeBanner() {
   };
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    navigate(`/search?q="${encodeURIComponent(searchQuery)}"`);
   };
   const performSearch = () => {
     // Update the URL with the new query string
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    navigate(`/search?q="${encodeURIComponent(searchQuery)}"`);
   };
   return (
 
