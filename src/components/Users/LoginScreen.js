@@ -82,12 +82,12 @@ export default function LoginScreen() {
                         </Box>
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 3, alignItems: 'center', justifyContent: 'center' }}>
                             
-                            <Link to="/home" style={{  textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none',fontSize: '1rem'   }}>
+                            
                                 <Button variant="contained" onClick={handleLogin}
                                 sx={{width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '50px'}}>
                                     Log in
                                 </Button>
-                            </Link>
+                           
 
                         </Box>
 

@@ -124,12 +124,12 @@ export default function RegisterScreen() {
 
 
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
-                            <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none', fontSize: '1rem' }}>
-                                    <Button variant="contained" onClick={handleRegister}
-                                        sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
-                                        Register
-                                    </Button>
-                                </Link>
+                            
+                            <Button variant="contained" onClick={handleRegister}
+                                sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
+                                Register
+                            </Button>
+                               
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
                        
