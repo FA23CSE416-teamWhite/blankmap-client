@@ -9,18 +9,22 @@ import IconButton from '@mui/material/IconButton';
 import blankMapicon from '../assets/blankMapIcon.png'
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import blankmap_font from './images/blankMap.png'
+
+const menu =<Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
+
 
 export default function IconBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" sx={{ bgcolor: '#C6D6D6' }}>
+            <AppBar position="static" sx={{ bgcolor: '#D6D6D6' }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Link to="/home" style={{ textDecoration: "none" }}>
-                        <img src={blankMapicon} alt="fireSpot" width="48" height="48" />
+                    <Link to="/main" style={{ textDecoration: "none" }}>
+                        <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
                     </Link>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Link to="/home" style={{ textDecoration: "none" }}>
+                    {/* <Link to="/home" style={{ textDecoration: "none" }}>
                         <Typography
                             variant="h6"
                             noWrap
@@ -35,11 +39,11 @@ export default function IconBanner() {
                         >
                             Blank Map
                         </Typography>
-                    </Link>
+                    </Link> */}
+                    <img src={blankmap_font} alt="fireSpot" width="120" height="100%" />
                     <Box sx={{ flexGrow: 1 }} />
-                    <Link to="/Login">SignIn/SignOut</Link>
-
-                    <Link to="/profile" style={{ textDecoration: "none" }}>
+                    <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
+                    <Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
                         <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
                     </Link>
 

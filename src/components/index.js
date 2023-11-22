@@ -12,6 +12,7 @@ import MessageCenter from './MessageCenter'
 import MapEdit from './MapEdit'
 import MapEditHeat from './MapEditHeat'
 import RegionalEdit from './RegionalEdit'
+import MainPage from './MainPage'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -31,6 +32,7 @@ export {
     MessageCenter,
     MapEdit,
     MapEditHeat,
-    RegionalEdit
+    RegionalEdit,
+    MainPage
 
 }

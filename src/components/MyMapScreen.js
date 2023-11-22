@@ -21,6 +21,7 @@ const MyMapScreen = ({ userMaps }) => {
       tags: ["tag1", "tag2", "tag3"],
       mapSnapshot: temp_map,
       createdDate: "10/25/2015",
+      setting:"private"
     },
     {
       title: "Dog is better",
@@ -29,29 +30,30 @@ const MyMapScreen = ({ userMaps }) => {
       tags: ["tag4", "tag5", "tag6"],
       mapSnapshot: temp_map,
       createdDate: "12/12/2002",
+      setting:"public"
     },
     // Add more map information objects as needed
   ];
-  const filteredMaps = mapList;
+  
   const navigate = useNavigate();
-  // const filteredMaps = userMaps.filter((map) => {
-  //   // Apply filtering logic based on mapFilter and searchTerm
-  //   if (mapFilter === "public" && !map.isPublic) {
-  //     return false;
-  //   }
-  //   if (mapFilter === "private" && map.isPublic) {
-  //     return false;
-  //   }
-  //   if (searchTerm && !map.title.toLowerCase().includes(searchTerm.toLowerCase())) {
-  //     return false;
-  //   }
-  //   return true;
-  // });
+  const filteredMaps = mapList.filter((map) => {
+    // Apply filtering logic based on mapFilter and searchTerm
+    if (mapFilter === "public" && !(map.setting==="public")) {
+      return false;
+    }
+    if (mapFilter === "private" && !(map.setting==="private")) {
+      return false;
+    }
+    if (searchTerm && !map.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
     <Grid container>
-      <Grid item xs={12} sm={3}>
+      <Grid item xs={12} sm={2}>
         <ProfileMenu />
       </Grid>
       <Grid item xs={12} sm={9}>
@@ -115,20 +117,26 @@ const MyMapScreen = ({ userMaps }) => {
               <Card key={index} style={{ marginBottom: '25px', backgroundColor: 'aliceblue', marginTop: '15px'}}>
                 <CardContent>
                   <MapOverview mapInfo={mapInfo} />
-                  <Box sx={{justifyContent: 'right',}}>
-                    <Button 
-                      // onClick={()} for future purposes
-                      sx={{
-                        fontSize: '10px',
-                        backgroundColor: 'red',
-                        color: 'white',
-                        padding: '5px',
-                        borderRadius: '4px', // Set border-radius for rounded corners
-                        margin: '0 4px',
-                    }}>Delete
-                    </Button>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Button
+                        // onClick={() => {...}} for future purposes
+                        sx={{
+                          fontSize: '10px',
+                          backgroundColor: 'red',
+                          color: 'white',
+                          padding: '5px',
+                          borderRadius: '4px', // Set border-radius for rounded corners
+                          margin: '0 4px',
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                    <Box sx={{ textAlign: 'left' }}>
+                      {mapInfo.setting}
+                    </Box>
                   </Box>
-                  
                 </CardContent>
               </Card>
             ))}

@@ -18,7 +18,7 @@ const MyInfoScreen = () => {
       <Grid item xs={12} sm={3}>
         <ProfileMenu />
       </Grid>
-      <Grid item xs={12} sm={9}>
+      <Grid item xs={12} sm={9} sx={{ width: '100%', flex: 'auto' }}>
         <Paper
         elevation={3}
         sx={{
@@ -28,8 +28,7 @@ const MyInfoScreen = () => {
           flexDirection: 'column',
           alignItems: 'center',
           flex: 1,
-          marginLeft: '225px',
-          width: '100%',
+          marginLeft: '25px',
         }}
       >
         <div className="avatar-section">
