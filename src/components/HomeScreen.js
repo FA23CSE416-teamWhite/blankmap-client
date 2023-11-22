@@ -29,7 +29,7 @@ const HomeScreen = () => {
       }else{
         setSearchQuery(search.get("q"));
       }
-      console.log('Search String:', searchQuery);
+      // console.log('Search String:', searchQuery);
     };
     extractSearchString();
     const fetchData = async () => {

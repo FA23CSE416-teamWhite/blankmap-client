@@ -80,17 +80,26 @@ const MapCreationPage = () => {
                     />
                 </FormControl>
                 <Box>
-                    <FormControlLabel
-                        sx={{ display: 'flex', justifyContent: 'center', }}
-                        control={<Switch checked={isPublic} onChange={handleToggleSwitch} />}
-                        label={
-                            <Typography variant="body1">
-                                {isPublic ? 'Public' : 'Private'}
-                            </Typography>
-                        }
-                        labelPlacement="start"
-                    />
-                </Box>
+      <FormControlLabel
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          '& .MuiSwitch-thumb': {
+            color: isPublic ? '#0844A4' : '#D6D6D6', // Change thumb color based on the switch state
+          },
+          '& .MuiSwitch-track': {
+            backgroundColor: isPublic ? '#99ff99' : '#D6D6D6', // Change track color based on the switch state
+          },
+        }}
+        control={<Switch checked={isPublic} onChange={handleToggleSwitch} />}
+        label={
+          <Typography variant="body1">
+            {isPublic ? 'Public' : 'Private'}
+          </Typography>
+        }
+        labelPlacement="start"
+      />
+    </Box>
                 <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
                         id="mapDescription"
