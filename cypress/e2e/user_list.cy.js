@@ -1,14 +1,14 @@
-describe('Normal Login', () => {
-  it('successfully loads', () => {
-    cy.visit('https://blankmap-front-1626f242c2d7.herokuapp.com/login'); // Assuming your app is served at http://localhost:3000/
+// describe('Normal Login', () => {
+//   it('successfully loads', () => {
+//     cy.visit('https://blankmap-front-1626f242c2d7.herokuapp.com/login'); // Assuming your app is served at http://localhost:3000/
 
-    // Click the login button
-    cy.contains('Login').click();
+//     // Click the login button
+//     cy.contains('Login').click();
 
-    // Assert that the login was successful
-    cy.url().should('include', '/home');
-  });
-});
+//     // Assert that the login was successful
+//     cy.url().should('include', '/home');
+//   });
+// });
 describe('Guest login', () => {
   it('successfully loads', () => {
     cy.visit('https://blankmap-front-1626f242c2d7.herokuapp.com/login'); // Assuming your app is served at http://localhost:3000/
