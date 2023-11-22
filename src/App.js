@@ -40,7 +40,6 @@ const sampleMapDetails = {
     },
     // Add more map details as needed
   };
-
   const App = () => {
     return (
       <BrowserRouter>
@@ -58,7 +57,7 @@ const sampleMapDetails = {
     const location = useLocation();
     const showAppBanner = ['/Home','/home', '/create',"/detail","/profile","/profile/my-maps"
     ,"/profile/message-center","/profile/personal-information"
-    ,"/edit","/edit-heat","/regional-edit"];
+    ,"/edit","/edit-heat","/regional-edit","/search"];
     const shouldShowAppBanner = showAppBanner.includes(location.pathname);
   
     return (
@@ -81,6 +80,7 @@ const sampleMapDetails = {
             <Route path="/sign-out" element={<LoginScreen />} />
             <Route path="/edit-heat" element={<MapEditHeat />} />
             <Route path="/regional-edit" element={<RegionalEdit />} />
+            <Route path="/search" element={<HomeScreen />} />
         </Routes>
       </>
     );

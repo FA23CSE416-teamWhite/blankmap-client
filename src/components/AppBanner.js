@@ -18,6 +18,7 @@ export default function AppBanner() {
                 <Toolbar>
                     <Routes>
                         <Route path="/home" element={<HomeBanner />} />
+                        <Route path="/search" element={<HomeBanner />} />
                         <Route path="/create" element={<CreateBanner />} />
                         <Route path="/login" element={<Box></Box>} />
                         <Route path="/register" element={<Box></Box>} />

@@ -12,8 +12,22 @@ import temp_map from './images/temp_map.png';
 import Autocomplete from '@mui/material/Autocomplete';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 const HomeScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  useEffect(() => {
+    const extractSearchString = () => {
+      const search = new URLSearchParams(window.location.search);
+      setSearchQuery(search.get("q"));
+      console.log('Search String:', searchQuery);
+    };
+    extractSearchString();
+    return () => {
+    };
+  }, [location.search, searchQuery]);
   const [mapList, setMaplist] = useState( [
     {
       title: "Cat's Masterpiece",
@@ -220,8 +234,8 @@ const HomeScreen = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
-  const [sortOption, setSortOption] = useState(null);
-  const [categoryFilter, setCategoryFilter] = useState(null);
+  const [sortOption, setSortOption] = useState('title');
+  const [categoryFilter, setCategoryFilter] = useState('None');
 
   const handleCreateMap = () => {
     console.log("create map");
@@ -251,9 +265,9 @@ const HomeScreen = () => {
   });
 
   // Apply category filter
-  const filteredMapList = categoryFilter
-    ? sortedMapList.filter((map) => map.tags.includes(categoryFilter))
-    : sortedMapList;
+  const filteredMapList = (categoryFilter === 'None' || categoryFilter === '' || categoryFilter === null)
+  ? sortedMapList
+  : sortedMapList.filter((map) => map.tags.includes(categoryFilter));
 
   const indexOfLastMap = currentPage * mapsPerPage;
   const indexOfFirstMap = indexOfLastMap - mapsPerPage;
@@ -292,7 +306,7 @@ const HomeScreen = () => {
         <Autocomplete
           value={categoryFilter}
           onChange={(e, value) => handleCategoryFilter(value)}
-          options={Array.from(new Set(mapList.flatMap((map) => map.tags)))}
+          options={[...new Set(['None', ...mapList.flatMap((map) => map.tags)])]}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -342,6 +356,7 @@ const HomeScreen = () => {
               onChange={(event, page) => handlePageChange(page)}
             />
           </Stack>
+          <p>112</p>
         </div>
 
       </div>
