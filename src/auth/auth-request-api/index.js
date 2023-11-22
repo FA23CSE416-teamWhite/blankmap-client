@@ -21,11 +21,19 @@ export const registerUser = (firstName, lastName, email, userName, password, pas
         passwordVerify : passwordVerify
     })
 }
+
+export const resetPassword = (email, password) => {
+    return api.post(`/reset/`, {
+        email : email,
+        password : password
+    })
+}
 const apis = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    resetPassword
 }
 
 export default apis

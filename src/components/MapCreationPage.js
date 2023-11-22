@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import {
@@ -23,18 +23,33 @@ const MapCreationPage = () => {
     const [tags, setTags] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("Choropleth");
     const [routerAdd, setRouterAdd] = useState("edit")
+    const fileInputRef = React.useRef();
+    const[selectedFile, setSelectedFile] = useState(null);  
     const navigate = useNavigate();
+
     const handleStartWithBlank = () => {
+        console.log("Load from Map");
+        console.log("Map Name: ", mapName);
+        console.log("Is Public: ", isPublic);
+        console.log("Description: ", description);
         navigate("/" + routerAdd)
         // Logic to handle starting with a blank map
         console.log("Start with Blank Map");
     };
 
     const handleLoadFromMap = () => {
-        navigate("/" + routerAdd)
         console.log("Load from Map");
+        console.log("Map Name: ", mapName);
+        console.log("Is Public: ", isPublic);
+        console.log("Description: ", description);
+        fileInputRef.current.click();
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        // Do something with the selected file, for example, store it in state
+        setSelectedFile(file);
+    };
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
         const selectedValue = event.target.value;
@@ -154,20 +169,20 @@ const MapCreationPage = () => {
                     </Grid>
                     <Grid item xs={12} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                         <Box>
-                        <InputLabel sx={{ justifyContent: 'right', alignItems: 'center' }} htmlFor="selectedCategory">Choose a Category:</InputLabel>
-                        <Select
-                            id="selectedCategory"
-                            value={selectedCategory}
-                            onChange={handleCategoryChange}
-                            sx={{ width: '200px', display: 'flex', justifyContent: 'right', alignItems: 'center', }}
-                            size="small"
-                        >
-                            {/* <MenuItem value="">-- Select --</MenuItem> */}
-                            <MenuItem value="Choropleth">Choropleth</MenuItem>
-                            <MenuItem value="HeatMap">Heat Map</MenuItem>
-                            <MenuItem value="Regional">Regional Map</MenuItem>
-                            {/* Add more categories as needed */}
-                        </Select>
+                            <InputLabel sx={{ justifyContent: 'right', alignItems: 'center' }} htmlFor="selectedCategory">Choose a Category:</InputLabel>
+                            <Select
+                                id="selectedCategory"
+                                value={selectedCategory}
+                                onChange={handleCategoryChange}
+                                sx={{ width: '200px', display: 'flex', justifyContent: 'right', alignItems: 'center', }}
+                                size="small"
+                            >
+                                {/* <MenuItem value="">-- Select --</MenuItem> */}
+                                <MenuItem value="Choropleth">Choropleth</MenuItem>
+                                <MenuItem value="HeatMap">Heat Map</MenuItem>
+                                <MenuItem value="Regional">Regional Map</MenuItem>
+                                {/* Add more categories as needed */}
+                            </Select>
                         </Box>
                     </Grid>
                 </Grid>
@@ -181,7 +196,7 @@ const MapCreationPage = () => {
                             color: 'white', // Text color
                         }}
                     >
-                        Load From Map
+                        Start With Blank
                     </Button>
                     <Box sx={{ width: '10px' }}></Box>
                     <Button
@@ -195,6 +210,13 @@ const MapCreationPage = () => {
                     >
                         Load From Map
                     </Button>
+                    <input
+                        type="file"
+                        accept=".json"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
                 </Box>
             </Grid>
         </Grid>

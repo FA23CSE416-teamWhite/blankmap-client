@@ -4,13 +4,18 @@ import NavBar from "./NavBar";
 import  avatar from "./images/avatar.png";
 import { Paper, Typography, Box, Button, Grid } from "@mui/material";
 
-const MyInfoScreen = () => {
-    const username = "testuser";
-    const email = "email@email.email";
-    const phone = "123-456-7890";
-    const memberSince = "1/1/2014";
-    const numberOfMaps = "2";
-    const bio = "Nice to meet you!";
+const MyInfoScreen = ({userInfo}) => {
+  var info=userInfo
+  info={
+    username: "testuser",
+    email : "email@email.email",
+    phone : "123-456-7890",
+    memberSince : "1/1/2014",
+    numberOfMaps : "2",
+    bio : "Nice to meet you!"
+
+  }
+    
     const avatarUrl = avatar;
 
  return (
@@ -38,26 +43,26 @@ const MyInfoScreen = () => {
         <div className="user-info" style={{ marginTop: '20px' }}>
           <Typography variant="h5">User Information</Typography>
           <div>
-            <strong>Username:</strong> {username}
+            <strong>Username:</strong> {info.username}
           </div>
           <div>
-            <strong>Email:</strong> {email}
+            <strong>Email:</strong> {info.email}
           </div>
           <div>
-            <strong>Phone:</strong> {phone}
+            <strong>Phone:</strong> {info.phone}
           </div>
           <div>
             <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
             {/* Ideally, avoid displaying passwords for security reasons */}
           </div>
           <div>
-            <strong>Member Since:</strong> {memberSince}
+            <strong>Member Since:</strong> {info.memberSince}
           </div>
           <div>
-            <strong>Number of Maps:</strong> {numberOfMaps}
+            <strong>Number of Maps:</strong> {info.numberOfMaps}
           </div>
           <div>
-            <strong>Bio:</strong> {bio}
+            <strong>Bio:</strong> {info.bio}
           </div>
         </div>
         <Button variant="contained" onClick={() => console.log('Edit button clicked')} style={{ marginTop: '20px' }}>Edit</Button>
