@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react'
+import {useState ,useContext} from 'react'
+import AuthContext from '../../auth';
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
@@ -14,33 +15,26 @@ import axios from 'axios';
 
 
 export default function LoginScreen() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate()
+    const { auth } = useContext(AuthContext);
 
     function submitForm(event) {
-        if (username === "" || 
+        if (email === "" || 
             password === ""  ) {
             alert("Please fill all fields");
             return;
         }
+        auth.loginUser(email, password)
+        .then(function (res){
+            if(auth.user == null){
+                alert("User not found") 
+            }
+        })
+        
     // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-        axios
-            .get("http://localhost:8000/api/users", {
-                params:{
-                username: username,
-                password: password,
-                }
-            })
-            .then(function (res) { 
-                console.log(res)
-                alert("Logged in");
-                navigate('/home')
-                // window.location.reload();
-            })
-            .catch(function () {
-                alert("Could not find account. Please try again");
-            });
+        
     }
     
     return(
@@ -65,7 +59,7 @@ export default function LoginScreen() {
                     <Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
                             <AccountCircle sx = {{padding:1}}/>
-                            <TextField label = "Username" onChange={(e) => setUsername(e.target.value)} fullWidth/>
+                            <TextField label = "Username" onChange={(e) => setEmail(e.target.value)} fullWidth/>
                         </Box>
     
                         <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
@@ -80,7 +74,7 @@ export default function LoginScreen() {
                             Login
                             </Button>
                             <Button variant="contained" to="/" sx={{ml:"20%"}} onClick={() => {
-                                navigate('/home');
+                                auth.guestLogin()
                               }}>
                                 Guest Login
                             </Button>

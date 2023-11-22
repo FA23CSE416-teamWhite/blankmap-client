@@ -10,14 +10,16 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    GET_QUESTION: "GET_QUESTION"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
         loggedIn: false,
-        errorMessage: null
+        errorMessage: null,
+        extra: ""
     });
     const history = useNavigate();
 
@@ -56,6 +58,16 @@ function AuthContextProvider(props) {
                     errorMessage: payload.errorMessage
                 })
             }
+
+            case AuthActionType.GET_QUESTION: {
+                return setAuth({
+                    user: null,
+                    loggedIn: false,
+                    errorMessage: "",
+                    extra: payload.extra
+                })
+            }
+
             default:
                 return auth;
         }
@@ -115,6 +127,18 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.getQuestion = async function () {
+        const response = await api.getQuestion();
+        if (response.status === 200) {
+            authReducer({
+                type: AuthActionType.GET_QUESTION,
+                payload: {
+                    extra: response.data.question
+                }
+            });
+        }
+    }
+
     auth.registerUser = async function(firstName, lastName, email, userName, password, passwordVerify) {
         console.log("REGISTERING USER");
         try{   
@@ -148,6 +172,7 @@ function AuthContextProvider(props) {
 
     auth.loginUser = async function(email, password) {
         try{
+            console.log(email)
             const response = await api.loginUser(email, password);
             if (response.status === 200) {
                 authReducer({
@@ -191,6 +216,18 @@ function AuthContextProvider(props) {
         }
         console.log("user initials: " + initials);
         return initials;
+    }
+
+    auth.resetPassword = async function(email, answer, password, passwordVerify) {
+        console.log(email)
+        const response = await api.resetPassword(email, password);
+        if (response.status === 200) {
+            authReducer( {
+                type: AuthActionType.LOGOUT_USER,
+                payload: null
+            })
+            history.push("/");
+        }
     }
 
     return (

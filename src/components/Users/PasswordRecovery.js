@@ -1,6 +1,7 @@
 import * as React from 'react';
-import {useState} from 'react'
+import {useState, useContext} from 'react'
 import axios from 'axios';
+import AuthContext from '../../auth';
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
@@ -11,18 +12,19 @@ import LockIcon from '@mui/icons-material/Lock';
 import { Link, useNavigate } from "react-router-dom";
 import { CardHeader, CardContent, Button } from '@mui/material';
 import backgroundImage from '../images/login-background.png';
+import { QuestionAnswer } from '@mui/icons-material';
 
 export default function PasswordRecovery() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [recoveryQuestion, setRecoveryQuestion] = useState("");
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
     const [reset, setReset] = useState(false);
-    const navigate = useNavigate()
+    const { auth } = useContext(AuthContext);
 
     function retrieveAccount(event) {
-        if (username === ""  ) {
+        if (email === ""  ) {
             alert("Please fill all fields");
             return;
         }
@@ -30,7 +32,7 @@ export default function PasswordRecovery() {
         axios
             .get("http://localhost:8000/api/users", {
                 params:{
-                username: username,
+                email: email,
                 }
             })
             .then(function (res) { 
@@ -52,20 +54,13 @@ export default function PasswordRecovery() {
             return;
         }
     // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-        axios
-            .put("http://localhost:8000/api/users", {
-                params:{
-                username: username,
-                },
-                password:password
-            })
+        auth.resetPassword(email, QuestionAnswer, password, passwordConfirm)
             .then(function (res) { 
                 alert("password reset")
-                navigate('/login')
                 // window.location.reload();
             })
             .catch(function () {
-                alert("Could not find account. Please try again");
+                alert("Error, Please try again");
             });
     }
 
@@ -89,7 +84,7 @@ export default function PasswordRecovery() {
                 <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
                     <Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Username" fullWidth onChange={(e) => setUsername(e.target.value)}/>
+                            <TextField label = "Email" fullWidth onChange={(e) => setEmail(e.target.value)}/>
                         </Box>
 
                         {(reset) && (

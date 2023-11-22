@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react'
+import {useState, useContext} from 'react'
+import AuthContext from '../../auth';
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
@@ -15,11 +16,13 @@ import axios from 'axios';
 export default function RegisterScreen() {
     const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [recoveryQuestion, setRecoveryQuestion] = useState("");
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
-    const navigate = useNavigate()
+    const { auth } = useContext(AuthContext);
 
     function submitForm(event) {
             if (username === "" || 
@@ -36,22 +39,14 @@ export default function RegisterScreen() {
                 return;
             }
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-            axios
-                .post("http://localhost:8000/api/users", {
-                    username: username,
-                    email: email,
-                    password: password,
-                    recoveryQuestion: recoveryQuestion,
-                    recoveryAnswer: recoveryAnswer
-                })
-                .then(function () {
-                    alert("Account created successfully");
-                    navigate('/login')
-                    // window.location.reload();
-                })
-                .catch(function () {
-                    alert("Could not creat account. Please try again");
-                });
+           auth.registerUser(firstName, lastName, email, username, password, passwordConfirm)
+           .then(function (res) { 
+            console.log(auth)
+            if(auth.user == null){
+                alert(auth.errorMessage)
+            }
+            // window.location.reload();
+        })
         }
     return(
         <Grid
@@ -72,6 +67,12 @@ export default function RegisterScreen() {
                             />
                 <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
                     <Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField label = "First name" onChange={(e) => setFirstName(e.target.value)} fullWidth/>
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField label = "Last name" onChange={(e) => setLastName(e.target.value)} fullWidth/>
+                        </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
                             <TextField label = "Username" onChange={(e) => setUsername(e.target.value)} fullWidth/>
                         </Box>
