@@ -1,7 +1,7 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'https://blankmap-front-1626f242c2d7.herokuapp.com/auth'
+    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`);
 export const loginUser = (email, password) => {
