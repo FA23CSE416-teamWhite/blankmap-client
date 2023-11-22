@@ -24,7 +24,7 @@ export default function RegisterScreen() {
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
     const { auth } = useContext(AuthContext);
 
-    function submitForm(event) {
+    function handleRegister(event) {
             if (username === "" || 
                 email === "" || 
                 password === "" || 
@@ -54,62 +54,89 @@ export default function RegisterScreen() {
         justifyContent="center"
         alignItems="center"
         sx={{
-          height: 'calc(100vh - 128px)',
+          height: 'calc(100vh+10)',
           background: `url(${backgroundImage}) center/cover no-repeat fixed`,
           padding: '20px', // Adjust padding as needed
           boxSizing: 'border-box',
         }}
       ><Grid item xs={12} sm={8} md={6} lg={4}>
-            <Card variant="outlined" sx={{ minWidth: 600 }}>
-                <CardHeader color="blue"
-                            title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>REGISTER</Typography>}
-                            sx = {{bgcolor:"CornflowerBlue"}}
-                            />
+            <Card variant="outlined" sx={{ minWidth: 600,boxShadow:3,borderRadius: 3  }}>
+                
                 <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
-                    <Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "First name" onChange={(e) => setFirstName(e.target.value)} fullWidth/>
+                    
+                    <Box onSubmit={handleRegister}>
+                    <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2 }}>
+                            <span style={{ fontWeight: 'bold', fontSize: '1.4em' }}>Register</span>
                         </Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Last name" onChange={(e) => setLastName(e.target.value)} fullWidth/>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            First Name
                         </Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Username" onChange={(e) => setUsername(e.target.value)} fullWidth/>
+                        <Box id="firstname" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Last Name
+                        </Box>
+                        <Box id="lastname" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Username
+                        </Box>
+                        <Box id="username" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
     
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Email" onChange={(e) => setEmail(e.target.value)} fullWidth/>
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Email
+                        </Box>
+                        <Box id="email" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Choose a Password" onChange={(e) => setPassword(e.target.value)} fullWidth/>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Password
+                        </Box>
+                        <Box id="password" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Confirm Password" onChange={(e) => setPasswordConfirm(e.target.value)}fullWidth/>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                            Confirm Password
+                        </Box>
+                        <Box id="passwordVerify" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Choose a Recovery Question" onChange={(e) => setRecoveryQuestion(e.target.value)}fullWidth/>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                        Choose a Recovery Question
+                        </Box>
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",  paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Answer to Question" onChange={(e) => setRecoveryAnswer(e.target.value)} fullWidth/>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                        Answer to Question
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
-                        <Box sx = {{mt:3, mb:4,display: 'flex', }}>
-                            <Button variant="contained" to="/" sx={{ml:"40%"}}
-                            onClick={() => {
-                                submitForm();
-                              }}>
-                                Register
-                            </Button>
-                        </Box>    
-                    </Box>
 
-                    <Box sx={{pr:"50%"}}> 
+                        <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
+                            <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none', fontSize: '1rem' }}>
+                                    <Button variant="contained" onClick={handleRegister}
+                                        sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
+                                        Register
+                                    </Button>
+                                </Link>
+                        </Box>
+                        <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
+                       
                         <Link to="/login">Already have an Account?</Link>
+                        </Box>
                     </Box>
+
                 </CardContent>
             </Card>
         </Grid>
