@@ -1,6 +1,4 @@
 import * as React from 'react';
-import {useState, useContext} from 'react'
-import AuthContext from '../../auth';
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
@@ -8,53 +6,33 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
-import { Link, useNavigate  } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { CardHeader, CardContent, Button } from '@mui/material';
 import backgroundImage from '../images/login-background.png';
-import axios from 'axios';
+import AuthContext from '../../auth';
+import { useContext } from 'react';
 
 export default function RegisterScreen() {
-    const [username, setUsername] = useState("");
-	const [email, setEmail] = useState("");
-    const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [recoveryQuestion, setRecoveryQuestion] = useState("");
-    const [recoveryAnswer, setRecoveryAnswer] = useState("");
     const { auth } = useContext(AuthContext);
 
-    function handleRegister(event) {
-            if (username === "" || 
-                email === "" || 
-                password === "" || 
-                passwordConfirm === "" || 
-                recoveryAnswer === "" ||
-                recoveryQuestion === "") {
-                alert("Please fill all fields");
-                return;
-            }
-            if(passwordConfirm != password){
-                alert("Passwords do not match");
-                return;
-            }
-        // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-           auth.registerUser(firstName, lastName, email, username, password, passwordConfirm)
-           .then(function (res) { 
-            console.log(auth)
-            if(auth.user == null){
-                alert(auth.errorMessage)
-            }
-            // window.location.reload();
-        })
-        }
+    const handleRegister = (event) => {
+        const username = document.getElementById('username').value;
+        const lastname = document.getElementById('lastname').value;
+        const email = document.getElementById('email').value;
+        const firstName = document.getElementById('firstname').value;
+        const passwordVerify = document.getElementById('passwordVerify').value;
+        const password = document.getElementById('password').value;
+
+        // Perform login action
+        auth.registerUser(firstName,lastname,email,username, password,passwordVerify);
+    };
     return(
         <Grid
         container
         justifyContent="center"
         alignItems="center"
         sx={{
-          height: 'calc(100vh+10)',
+          height: 'calc(100vh )',
           background: `url(${backgroundImage}) center/cover no-repeat fixed`,
           padding: '20px', // Adjust padding as needed
           boxSizing: 'border-box',
@@ -124,12 +102,12 @@ export default function RegisterScreen() {
 
 
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
-                            
-                            <Button variant="contained" onClick={handleRegister}
-                                sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
-                                Register
-                            </Button>
-                               
+                            <Link to="/home" style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block', textTransform: 'none', fontSize: '1rem' }}>
+                                    <Button variant="contained" onClick={handleRegister}
+                                        sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '45px' }}>
+                                        Register
+                                    </Button>
+                                </Link>
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
                        
@@ -143,3 +121,4 @@ export default function RegisterScreen() {
     </Grid>
     );
 }
+    
