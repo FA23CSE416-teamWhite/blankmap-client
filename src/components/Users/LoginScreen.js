@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
     function handleLogin(event) {
         if (email === "" || 
-            password === ""  ) {
+            password === "" ) {
             alert("Please fill all fields");
             return;
         }
@@ -68,17 +68,17 @@ export default function LoginScreen() {
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Username
                         </Box>
-                        <Box id="username" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
                             {/* <AccountCircle sx = {{padding:1}}/> */}
-                            <TextField  fullWidth/>
+                            <TextField id="username" fullWidth/>
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:"20px"}}>
                             Password
                             <Link to="/forgot" style={{ marginLeft: 'auto' }}>Forgot Password</Link>
                         </Box>
-                        <Box id="password" sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",marginTop:'3px',marginBottom:'3px', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box  sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",marginTop:'3px',marginBottom:'3px', alignItems: 'center', justifyContent: 'center'}}>
                             {/* <LockIcon sx = {{padding:1}}/> */}
-                            <TextField  fullWidth/>
+                            <TextField  id="password" fullWidth/>
                         </Box>
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 3, alignItems: 'center', justifyContent: 'center' }}>
                             

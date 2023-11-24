@@ -22,7 +22,7 @@ export default function RegisterScreen() {
         const firstName = document.getElementById('firstname').value;
         const passwordVerify = document.getElementById('passwordVerify').value;
         const password = document.getElementById('password').value;
-
+        
         // Perform login action
         auth.registerUser(firstName,lastname,email,username, password,passwordVerify);
     };
@@ -49,41 +49,41 @@ export default function RegisterScreen() {
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             First Name
                         </Box>
-                        <Box id="firstname" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="firstname" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Last Name
                         </Box>
-                        <Box id="lastname" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="lastname" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Username
                         </Box>
-                        <Box id="username" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="username" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
     
                         <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Email
                         </Box>
-                        <Box id="email" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="email" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Password
                         </Box>
-                        <Box id="password" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="password" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
                             Confirm Password
                         </Box>
-                        <Box id="passwordVerify" sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                        <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                            <TextField id="passwordVerify" fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
                         </Box>
 
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
