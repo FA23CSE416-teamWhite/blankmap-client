@@ -16,23 +16,19 @@ import blankMapicon from '../images/logo_clear.png';
 
 
 export default function LoginScreen() {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate()
     const { auth } = useContext(AuthContext);
-
+    
     function handleLogin(event) {
-        if (email === "" || 
-            password === "" ) {
+        if (username === "" || 
+            password === ""  ) {
             alert("Please fill all fields");
             return;
         }
-        auth.loginUser(email, password)
-        .then(function (res){
-            if(auth.user == null){
-                alert("User not found") 
-            }
-        })
+        auth.loginUser(username, password)
+        
         
     // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
         
@@ -70,7 +66,7 @@ export default function LoginScreen() {
                         </Box>
                         <Box  sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
                             {/* <AccountCircle sx = {{padding:1}}/> */}
-                            <TextField id="username" fullWidth/>
+                            <TextField id="username" onChange={(e) => setUsername(e.target.value)} fullWidth/>
                         </Box>
                         <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:"20px"}}>
                             Password
@@ -78,7 +74,7 @@ export default function LoginScreen() {
                         </Box>
                         <Box  sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",marginTop:'3px',marginBottom:'3px', alignItems: 'center', justifyContent: 'center'}}>
                             {/* <LockIcon sx = {{padding:1}}/> */}
-                            <TextField  id="password" fullWidth/>
+                            <TextField  id="password" onChange={(e) => setPassword(e.target.value)} fullWidth/>
                         </Box>
                         <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 3, alignItems: 'center', justifyContent: 'center' }}>
                             

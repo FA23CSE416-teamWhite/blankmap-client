@@ -24,7 +24,7 @@ function AuthContextProvider(props) {
     const history = useNavigate();
 
     useEffect(() => {
-        auth.logoutUser();
+        auth.getLoggedIn();
     }, []);
 
     const authReducer = (action) => {
@@ -173,7 +173,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history("/");
+                history("/home");
             }
         } catch(error){
             authReducer({
