@@ -17,7 +17,7 @@ import { useContext } from 'react';
 
 export default function IconBanner() {
     const { auth } = useContext(AuthContext);
-    let menu =<Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
+    let menu =<Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
     let main = <Link to="/main" style={{ textDecoration: "none" }}>
                     <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
                 </Link>
