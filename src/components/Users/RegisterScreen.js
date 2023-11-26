@@ -39,7 +39,7 @@ export default function RegisterScreen() {
                 return;
             }
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-           auth.registerUser(firstName, lastName, email, username, password, passwordConfirm)
+        auth.registerUser(firstName, lastName, email, username, password, passwordConfirm,recoveryQuestion,recoveryAnswer)
            .then(function (res) { 
             console.log(auth)
             
@@ -51,7 +51,7 @@ export default function RegisterScreen() {
         justifyContent="center"
         alignItems="center"
         sx={{
-          height: 'calc(100vh )',
+          height: 'calc(100vh+10 )',
           background: `url(${backgroundImage}) center/cover no-repeat fixed`,
           padding: '20px', // Adjust padding as needed
           boxSizing: 'border-box',
@@ -140,4 +140,4 @@ export default function RegisterScreen() {
     </Grid>
     );
 }
-    
+ 
