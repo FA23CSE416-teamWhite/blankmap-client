@@ -14,6 +14,8 @@ import {
     Switch,
     Button,
 } from '@mui/material';
+import mapApi from "../api/mapApi";
+import { FormHelperText } from "@mui/material";
 
 const MapCreationPage = () => {
     // State for form inputs
@@ -24,7 +26,8 @@ const MapCreationPage = () => {
     const [selectedCategory, setSelectedCategory] = useState("Choropleth");
     const [routerAdd, setRouterAdd] = useState("edit")
     const fileInputRef = React.useRef();
-    const[selectedFile, setSelectedFile] = useState(null);  
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [mapNameError, setMapNameError] = useState(false);
     const navigate = useNavigate();
 
     const handleStartWithBlank = () => {
@@ -33,22 +36,27 @@ const MapCreationPage = () => {
         console.log("Is Public: ", isPublic);
         console.log("Description: ", description);
         navigate("/" + routerAdd)
+        mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
         // Logic to handle starting with a blank map
         console.log("Start with Blank Map");
     };
 
-    const handleLoadFromMap = () => {
-        console.log("Load from Map");
-        console.log("Map Name: ", mapName);
-        console.log("Is Public: ", isPublic);
-        console.log("Description: ", description);
+    const handleLoadFromMap = async () => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        // Do something with the selected file, for example, store it in state
-        setSelectedFile(file);
+    const handleFileChange = async (event) => {
+        try {
+            const file = event.target.files[0];
+            setSelectedFile(file);
+            if (file) {
+                await mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, file);
+                navigate("/" + routerAdd);
+            }
+        } catch (error) {
+            console.error("Error handling file change:", error);
+            // Handle the error as needed
+        }
     };
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
@@ -69,7 +77,18 @@ const MapCreationPage = () => {
     const handleToggleSwitch = () => {
         setIsPublic(!isPublic);
     };
+    const handleTagsChange = (e) => {
+        const inputTags = e.target.value;
+        const formattedTags = inputTags.toLowerCase().replace(/[^a-z\s]/g, '');
+        setTags(formattedTags);
+    };
+    const handleMapNameChange = (e) => {
+        const inputMapName = e.target.value;
+        setMapName(inputMapName);
 
+        // Validation: Check if the input is not empty
+        setMapNameError(inputMapName.trim() === '');
+    };
     return (
         <Grid container>
             <Grid item xs={12} sm={1}></Grid>
@@ -88,12 +107,13 @@ const MapCreationPage = () => {
                         label="Map Name:"
                         variant="outlined"
                         placeholder="Enter Name of the map"
-                        onChange={(e) => setMapName(e.target.value)}
+                        onChange={handleMapNameChange}
                         sx={{
                             width: '400px', // Set the width to make it square
                             borderRadius: '8px', // Optional: Set the border-radius for rounded corners
                         }}
                     />
+                    {mapNameError && <FormHelperText error>Please enter a map name</FormHelperText>}
                 </FormControl>
                 <Box>
                     <FormControlLabel
@@ -144,7 +164,7 @@ const MapCreationPage = () => {
                         margin="normal"
                         label="Tags:"
                         variant="outlined"
-                        placeholder="Enter your map tags"
+                        placeholder="Enter your map tags (Use space to divide tags)"
                         fullWidth
                         multiline
                         sx={{
@@ -152,7 +172,7 @@ const MapCreationPage = () => {
                             height: '200px', // Set the height to make it
                             borderRadius: '8px', // Optional: Set the border-radius for rounded corners
                         }}
-                        onChange={(e) => setTags(e.target.value)}
+                        onChange={handleTagsChange}
                         rows={5}
                     />
                 </FormControl>

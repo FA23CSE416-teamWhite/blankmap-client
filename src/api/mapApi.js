@@ -15,8 +15,27 @@ const fetchMaps = async (query) => {
     }
 }
 
+const createMap = async (mapName, isPublic, description, tags, selectedCategory, selectedFile) => {
+    try {
+        const formData = new FormData();
+        formData.append('mapName', mapName);
+        formData.append('isPublic', isPublic);
+        formData.append('description', description);
+        formData.append('tags', JSON.stringify(tags));
+        formData.append('selectedCategory', selectedCategory);
+        formData.append('selectedFile', selectedFile); // Assuming selectedFile is a File object
+  
+        const response = await axios.post('/api/createMap', formData);
+
+        console.log('Map created:', response.data);
+      } catch (error) {
+        console.error('Error creating map:', error);
+      }
+}
+
 const mapApi = {
     fetchMaps,
+    createMap
   };
 
 export default mapApi;
