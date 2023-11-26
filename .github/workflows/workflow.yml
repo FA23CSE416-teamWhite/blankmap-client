@@ -27,6 +27,8 @@ jobs:
               uses: actions/checkout@v2
             - name: Install Dependencies
               run: npm install
+            - name: Start Client
+              run: npm start
             - name: Run Cypress Tests
               run: npx cypress run
         deploy:

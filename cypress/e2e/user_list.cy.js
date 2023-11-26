@@ -51,11 +51,11 @@
 const localhost = 'http://localhost:3000';
 const heroku = 'https://blankmap-front-1626f242c2d7.herokuapp.com';
 const firebase = 'https://blank-map-client.web.app/';
-const url = firebase;
+const url = localhost;
 
 describe('Main Page Get Started', () => {
     it('successfully loads main page', () => {
-        cy.visit(localhost); // Assuming your app is served at http://localhost:3000/
+        cy.visit(url); // Assuming your app is served at http://localhost:3000/
         cy.contains('Get Started').click();
         cy.url().should('include', '/register');
     });
