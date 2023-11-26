@@ -22,7 +22,7 @@ export default function RegisterScreen() {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [recoveryQuestion, setRecoveryQuestion] = useState("");
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
-    const { auth } = useContext(AuthContext);
+    const { auth } = useContext(AuthContext); 
 
     function handleRegister(event) {
             if (username === "" || 
