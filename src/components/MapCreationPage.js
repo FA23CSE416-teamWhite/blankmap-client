@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
+import { GlobalStoreContext } from '../store/index'; 
 import {
     Box,
     Typography,
@@ -13,23 +14,34 @@ import {
     MenuItem,
     Switch,
     Button,
+    Chip
 } from '@mui/material';
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 
 const MapCreationPage = () => {
+    const { globalStore, setQueryString } = useContext(GlobalStoreContext);
     // State for form inputs
     const [mapName, setMapName] = useState("");
     const [isPublic, setIsPublic] = useState(true);
     const [description, setDescription] = useState("");
-    const [tags, setTags] = useState("");
+    const [tags, setTags] = useState([]);
+    const [newTag, setNewTag] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("Choropleth");
     const [routerAdd, setRouterAdd] = useState("edit")
     const fileInputRef = React.useRef();
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [mapNameError, setMapNameError] = useState(false);
+
+    const[selectedFile, setSelectedFile] = useState(null);  
+    const [selectedFileName, setSelectedFileName] = useState("");
     const navigate = useNavigate();
 
+    function handleSubmit(){
+        if(mapName=== "" ||description===""||tags===""||selectedFile==="" ){
+            alert("Please fill all fields");
+                return;
+        }
+        globalStore.createMap(mapName,description,isPublic,tags,selectedFile)
+    }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
         console.log("Map Name: ", mapName);
@@ -45,18 +57,12 @@ const MapCreationPage = () => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = async (event) => {
-        try {
-            const file = event.target.files[0];
-            setSelectedFile(file);
-            if (file) {
-                await mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, file);
-                navigate("/" + routerAdd);
-            }
-        } catch (error) {
-            console.error("Error handling file change:", error);
-            // Handle the error as needed
-        }
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        // Do something with the selected file, for example, store it in state
+        setSelectedFile(file);
+        setSelectedFileName(file.name);
     };
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
@@ -77,18 +83,18 @@ const MapCreationPage = () => {
     const handleToggleSwitch = () => {
         setIsPublic(!isPublic);
     };
-    const handleTagsChange = (e) => {
-        const inputTags = e.target.value;
-        const formattedTags = inputTags.toLowerCase().replace(/[^a-z\s]/g, '');
-        setTags(formattedTags);
-    };
-    const handleMapNameChange = (e) => {
-        const inputMapName = e.target.value;
-        setMapName(inputMapName);
 
-        // Validation: Check if the input is not empty
-        setMapNameError(inputMapName.trim() === '');
-    };
+    const addTag = () => {
+        if (newTag.trim() === "") return;
+        setTags([...tags, newTag]);
+        setNewTag("");
+      };
+    
+      const removeTag = (tagToRemove) => {
+        const updatedTags = tags.filter((tag) => tag !== tagToRemove);
+        setTags(updatedTags);
+      };
+
     return (
         <Grid container>
             <Grid item xs={12} sm={1}></Grid>
@@ -107,13 +113,12 @@ const MapCreationPage = () => {
                         label="Map Name:"
                         variant="outlined"
                         placeholder="Enter Name of the map"
-                        onChange={handleMapNameChange}
+                        onChange={(e) => setMapName(e.target.value)}
                         sx={{
                             width: '400px', // Set the width to make it square
                             borderRadius: '8px', // Optional: Set the border-radius for rounded corners
                         }}
                     />
-                    {mapNameError && <FormHelperText error>Please enter a map name</FormHelperText>}
                 </FormControl>
                 <Box>
                     <FormControlLabel
@@ -156,7 +161,33 @@ const MapCreationPage = () => {
                         rows={10}
                     />
                 </FormControl>
-                <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <FormControl fullWidth margin="normal" sx={{marginY:3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    
+                    <Box display="flex" alignItems="center">
+                    <TextField
+                        id="mapTags"
+                        type="text"
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        placeholder="Add a Tag"
+                    />
+                    <Button sx={{marginX:1}} variant="contained" onClick={addTag}>
+                        Add Tag
+                    </Button>
+                    </Box>
+                    <Box mt={1}>
+                    {tags.map((tag, index) => (
+                        <Chip
+                        key={index}
+                        label={tag}
+                        onDelete={() => removeTag(tag)}
+                        sx={{ margin: '0.5rem' }}
+                        />
+                    ))}
+                    </Box>
+                </FormControl>
+
+                {/* <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
                         id="mapTags"
                         type="text"
@@ -175,7 +206,7 @@ const MapCreationPage = () => {
                         onChange={handleTagsChange}
                         rows={5}
                     />
-                </FormControl>
+                </FormControl> */}
             </Grid>
             <Grid item xs={12} sm={1}>
             </Grid>
@@ -206,6 +237,7 @@ const MapCreationPage = () => {
                         </Box>
                     </Grid>
                 </Grid>
+                {selectedFileName}
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "20px", borderRadius: '10px' }}>
                     <Button
                         variant="contained"
@@ -238,6 +270,18 @@ const MapCreationPage = () => {
                         onChange={handleFileChange}
                     />
                 </Box>
+                <Button
+                        variant="contained"
+                        onClick={handleSubmit}
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginY:2
+                        }}
+                    >
+                        Submit
+                    </Button>
             </Grid>
         </Grid>
     );
