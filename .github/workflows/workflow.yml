@@ -26,9 +26,9 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v2
             - name: Cypress run
-              uses: cypress-io/github-action@v6
+              uses: cypress-io/github-action@v2
               with:
-                build: CI='' npm run build
+                # build: CI='' npm run build
                 start: npm run start
                 wait-on: 'http://localhost:3000'
         deploy:
