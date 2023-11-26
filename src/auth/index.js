@@ -84,7 +84,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history.push("/");
+                history("/");
             }
         } catch(error){
             try{
@@ -130,6 +130,8 @@ function AuthContextProvider(props) {
 
     auth.registerUser = async function(firstName, lastName, email, userName, password, passwordVerify) {
         console.log("REGISTERING USER");
+        console.log(firstName);
+        console.log(lastName);
         try{   
             const response = await api.registerUser(firstName, lastName, email, userName, password, passwordVerify);   
             if (response.status === 200) {
@@ -142,7 +144,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history.push("/login");
+                history("/login");
                 console.log("NOW WE LOGIN");
                 auth.loginUser(email, password);
                 console.log("LOGGED IN");
@@ -171,7 +173,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history.push("/");
+                history("/home");
             }
         } catch(error){
             authReducer({
@@ -192,31 +194,31 @@ function AuthContextProvider(props) {
                 type: AuthActionType.LOGOUT_USER,
                 payload: null
             })
-            history.push("/");
+            history("/");
         }
     }
 
-    auth.getUserInitials = function() {
-        let initials = "";
-        if (auth.user) {
-            initials += auth.user.firstName.charAt(0);
-            initials += auth.user.lastName.charAt(0);
-        }
-        console.log("user initials: " + initials);
-        return initials;
-    }
+    // auth.getUserInitials = function() {
+    //     let initials = "";
+    //     if (auth.user) {
+    //         initials += auth.user.firstName.charAt(0);
+    //         initials += auth.user.lastName.charAt(0);
+    //     }
+    //     console.log("user initials: " + initials);
+    //     return initials;
+    // }
 
-    auth.resetPassword = async function(email, answer, password, passwordVerify) {
-        console.log(email)
-        const response = await api.resetPassword(email, password);
-        if (response.status === 200) {
-            authReducer( {
-                type: AuthActionType.LOGOUT_USER,
-                payload: null
-            })
-            history.push("/");
-        }
-    }
+    // auth.resetPassword = async function(email, answer, password, passwordVerify) {
+    //     console.log(email)
+    //     const response = await api.resetPassword(email, password);
+    //     if (response.status === 200) {
+    //         authReducer( {
+    //             type: AuthActionType.LOGOUT_USER,
+    //             payload: null
+    //         })
+    //         history("/");
+    //     }
+    // }
 
     return (
         <AuthContext.Provider value={{

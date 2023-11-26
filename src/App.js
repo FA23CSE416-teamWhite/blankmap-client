@@ -27,14 +27,22 @@ const sampleMapDetails = {
       author: "Cat",
       tags: ["tag1", "tag2", "tag3"],
       mapImage: './components/images/temp_map.png',
+      likes: 12,
+      dislikes: 3,
       comments: [
         {
-          comment: "Comment 1",
-          replys: ["nice comment"]
+          user: "cat2",
+          likes: 3,
+          dislikes: 0,
+          comment: "cats on top always",
+          replys: [{ user: "cat42", reply: "always!!"}]
         },
         {
-          comment: "Comment 2",
-          replys: ["nice"],
+          user: "totallynotDOG",
+          likes: 1,
+          dislikes: 5,
+          comment: "could be better tho",
+          replys: [{ user: "cat69", reply: "stay hating"}],
         }],
       createdDate: "10/25/2015",
     },
@@ -44,7 +52,19 @@ const sampleMapDetails = {
       author: "Author 2",
       tags: ["tag4", "tag5", "tag6"],
       mapImage: "url-to-map-image-2.jpg",
-      comments: ["Comment 3", "Comment 4"],
+      likes: 34,
+      dislikes: 5,
+      comments: [
+        {
+          user: "cat2",
+          comment: "cats on top always",
+          replys: [{ user: "cat42", reply: "always!!"}]
+        },
+        {
+          user: "totallynotDOG",
+          comment: "could be better tho",
+          replys: [{ user: "cat69", reply: "stay hating"}],
+        }],
     },
     // Add more map details as needed
   };

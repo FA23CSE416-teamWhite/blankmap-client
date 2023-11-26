@@ -1,7 +1,6 @@
 import React from "react";
 import Tags from "./Tags";
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -12,27 +11,6 @@ import CardContent from '@mui/material/CardContent';
 
 const MapOverview = ({ mapInfo }) => {
   const { title, description, author, tags, mapSnapshot, createdDate } = mapInfo;
-  let tag_buttons = tags.map((tag, index) => (
-    <IconButton
-      key={index}
-      sx={{
-        fontSize: '10px',
-        backgroundColor: '#0844A4',
-        color: 'white',
-        padding: '5px',
-        borderRadius: '10px',
-        margin: '0 4px',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-        transition: 'background-color 0.3s', // Add transition for smooth color change
-        ':hover': {
-          backgroundColor: '#0A5CE8', // Change color on hover
-        },
-      }}
-    >
-      {tag}
-    </IconButton>
-  ));
-
   return (
     <Card style={{ marginBottom: '25px', backgroundColor: '#EBEBEB', marginTop: '15px', borderRadius: '10px' }}>  <CardContent style={{ padding: '0px' }}>
       <Link to={`/detail`} style={{ textDecoration: "none" }}>
@@ -74,7 +52,7 @@ const MapOverview = ({ mapInfo }) => {
                   },
                 }} varient='h3'>{title}</Typography>
                 <Typography sx={{ color: 'black', fontSize: "12px" }}>Desciption: {description}</Typography>
-                {tag_buttons}
+                  <Tags tags={tags}></Tags>
               </Box>
               <Typography sx={{ fontSize: "12px", textAlign: 'right', color: '#0844A4' }}>
                 By {author} on {createdDate}

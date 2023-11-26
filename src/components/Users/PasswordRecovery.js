@@ -76,16 +76,20 @@ export default function PasswordRecovery() {
           boxSizing: 'border-box',
         }}
       ><Grid item xs={12} sm={8} md={6} lg={4}>
-            <Card variant="outlined" sx={{ minWidth: 600 }}>
-                <CardHeader color="blue"
-                            title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
-                            sx = {{bgcolor:"CornflowerBlue"}}
-                            />
-                <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
-                    <Box>
-                        <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px", paddingY:1, alignItems: 'center', justifyContent: 'center'}}>
-                            <TextField label = "Email" fullWidth onChange={(e) => setEmail(e.target.value)}/>
-                        </Box>
+      <Card variant="outlined" sx={{ minWidth: 600 ,boxShadow:3,borderRadius: 3 }}>
+          <CardContent  sx={{paddingY: 5,  alignItems:  "center"}}>
+              <Box>
+                  <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2 }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '1.4em' }}>Password Recovery</span>
+                  </Box>
+                  <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px"}}>
+                      Email:
+                  </Box>
+                  <Box sx={{display:'flex', flexGrow: 1 , paddingX:"60px",marginTop:'3px',marginBottom:"8px", alignItems: 'center', justifyContent: 'center'}}>
+                      <TextField onChange={(e) => setEmail(e.target.value)}  fullWidth sx={{ '& input': { padding: '10px 12px' } }} />
+                  </Box>
+
+                  </Box>
 
                         {(reset) && (
                             <Box>
@@ -115,12 +119,15 @@ export default function PasswordRecovery() {
                                 resetAccount();
                               }}>Reset</Button>
                         </Box>    
-                    </Box>
-                    <Box > 
-                        <Link to="/login">Back to Login</Link>
-                    </Box>
-                </CardContent>
-            </Card>
+                    <Box>
+                    
+                  <Box sx={{display:'flex', flexGrow: 1 ,paddingX:"60px",paddingY: 1,alignItems: 'center', justifyContent: 'center'}}> 
+                 
+                  <Link to="/login">Back to login</Link>
+                  </Box>
+              </Box>
+          </CardContent>
+      </Card>
         </Grid>
     </Grid>
     );

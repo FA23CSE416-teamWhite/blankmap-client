@@ -18,10 +18,12 @@ import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 
 const Comment = ({ comment }) => {
-    const [likes, setLikes] = useState(0);
-    const [dislikes, setDislikes] = useState(0);
+    const [likes, setLikes] = useState(comment.likes);
+    const [likeClicked, setLikeClicked] = useState(false);
+    const [dislikes, setDislikes] = useState(comment.dislikes);
+    const [dislikeClicked, setDislikeClicked] = useState(false);
     const [showReplyInput, setShowReplyInput] = useState(false);
-    const [replyText, setReplyText] = useState('')
+    const [replyText, setReplyText] = useState('');
     const [replyList, setReplyList] = useState(comment.replys);
 
     const onReply = () => {
@@ -29,10 +31,30 @@ const Comment = ({ comment }) => {
         setShowReplyInput(showInput);
     };
     const onUpvote = () => {
-        setLikes(likes + 1)
+        if(!likeClicked){
+            setLikes(likes + 1)
+        }
+        else{
+            setLikes(comment.likes)
+        }
+        setLikeClicked(!likeClicked)
+        if(dislikeClicked){
+            setDislikes(comment.dislikes)
+            setDislikeClicked(!dislikeClicked)
+        }
     }
     const onDownvote = () => {
-        setDislikes(dislikes + 1)
+        if(!dislikeClicked){
+            setDislikes(dislikes + 1)
+        }
+        else{
+            setDislikes(comment.dislikes)
+        }
+        setDislikeClicked(!dislikeClicked)
+        if(likeClicked){
+            setLikes(comment.likes)
+            setLikeClicked(!likeClicked)
+        }
     }
     const handleAddReply = () => {
         if (replyText == ''){
@@ -44,13 +66,14 @@ const Comment = ({ comment }) => {
             // Clear the comment input
             setReplyText('');
             // Update the comment list
-            setReplyList([...replyList, replyText]);
+            const newReply = { user: "Guest", reply: replyText };
+            setReplyList([...replyList, newReply]);
         }
     }
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                <Typography>{comment.comment}</Typography>
+                <Typography><span style={{ color: 'steelblue' }}>{comment.user}</span> says: {comment.comment}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <div className="comment-actions">
                         <Button onClick={onReply} color="primary" size="small">
@@ -83,11 +106,11 @@ const Comment = ({ comment }) => {
                 </Box>
                 {showReplyInput && (
                     <Box sx={{ marginLeft: '20px' }}>
-                        <Typography style={{ fontSize: '15px' }}>Replies</Typography>
+                        <Typography style={{ fontSize: '15px', color: "blue"}}>Replies</Typography>
                         <List>
                             {replyList.map((reply, index) => (
                                 <Typography style={{ fontSize: '12px' }}>
-                                    {reply}
+                                    <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
                                 </Typography>
                             ))}
                         </List>
@@ -100,14 +123,16 @@ const Comment = ({ comment }) => {
 };
 
 const MapDetailScreen = ({ mapDetails }) => {
-    const { title, description, tags, mapImage, comments } = mapDetails;
+    const { title, description, tags, mapImage, likes, dislikes, comments } = mapDetails;
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
     const [commentList, setCommentList] = useState(comments);
     // const [newDescription, setDescription] = useState(description);
     const [tagList, setTagList] = useState(tags);
     const [likeColor, setLikeColor] = useState('grey');
+    const [newLikes, setLikes] = useState(likes);
     const [dislikeColor, setDislikeColor] = useState('grey');
+    const [newDislikes, setDislikes] = useState(dislikes);
     const navigate = useNavigate();
 
     const handleAddComment = () => {
@@ -120,7 +145,7 @@ const MapDetailScreen = ({ mapDetails }) => {
             // Clear the comment input
             setNewComment('');
             // Update the comment list
-            const newCommentObject = {comment: newComment, replys: []}
+            const newCommentObject = { user: "Guest", comment: newComment, replys: []}
             setCommentList([...commentList, newCommentObject]);
         }
     };
@@ -146,16 +171,30 @@ const MapDetailScreen = ({ mapDetails }) => {
     const handleLike = () => {
         const newColor = likeColor === 'grey' ? 'steelblue' : 'grey';
         setLikeColor(newColor);
+        if (newColor === 'grey') {
+            setLikes(likes);
+        }
+        else if (newColor === 'steelblue') {
+            setLikes(newLikes + 1);
+        }
         if (dislikeColor === 'red') {
             setDislikeColor('grey')
+            setDislikes(dislikes)
         }
 
     };
     const handleDislike = () => {
         const newColor = dislikeColor === 'grey' ? 'red' : 'grey';
         setDislikeColor(newColor);
+        if (newColor === 'grey') {
+            setDislikes(dislikes);
+        }
+        else if (newColor === 'red') {
+            setDislikes(newDislikes + 1);
+        }
         if (likeColor === 'steelblue') {
             setLikeColor('grey')
+            setLikes(likes)
         }
     };
     return (
@@ -201,9 +240,11 @@ const MapDetailScreen = ({ mapDetails }) => {
                             <IconButton onClick={handleLike}>
                                 <UpvoteIcon style={{ color: likeColor }}/>
                             </IconButton>
+                            {newLikes}
                             <IconButton onClick={handleDislike}>
                                 <DownvoteIcon style={{ color: dislikeColor }}/>
                             </IconButton>
+                            {newDislikes}
                         </Box>
                         <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} />
                     </Paper>

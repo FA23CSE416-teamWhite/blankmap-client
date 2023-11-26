@@ -10,19 +10,29 @@ import blankMapicon from '../assets/blankMapIcon.png'
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import blankmap_font from './images/blankMap.png'
-
-const menu =<Link to="/Login" style={{ textDecoration: 'none', color: 'cornflowerblue' }}>Login</Link>
+import AuthContext from '../auth';
+import { Menu } from '@mui/material';
+import { useContext } from 'react';
 
 
 export default function IconBanner() {
-
+    const { auth } = useContext(AuthContext);
+    let menu =<Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
+    let main = <Link to="/main" style={{ textDecoration: "none" }}>
+                    <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
+                </Link>
+    if(auth.loggedIn){
+        menu=<Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
+                <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
+            </Link>
+        main=<img src={blankMapicon} alt="fireSpot" width="60" height="60" />
+    }
+    
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ bgcolor: '#D6D6D6' }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Link to="/main" style={{ textDecoration: "none" }}>
-                        <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
-                    </Link>
+                    {main}
                     <Box sx={{ flexGrow: 1 }} />
                     {/* <Link to="/home" style={{ textDecoration: "none" }}>
                         <Typography
@@ -42,10 +52,7 @@ export default function IconBanner() {
                     </Link> */}
                     <img src={blankmap_font} alt="fireSpot" width="120" height="100%" />
                     <Box sx={{ flexGrow: 1 }} />
-                    <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
-                    <Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
-                        <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
-                    </Link>
+                    {menu}
 
                 </Toolbar>
             </AppBar>
