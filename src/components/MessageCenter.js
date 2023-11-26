@@ -4,17 +4,22 @@ import Typography from '@mui/material/Typography';
 import ProfileMenu from './ProfileMenu'; // Import your ProfileMenu component
 import Message from './Message';
 import Grid from "@mui/material/Grid";
+import AuthContext from "../auth";
+import { useContext } from "react";
 
 const MessageCenter = () => {
-    const messages = [
-        {
-            id:1,
-            user: "Dog",
-            message:"Nice map!",
-            map: "World GDP",
-            dateCreated: "8/02/2015"
-        }
-    ]
+  const { auth } = useContext(AuthContext);
+  if(!auth.user){
+    console.log("GETT LOGGG IN")
+    auth.getLoggedIn();
+    return <div>Loading...</div>;
+  }
+    const messages = auth.user.comments
+    // let messages=[]
+    // if(userMessages){
+    //   messages=auth.user.comments
+    // }
+   
 
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>

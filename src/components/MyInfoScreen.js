@@ -63,7 +63,7 @@ const MyInfoScreen = () => {
             <strong>Member Since:</strong> {formattedDate}
           </div>
           <div>
-            <strong>Number of Maps:</strong> {info.mapLength}
+            <strong>Number of Maps:</strong> {info.maps.length}
           </div>
           <div>
             <strong>Bio:</strong> {info.bio}
