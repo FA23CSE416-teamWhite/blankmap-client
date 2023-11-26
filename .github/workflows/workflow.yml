@@ -25,12 +25,12 @@ jobs:
           steps:
             - name: Checkout Repository
               uses: actions/checkout@v2
-            - name: Install Dependencies
-              run: npm install
-            - name: Start Client
-              run: npm start
-            - name: Run Cypress Tests
-              run: npx cypress run
+            - name: Cypress run
+              uses: cypress-io/github-action@v6
+              with:
+                build: npm run build
+                start: npm run start
+                wait-on: 'http://localhost:3000'
         deploy:
           runs-on: ubuntu-latest
           needs: run-cypress
