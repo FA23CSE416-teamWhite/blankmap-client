@@ -31,6 +31,7 @@ jobs:
                 build: npm run build
                 start: npm run start
                 wait-on: 'http://localhost:3000'
+                env: CI=false
         deploy:
           runs-on: ubuntu-latest
           needs: run-cypress
