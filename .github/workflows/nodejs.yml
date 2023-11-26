@@ -7,6 +7,8 @@ on:
     branches:
       - main
       - test
+env:
+  CI: false
 jobs:
         setup-node:
           runs-on: ubuntu-latest
