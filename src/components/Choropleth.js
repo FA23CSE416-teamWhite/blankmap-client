@@ -12,15 +12,15 @@ const style = {
   fillOpacity: 0.5
 };
 
-export default function Choropleth({color, geojsonData, featureForChoropleth}) {
+export default function Choropleth({color, geojsonData, featureForChoropleth, step}) {
   const map = useMap();
-
+    console.log(step)
   useEffect(() => {
     if (!geojsonData) return;
     const choroplethLayer = L.choropleth(geojsonData, {
         valueProperty: featureForChoropleth,
         scale: ["white", color],
-        steps: 5,
+        steps: step,
         mode: "q",
         style,
         onEachFeature: function (feature, layer) {
@@ -43,7 +43,7 @@ export default function Choropleth({color, geojsonData, featureForChoropleth}) {
         // If you need to fit the map bounds to the choropleth layer
         // map.fitBounds(choroplethLayer.getBounds());
 
-  }, [map,color,geojsonData,featureForChoropleth]);
+  }, [map,color,geojsonData,featureForChoropleth,step]);
 
   return null;
 }

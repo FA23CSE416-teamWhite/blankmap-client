@@ -48,6 +48,7 @@ const MapEdit = () => {
     const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    const [choroStep, setChoroStep] = useState(5);
     let displayFeatures;
 
     if (features.length > 0) {
@@ -205,7 +206,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} />}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep}/>}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -316,6 +317,27 @@ const MapEdit = () => {
                     )}
                     style={{ minWidth: '200px', flex: 1 }}
                 />
+                <FormControl fullWidth size="small" style={{ marginTop: '10px' }}>
+                    <InputLabel id="step-type-label">Choropleth Step:</InputLabel>
+                    <Select
+                        labelId="step-type-label"
+                        id="step-type"
+                        value={choroStep}
+                        onChange={(e) => setChoroStep(e.target.value)}
+                        label="Choropleth Step:"
+                        inputProps={{
+                            style: { height: '36px' },
+                        }}
+                    >
+                        <MenuItem value="1">1</MenuItem>
+                        <MenuItem value="3">3</MenuItem>
+                        <MenuItem value="5"> 5 </MenuItem>
+                        <MenuItem value="10">10</MenuItem>
+                        <MenuItem value="20">20</MenuItem>
+                        <MenuItem value="50">50</MenuItem>
+                        <MenuItem value="100">100</MenuItem>
+                    </Select>
+                </FormControl>
                 <Typography> Choose a Color: {pickColor}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <SquareIcon
