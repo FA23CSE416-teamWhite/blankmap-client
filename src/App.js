@@ -20,54 +20,6 @@ import{
     MainPage
 } from './components'
 import IconBanner from './components/IconBanner';
-const sampleMapDetails = {
-    "1": {
-      title: "Cat's Masterpiece",
-      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
-      author: "Cat",
-      tags: ["tag1", "tag2", "tag3"],
-      mapImage: './components/images/temp_map.png',
-      likes: 12,
-      dislikes: 3,
-      comments: [
-        {
-          user: "cat2",
-          likes: 3,
-          dislikes: 0,
-          comment: "cats on top always",
-          replys: [{ user: "cat42", reply: "always!!"}]
-        },
-        {
-          user: "totallynotDOG",
-          likes: 1,
-          dislikes: 5,
-          comment: "could be better tho",
-          replys: [{ user: "cat69", reply: "stay hating"}],
-        }],
-      createdDate: "10/25/2015",
-    },
-    "2": {
-      title: "Map 2",
-      description: "Description for Map 2",
-      author: "Author 2",
-      tags: ["tag4", "tag5", "tag6"],
-      mapImage: "url-to-map-image-2.jpg",
-      likes: 34,
-      dislikes: 5,
-      comments: [
-        {
-          user: "cat2",
-          comment: "cats on top always",
-          replys: [{ user: "cat42", reply: "always!!"}]
-        },
-        {
-          user: "totallynotDOG",
-          comment: "could be better tho",
-          replys: [{ user: "cat69", reply: "stay hating"}],
-        }],
-    },
-    // Add more map details as needed
-  };
   const App = () => {
     return (
       <BrowserRouter>
@@ -98,7 +50,7 @@ const sampleMapDetails = {
             <Route path="/register" element={<RegisterScreen />} />
             <Route path="/home" element={<HomeScreen />} />
             <Route path="/create" element={<MapCreationPage />} />
-            <Route path="/detail" element={<MapDetailScreen mapDetails={sampleMapDetails["1"]} />} />
+            <Route path="/detail" element={<MapDetailScreen />} />
             <Route path="/profile" element={<MyInfoScreen />} />
             <Route path="/profile/my-maps" element={<MyMapScreen />} />
             <Route path="/profile/personal-information" element ={<MyInfoScreen />} />

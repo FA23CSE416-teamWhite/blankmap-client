@@ -88,7 +88,7 @@ function AuthContextProvider(props) {
             }
         } catch(error){
             try{
-                const response = await api.registerUser("Guest", "User", "guest@gmail.com", "Guest", "GuestPassword", "GuestPassword");
+                const response = await api.registerUser("Guest", "User", "guest@gmail.com", "Guest", "GuestPassword", "GuestPassword", "GuestRecovery", "GuestRecovery");
                 if (response.status === 200) {
                     console.log("Registered Sucessfully");
                     authReducer({

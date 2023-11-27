@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Tags from './Tags.js';
 import {
     Box,
@@ -16,15 +16,17 @@ import UpvoteIcon from '@mui/icons-material/ThumbUp';
 import DownvoteIcon from '@mui/icons-material/ThumbDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
-
+import { GlobalStoreContext } from '../store/index'; 
+import AuthContext from '../auth';
 const Comment = ({ comment }) => {
+    const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
     const [likeClicked, setLikeClicked] = useState(false);
     const [dislikes, setDislikes] = useState(comment.dislikes);
     const [dislikeClicked, setDislikeClicked] = useState(false);
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [replyText, setReplyText] = useState('');
-    const [replyList, setReplyList] = useState(comment.replys);
+    const [replyList, setReplyList] = useState(comment.replies);
 
     const onReply = () => {
         const showInput = showReplyInput === true ? false : true;
@@ -66,10 +68,31 @@ const Comment = ({ comment }) => {
             // Clear the comment input
             setReplyText('');
             // Update the comment list
-            const newReply = { user: "Guest", reply: replyText };
-            setReplyList([...replyList, newReply]);
+            let username = ""
+            if (auth.loggedIn) {
+                username = auth.user.userName
+            }
+            else{
+                username = "Guest"
+            }
+            const newReply = { user: username, reply: replyText };
+            if(!replyList){
+                setReplyList([newReply]);
+            }
+            else{
+                setReplyList([...replyList, newReply]);
+            }
         }
     }
+    let replyDisplay;
+    if (replyList){
+        replyDisplay = replyList.map((reply, index) => (
+            <Typography style={{ fontSize: '12px' }}>
+                <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
+            </Typography>
+        ))
+    }
+    
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
@@ -108,11 +131,7 @@ const Comment = ({ comment }) => {
                     <Box sx={{ marginLeft: '20px' }}>
                         <Typography style={{ fontSize: '15px', color: "blue"}}>Replies</Typography>
                         <List>
-                            {replyList.map((reply, index) => (
-                                <Typography style={{ fontSize: '12px' }}>
-                                    <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
-                                </Typography>
-                            ))}
+                            {replyDisplay}
                         </List>
                     </Box>
                 )}
@@ -122,19 +141,31 @@ const Comment = ({ comment }) => {
     );
 };
 
-const MapDetailScreen = ({ mapDetails }) => {
-    const { title, description, tags, mapImage, likes, dislikes, comments } = mapDetails;
+const MapDetailScreen = () => {
+    const { globalStore } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
+    // const currentMapPage = globalStore.currentMapPage
+    const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
+    console.log("Got MapInfo in MapDetailScreen");
+    console.log(tempMapInfo)
+    
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
-    const [commentList, setCommentList] = useState(comments);
+    const [commentList, setCommentList] = useState(tempMapInfo.comments);
     // const [newDescription, setDescription] = useState(description);
-    const [tagList, setTagList] = useState(tags);
+    const [tagList, setTagList] = useState(tempMapInfo.tags);
     const [likeColor, setLikeColor] = useState('grey');
-    const [newLikes, setLikes] = useState(likes);
+    const [newLikes, setLikes] = useState(tempMapInfo.upVotes);
     const [dislikeColor, setDislikeColor] = useState('grey');
-    const [newDislikes, setDislikes] = useState(dislikes);
+    const [newDislikes, setDislikes] = useState(tempMapInfo.downVotes);
     const navigate = useNavigate();
 
+    let commentDisplay;
+    if (commentList){
+        commentDisplay = commentList.map((comment, index) => (
+            <Comment key={index} comment={comment} />
+        ))
+    }
     const handleAddComment = () => {
         if (newComment == ''){
             console.log("Empty comment")
@@ -145,8 +176,20 @@ const MapDetailScreen = ({ mapDetails }) => {
             // Clear the comment input
             setNewComment('');
             // Update the comment list
-            const newCommentObject = { user: "Guest", comment: newComment, replys: []}
-            setCommentList([...commentList, newCommentObject]);
+            let username = ""
+            if (auth.loggedIn) {
+                username = auth.user.userName
+            }
+            else{
+                username = "Guest"
+            }
+            const newCommentObject = { user: username, comment: newComment, replys: [], likes: 0, dislikes: 0 };
+            if(!commentList){
+                setCommentList([newCommentObject]);
+            }
+            else{
+                setCommentList([...commentList, newCommentObject]);
+            }
         }
     };
     // const handleUpdateDescription = () => {
@@ -172,14 +215,14 @@ const MapDetailScreen = ({ mapDetails }) => {
         const newColor = likeColor === 'grey' ? 'steelblue' : 'grey';
         setLikeColor(newColor);
         if (newColor === 'grey') {
-            setLikes(likes);
+            setLikes(tempMapInfo.upVotes);
         }
         else if (newColor === 'steelblue') {
             setLikes(newLikes + 1);
         }
         if (dislikeColor === 'red') {
             setDislikeColor('grey')
-            setDislikes(dislikes)
+            setDislikes(tempMapInfo.downVotes)
         }
 
     };
@@ -187,14 +230,14 @@ const MapDetailScreen = ({ mapDetails }) => {
         const newColor = dislikeColor === 'grey' ? 'red' : 'grey';
         setDislikeColor(newColor);
         if (newColor === 'grey') {
-            setDislikes(dislikes);
+            setDislikes(tempMapInfo.downVotes);
         }
         else if (newColor === 'red') {
             setDislikes(newDislikes + 1);
         }
         if (likeColor === 'steelblue') {
             setLikeColor('grey')
-            setLikes(likes)
+            setLikes(tempMapInfo.upVotes)
         }
     };
     return (
@@ -212,12 +255,12 @@ const MapDetailScreen = ({ mapDetails }) => {
                                 rows = {10}
                                 sx={{ height: '100%', width: '100%' }} 
                             /> */}
-                        <Typography>{description}</Typography>
+                        <Typography>{tempMapInfo.description}</Typography>
                     </Paper>
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Tags</Typography>
-                        <Tags tags={tags}></Tags>
+                        <Tags tags={tagList}></Tags>
                     </Paper>
 
                     <Box>
@@ -233,7 +276,7 @@ const MapDetailScreen = ({ mapDetails }) => {
                 <Grid item xs={12} md={8}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            <Typography variant="h4">{title}</Typography>
+                            <Typography variant="h4">{tempMapInfo.title}</Typography>
                             <IconButton onClick={() => console.log('download button clicked')}>
                                 <DownloadIcon />
                             </IconButton>
@@ -252,9 +295,7 @@ const MapDetailScreen = ({ mapDetails }) => {
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Comments</Typography>
                         <List>
-                            {commentList.map((comment, index) => (
-                                <Comment key={index} comment={comment} />
-                            ))}
+                            {commentDisplay}
                         </List>
                         <Box>
                             <TextField

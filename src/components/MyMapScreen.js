@@ -9,34 +9,25 @@ import { Box, Grid} from "@mui/material";
 import temp_map from './images/temp_map.png';
 import NavBar from "./NavBar";
 import Typography from '@mui/material/Typography';
+import AuthContext from "../auth";
+import { useContext } from "react";
 
-const MyMapScreen = ({ userMaps }) => {
+const MyMapScreen = () => {
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [mapFilter, setMapFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const mapList = [
-    {
-      title: "Cat's Masterpiece",
-      description: "Through the combined knowledge of all the felines in the world, we have created a masterpiece for the public",
-      author: "Cat",
-      tags: ["tag1", "tag2", "tag3"],
-      mapSnapshot: temp_map,
-      createdDate: "10/25/2015",
-      setting:"private"
-    },
-    {
-      title: "Dog is better",
-      description: "Dogs > Cats Ratio",
-      author: "Dog",
-      tags: ["tag4", "tag5", "tag6"],
-      mapSnapshot: temp_map,
-      createdDate: "12/12/2002",
-      setting:"public"
-    },
-    // Add more map information objects as needed
-  ];
   
-  const navigate = useNavigate();
-  const filteredMaps = mapList.filter((map) => {
+  
+  if(!auth.user){
+    console.log("GETT LOGGG IN")
+    auth.getLoggedIn();
+    return <div>Loading...</div>;
+  }
+  const mapList=auth.user.map;
+  let filteredMaps =[]
+  if(mapList){
+   filteredMaps = mapList.filter((map) => {
     // Apply filtering logic based on mapFilter and searchTerm
     if (mapFilter === "public" && !(map.setting==="public")) {
       return false;
@@ -49,6 +40,8 @@ const MyMapScreen = ({ userMaps }) => {
     }
     return true;
   });
+  }
+  
 
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
