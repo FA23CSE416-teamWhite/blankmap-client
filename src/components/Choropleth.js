@@ -45,5 +45,5 @@ export default function Choropleth({color, geojsonData, featureForChoropleth, st
 
   }, [map,color,geojsonData,featureForChoropleth,step]);
 
-  return null;
+  return null; 
 }
