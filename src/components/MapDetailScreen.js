@@ -17,8 +17,9 @@ import DownvoteIcon from '@mui/icons-material/ThumbDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index'; 
-
+import AuthContext from '../auth';
 const Comment = ({ comment }) => {
+    const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
     const [likeClicked, setLikeClicked] = useState(false);
     const [dislikes, setDislikes] = useState(comment.dislikes);
@@ -67,10 +68,31 @@ const Comment = ({ comment }) => {
             // Clear the comment input
             setReplyText('');
             // Update the comment list
-            const newReply = { user: "Guest", reply: replyText };
-            setReplyList([...replyList, newReply]);
+            let username = ""
+            if (auth.loggedIn) {
+                username = auth.user.userName
+            }
+            else{
+                username = "Guest"
+            }
+            const newReply = { user: username, reply: replyText };
+            if(!replyList){
+                setReplyList([newReply]);
+            }
+            else{
+                setReplyList([...replyList, newReply]);
+            }
         }
     }
+    let replyDisplay;
+    if (replyList){
+        replyDisplay = replyList.map((reply, index) => (
+            <Typography style={{ fontSize: '12px' }}>
+                <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
+            </Typography>
+        ))
+    }
+    
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
@@ -109,11 +131,7 @@ const Comment = ({ comment }) => {
                     <Box sx={{ marginLeft: '20px' }}>
                         <Typography style={{ fontSize: '15px', color: "blue"}}>Replies</Typography>
                         <List>
-                            {replyList.map((reply, index) => (
-                                <Typography style={{ fontSize: '12px' }}>
-                                    <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
-                                </Typography>
-                            ))}
+                            {replyDisplay}
                         </List>
                     </Box>
                 )}
@@ -125,6 +143,7 @@ const Comment = ({ comment }) => {
 
 const MapDetailScreen = () => {
     const { globalStore } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     // const currentMapPage = globalStore.currentMapPage
     const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
     console.log("Got MapInfo in MapDetailScreen");
@@ -141,6 +160,12 @@ const MapDetailScreen = () => {
     const [newDislikes, setDislikes] = useState(tempMapInfo.downVotes);
     const navigate = useNavigate();
 
+    let commentDisplay;
+    if (commentList){
+        commentDisplay = commentList.map((comment, index) => (
+            <Comment key={index} comment={comment} />
+        ))
+    }
     const handleAddComment = () => {
         if (newComment == ''){
             console.log("Empty comment")
@@ -151,8 +176,20 @@ const MapDetailScreen = () => {
             // Clear the comment input
             setNewComment('');
             // Update the comment list
-            const newCommentObject = { user: "Guest", comment: newComment, replys: []}
-            setCommentList([...commentList, newCommentObject]);
+            let username = ""
+            if (auth.loggedIn) {
+                username = auth.user.userName
+            }
+            else{
+                username = "Guest"
+            }
+            const newCommentObject = { user: username, comment: newComment, replys: [], likes: 0, dislikes: 0 };
+            if(!commentList){
+                setCommentList([newCommentObject]);
+            }
+            else{
+                setCommentList([...commentList, newCommentObject]);
+            }
         }
     };
     // const handleUpdateDescription = () => {
@@ -258,9 +295,7 @@ const MapDetailScreen = () => {
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Comments</Typography>
                         <List>
-                            {commentList.map((comment, index) => (
-                                <Comment key={index} comment={comment} />
-                            ))}
+                            {commentDisplay}
                         </List>
                         <Box>
                             <TextField
