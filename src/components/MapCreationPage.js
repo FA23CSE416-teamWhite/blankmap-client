@@ -21,7 +21,7 @@ import { FormHelperText } from "@mui/material";
 
 
 const MapCreationPage = () => {
-    const { globalStore, setQueryString } = useContext(GlobalStoreContext);
+    const { globalStore } = useContext(GlobalStoreContext);
     // State for form inputs
     const [mapName, setMapName] = useState("");
     const [isPublic, setIsPublic] = useState(true);
@@ -41,7 +41,8 @@ const MapCreationPage = () => {
             alert("Please fill all fields");
                 return;
         }
-        globalStore.createMap(mapName,description,isPublic,tags,selectedFile)
+        // store.getPlaylistSize()
+        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile)
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
