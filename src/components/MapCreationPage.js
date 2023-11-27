@@ -170,10 +170,24 @@ const MapCreationPage = () => {
                         id="mapTags"
                         type="text"
                         value={newTag}
+                        margin="normal"
+                        label="Add Tags:"
+                        variant="outlined"
+                        multiline
+                        sx={{
+                            borderRadius: '8px', // Optional: Set the border-radius for rounded corners
+                        }}
                         onChange={(e) => setNewTag(e.target.value)}
-                        placeholder="Add a Tag"
+                        placeholder="Add some tags to highlight your map"
                     />
-                    <Button sx={{marginX:1}} variant="contained" onClick={addTag}>
+                    <Button variant="contained"
+                        onClick={addTag}
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginLeft:2
+                        }}>
                         Add Tag
                     </Button>
                     </Box>

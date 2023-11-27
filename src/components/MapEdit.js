@@ -43,8 +43,8 @@ const MapEdit = () => {
     }
     const [features, setFeatures] = useState([]);
     const [newFeature, setNewFeature] = useState("");
-
-    const [selectedFeatureType, setSelectedFeatureType] = useState("");
+    const [selectedFeatureType, setSelectedFeatureType] = useState("string");
+    const [featureForChoropleth, setFeatureForChoropleth] = useState("");
     const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
@@ -76,17 +76,40 @@ const MapEdit = () => {
         displayFeatures = null;
     }
     const handleAddFeature = () => {
-        if (selectedFeatureType && newFeature) {
+        if (geojsonData && selectedFeatureType && newFeature) {
+            const isFeatureAlreadyExists = features.some(
+                (feature) => feature.name === newFeature
+            );
+            if (isFeatureAlreadyExists) {
+                console.log('Feature already exists!');
+                return;
+            }
             setFeatures([
                 ...features,
                 { type: selectedFeatureType, name: newFeature },
             ]);
 
-            setSelectedFeatureType("");
-            setNewFeature("");
+            const updatedGeojsonData = {
+                ...geojsonData,
+                features: geojsonData.features.map((feature) => {
+                    const newProperties = {
+                        ...feature.properties,
+                        [newFeature]: selectedFeatureType === 'string' ? '' : 0,
+                    };
+
+                    return {
+                        ...feature,
+                        properties: newProperties,
+                    };
+                }),
+            };
+
+            setGeojsonData(updatedGeojsonData);
+
+            setSelectedFeatureType('string');
+            setNewFeature('');
         }
     };
-
     const handleEditFeature = (index) => {
         const updatedFeatures = [...features];
         updatedFeatures.splice(index, 1);
@@ -104,9 +127,12 @@ const MapEdit = () => {
     }
     const handleRedo = () => {
     }
-    const handleFeatureSelect = (value) => {
-        setSelectedFeatureType(value);
+    const handleChoroplethSelect = (value) => {
+        setFeatureForChoropleth(value);
     }
+    const handleFeatureTypeChange = (event) => {
+        setSelectedFeatureType(event.target.value);
+    };
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -179,7 +205,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={selectedFeatureType} />}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} />}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -232,18 +258,34 @@ const MapEdit = () => {
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />
-
                 <Card>
                     <CardContent>
-                        <Typography>Feature Name:</Typography>
+                        <FormControl fullWidth size="small">
+                            <InputLabel id="feature-type-label">Feature Type</InputLabel>
+                            <Select
+                                labelId="feature-type-label"
+                                id="feature-type"
+                                value={selectedFeatureType}
+                                onChange={handleFeatureTypeChange}
+                                label="feature type"
+                                inputProps={{
+                                    style: { height: '36px' },
+                                }}
+                            >
+                                <MenuItem value="string">String</MenuItem>
+                                <MenuItem value="number">Number</MenuItem>
+                            </Select>
+                        </FormControl>
                         <TextField
                             type="text"
                             fullWidth
+                            label="Feature name:"
+                            variant="outlined"
                             placeholder="Add a feature..."
                             value={newFeature}
                             onChange={(e) => setNewFeature(e.target.value)}
                             size="small"
-                            sx={{ height: '40px' }}
+                            sx={{ height: '40px', marginBottom: '10px', marginTop: '10px' }}
                         />
                     </CardContent>
                 </Card>
@@ -256,8 +298,8 @@ const MapEdit = () => {
                 <Box sx={{ paddingY: 2 }} />
 
                 <Autocomplete
-                    value={selectedFeatureType}
-                    onChange={(e, value) => handleFeatureSelect(value)}
+                    value={featureForChoropleth}
+                    onChange={(e, value) => handleChoroplethSelect(value)}
                     options={[
                         'None',
                         ...features
