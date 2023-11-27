@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from './store-request-api/index'
+import mapApi from "../api/mapApi";
 import AuthContext from '../auth';
 
 
@@ -8,6 +9,7 @@ export const GlobalStoreContext = createContext({});
 console.log("create GlobalStoreContext");
 export const GlobalStoreActionType = {
     CREATE_NEW_MAP: "CREATE_NEW_MAP",
+    SET_CURRENT_MAP_PAGE: "SET_CURRENT_MAP_PAGE"
 }
 
 function GlobalStoreContextProvider(props) {
@@ -20,7 +22,16 @@ function GlobalStoreContextProvider(props) {
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-
+            case GlobalStoreActionType.CREATE_MAP: {
+                return setGlobalStore({
+                    currentMap: payload
+                });
+            }
+            case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
+                return setGlobalStore({
+                    currentMap: payload
+                });
+            }
         }
     }
     
@@ -29,17 +40,52 @@ function GlobalStoreContextProvider(props) {
         async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
             let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
             if (response.data.success) {
-                console.log("good")
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_MAP,
+                    payload: response.data.map
+                })
             }
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
     }
-    const setQueryString = (newQueryString) => {
-        setGlobalStore({
-            ...globalStore,
-            queryString: newQueryString
-        })
+    globalStore.updateCurrentMapPage = function(){
+        async function asyncUpdateCurrentMapPage() {
+            const response = await api.updateMapPage(globalStore.currentMap._id, globalStore.currentMap);
+            if (response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_LIST,
+                    payload: globalStore.currentMap
+                });
+            }
+        }
+        asyncUpdateCurrentMapPage();
     }
-    
+    globalStore.setDescription = function(description) {
+
+    };
+    globalStore.setPublicStatus = function(publicStatus){
+        
+    };
+    globalStore.setMapPageLikes = function(newLikes){
+        let mappage = globalStore.currentMap
+        mappage.upvotes = newLikes
+        globalStore.updateCurrentMapPage();
+    }
+    globalStore.setMapPageDislikes = function(newDislikes){
+        let mappage = globalStore.currentMap
+        mappage.downvotes = newDislikes
+        globalStore.updateCurrentMapPage();
+    }
+    globalStore.setMapPageComments = function(newComments){
+        let mappage = globalStore.currentMap
+        mappage.comments = newComments
+        globalStore.updateCurrentMapPage();
+    }
+    globalStore.setMapPageTags = function(newTags){
+        
+    }
+    globalStore.setMapPageTitle = function(newTitle){
+
+    }
     return (
         <GlobalStoreContext.Provider value={{globalStore}}>
             {props.children}

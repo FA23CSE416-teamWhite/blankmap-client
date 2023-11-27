@@ -15,9 +15,14 @@ export const createMap = (title,description,publicStatus,selectedCategory,tags,f
         file: file
     })
 }
-
+const updateMapPage = (id, mappage) => {
+    return api.put(`/updateMapPage/${id}`, {
+        mappage: mappage
+    })
+}
 const apis = {
-    createMap
+    createMap,
+    updateMapPage
 }
 
 export default apis
