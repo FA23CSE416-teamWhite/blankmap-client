@@ -83,7 +83,7 @@ const MyInfoScreen = () => {
           <img src={avatarUrl} alt="User Avatar" className="avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
         </div>
         
-        <div className="user-info" style={{ marginTop: '20px' }}>
+        <div id="userInfo" className="user-info" style={{ marginTop: '20px' }}>
           <Typography variant="h5">User Information</Typography>
           <div>
             <strong>Username: </strong>

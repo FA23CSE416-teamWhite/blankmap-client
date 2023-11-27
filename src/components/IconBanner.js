@@ -22,7 +22,7 @@ export default function IconBanner() {
                     <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
                 </Link>
     if(auth.loggedIn){
-        menu=<Link to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
+        menu=<Link id="accountCircle" to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
                 <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
             </Link>
         main=<img src={blankMapicon} alt="fireSpot" width="60" height="60" />

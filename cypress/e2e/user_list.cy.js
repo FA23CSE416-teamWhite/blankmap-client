@@ -73,7 +73,7 @@ describe('Login Test', () => {
         cy.get('button').contains('Log in').click();
 
         // Verify that the login was successful
-        cy.url().should('include', '/home'); // Adjust this URL based on your application's behavior
+        cy.url().should('include', '/home');
     });
 }
 );
@@ -86,7 +86,7 @@ describe('Guest Login Test', () => {
         cy.contains('Guest Login').click();
 
         // Verify that the login was successful
-        cy.url().should('include', '/home'); // Adjust this URL based on your application's behavior
+        cy.url().should('include', '/home'); 
     });
 }
 );
@@ -100,7 +100,48 @@ describe('Already have an account', () => {
         cy.contains('Already have an Account?').click();
 
         // Verify that the login was successful
-        cy.url().should('include', '/login'); // Adjust this URL based on your application's behavior
+        cy.url().should('include', '/login'); 
     });
 }
 );
+
+describe('Home Pages test', () => {
+    it('Create in home should successfully redirect to create', () => {
+        // Visit the login page
+        cy.visit(url + '/login');
+
+        // Enter username and password
+        cy.get('#username').type('test3');
+        cy.get('#password').type('12345678');
+
+        // Click the login button
+        cy.get('button').contains('Log in').click();
+
+        // Verify that the login was successful
+        cy.url().should('include', '/home'); 
+        cy.get('button').contains('Create Map').click();
+        cy.url().should('include', '/create'); 
+    });
+
+});
+
+describe('Home Pages test', () => {
+    it('Create in home should successfully redirect to create', () => {
+        // Visit the login page
+        cy.visit(url + '/login');
+
+        // Enter username and password
+        cy.get('#username').type('test3');
+        cy.get('#password').type('12345678');
+
+        // Click the login button
+        cy.get('button').contains('Log in').click();
+
+        // Verify that the login was successful
+        cy.url().should('include', '/home');
+        cy.get('#accountCircle').click();
+        cy.get('#userInfo').find('div:contains("Username:")').invoke('text').as('usernameValue').should('contain', 'test3');
+        cy.get('#userInfo').find('div:contains("Member Since:")').invoke('text').as('membersinceValue').should('contain', '11/25/2023');
+    });
+
+});
