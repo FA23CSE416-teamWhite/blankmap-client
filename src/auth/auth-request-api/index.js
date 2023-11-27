@@ -3,7 +3,7 @@ axios.defaults.withCredentials = true;
 const api = axios.create({
     baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
 })
-export const getLoggedIn = () => api.get(`/loggedIn/`, { cache: 'no-cache' });
+export const getLoggedIn = () => api.get(`/loggedIn/`);
 export const getQuestion = (email) => api.get(`/question/${email}`);
 export const loginUser = (userName, password) => {
     return api.post(`/login/`, {

@@ -2,6 +2,7 @@ import React, { useEffect, useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import { GlobalStoreContext } from '../store/index'; 
+import AuthContext from "../auth";
 import {
     Box,
     Typography,
@@ -22,6 +23,7 @@ import { FormHelperText } from "@mui/material";
 
 const MapCreationPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
+    const {auth}= useContext(AuthContext)
     // State for form inputs
     const [mapName, setMapName] = useState("");
     const [isPublic, setIsPublic] = useState(true);
@@ -41,7 +43,7 @@ const MapCreationPage = () => {
             alert("Please fill all fields");
                 return;
         }
-        // store.getPlaylistSize()
+        auth.getLoggedIn()
         globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile)
     }
     const handleStartWithBlank = () => {
