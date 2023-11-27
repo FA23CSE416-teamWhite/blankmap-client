@@ -44,9 +44,9 @@ const MapEdit = () => {
     const [newFeature, setNewFeature] = useState("");
 
     const [selectedFeatureType, setSelectedFeatureType] = useState("");
-    const [pickColor, setPickColor] = useState("");
+    const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
-    const [mapCenter, setMapCenter] = useState([40, -75]);
+    const [mapCenter, setMapCenter] = useState( [39.9897471840457, -75.13893127441406]);
     let displayFeatures = features.map((feature, index) => (
         <IconButton
             key={index}
@@ -126,7 +126,7 @@ const MapEdit = () => {
                 >
                     Map Title
                 </Typography>
-                <MapContainer ref={mapRef} center={mapCenter} zoom={13} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -137,7 +137,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {geojsonData && <GeoJSON data={geojsonData} />}
-                    <Choropleth />
+                    <Choropleth color={pickColor}/> 
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -207,7 +207,7 @@ const MapEdit = () => {
                 </Card>
                 <Button variant="contained"                     sx={{
                         borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
+                        backgroundColor: '#0844A4', 
                         color: 'white', // Text color
                         marginTop: '10px',
                     }} onClick={handleAddFeature}> Add More Features</Button>
@@ -218,13 +218,58 @@ const MapEdit = () => {
                 </Typography>
                 <TextField label="Choose a Feature"></TextField>
                 <Typography> Choose a Color: {pickColor}</Typography>
-                <Box sx={{ paddingY: 1 }}>
-                    <SquareIcon sx={{ color: "red", paddingX: 1 }} onClick={() => setPickColor("red")} />
-                    <SquareIcon sx={{ color: "blue", paddingX: 1 }} onClick={() => setPickColor("blue")} />
-                    <SquareIcon sx={{ color: "yellow", paddingX: 1 }} onClick={() => setPickColor("yellow")} />
-                    <SquareIcon sx={{ color: "green", paddingX: 1 }} onClick={() => setPickColor("green")} />
-                    <SquareIcon sx={{ color: "purple", paddingX: 1 }} onClick={() => setPickColor("purple")} />
-                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <SquareIcon
+        sx={{
+          color: 'red',
+          padding: 1,
+          border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => setPickColor('red')}
+      />
+      <SquareIcon
+        sx={{
+          color: 'blue',
+          padding: 1,
+          border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => setPickColor('blue')}
+      />
+      <SquareIcon
+        sx={{
+          color: 'yellow',
+          padding: 1,
+          border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => setPickColor('yellow')}
+      />
+      <SquareIcon
+        sx={{
+          color: 'green',
+          padding: 1,
+          border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => setPickColor('green')}
+      />
+      <SquareIcon
+        sx={{
+          color: 'purple',
+          padding: 1,
+          border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => setPickColor('purple')}
+      />
+    </Box>
 
                 <Box>
                     <Button variant="contained"                     sx={{

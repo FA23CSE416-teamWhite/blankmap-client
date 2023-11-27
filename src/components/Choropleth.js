@@ -12,7 +12,7 @@ const style = {
   fillOpacity: 0.5
 };
 
-export default function Choropleth() {
+export default function Choropleth({color}) {
   const map = useMap();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Choropleth() {
       .then((geojson) => {
         const choroplethLayer = L.choropleth(geojson, {
           valueProperty: "incidents",
-          scale: ["white", "red"],
+          scale: ["white", color],
           steps: 5,
           mode: "q",
           style,
@@ -43,7 +43,7 @@ export default function Choropleth() {
         // If you need to fit the map bounds to the choropleth layer
         // map.fitBounds(choroplethLayer.getBounds());
       });
-  }, [map]);
+  }, [map, color]);
 
   return null;
 }
