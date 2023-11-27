@@ -16,14 +16,12 @@ const MyInfoScreen = () => {
 
   const { auth } = useContext(AuthContext);
   
-  
   if(!auth.user){
     console.log("GETT LOGGG IN")
     auth.getLoggedIn();
     return <div>Loading...</div>;
   }
   const info=auth.user;
-
   const dateObject = new Date(auth.user.dateJoined);
   const formattedDate = dateObject.toLocaleDateString();
     const avatarUrl = avatar;
@@ -32,10 +30,33 @@ const MyInfoScreen = () => {
     }
 
     const handleProfileUpdate = () => {
+      if(lastName == ""){
+        setLastName(info.lastName)
+      }else{
+        info.lastName =lastName
+      }
+      if(firstName == ""){
+        setFirstName(info.firstName)
+      }else{
+        info.firstName = firstName
+      }
+      if(phone == ""){
+        setPhone(info.phone)
+      }else{
+        info.phone = phone
+      }
+      if(bio == ""){
+        setBio(info.bio)
+      }else{
+        info.bio = bio
+      }
+
+
       auth.updateProfile(auth.user.userName, email, firstName, lastName, phone, bio)
       .then(function(res){
           console.log(res)
           setEdit(!edit)
+          // window.location.reload(false)
         }
       )
     }
@@ -69,8 +90,7 @@ const MyInfoScreen = () => {
             {info.userName}
           </div>
           <div>
-            <strong>firstName: </strong>
-            {edit && info.firstName}
+            <strong>firstName: </strong>{edit && info.firstName }
             {!edit && <TextField size='small'  label ={info.firstName} onChange={(e) => setFirstName(e.target.value)}/>}
           </div>
           <div>
@@ -94,7 +114,7 @@ const MyInfoScreen = () => {
             <strong>Member Since:</strong> {formattedDate}
           </div>
           <div>
-            <strong>Number of Maps:</strong> {info.maps.length}
+            <strong>Number of Maps:</strong> {info.mapLength}
           </div>
           <div>
             <strong>Bio: </strong>

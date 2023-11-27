@@ -29,7 +29,7 @@ export default function LoginScreen() {
         }
         auth.loginUser(username, password)
         if(!auth.user){
-            alert(auth.errorMessage)
+            // alert(auth.errorMessage)
         }
         
 

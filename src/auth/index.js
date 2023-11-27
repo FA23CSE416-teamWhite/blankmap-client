@@ -28,6 +28,7 @@ function AuthContextProvider(props) {
     }, []);
     console.log(auth.user)
     const authReducer = (action) => {
+        console.log(action)
         const { type, payload } = action;
         switch (type) {
             case AuthActionType.GET_LOGGED_IN: {
