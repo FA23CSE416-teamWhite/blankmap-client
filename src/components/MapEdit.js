@@ -16,6 +16,7 @@ import {
     Switch,
     Button,
     CardContent,
+    Autocomplete
 } from "@mui/material";
 import tempMap from '../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
@@ -40,33 +41,40 @@ const MapEdit = () => {
         baseData: [],
         mapType: "Choropleth"
     }
-    const [features, setFeatures] = useState(tempMapData.addedFeatures);
+    const [features, setFeatures] = useState([]);
     const [newFeature, setNewFeature] = useState("");
 
     const [selectedFeatureType, setSelectedFeatureType] = useState("");
     const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
-    const [mapCenter, setMapCenter] = useState( [39.9897471840457, -75.13893127441406]);
-    let displayFeatures = features.map((feature, index) => (
-        <IconButton
-            key={index}
-            sx={{
-                fontSize: '10px',
-                backgroundColor: '#0844A4',
-                color: 'white',
-                padding: '5px',
-                borderRadius: '10px',
-                margin: '0 4px',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'background-color 0.3s', // Add transition for smooth color change
-                ':hover': {
-                    backgroundColor: '#0A5CE8', // Change color on hover
-                },
-            }}
-        >
-            {feature.name}
-        </IconButton>
-    ));
+    const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    let displayFeatures;
+
+    if (features.length > 0) {
+        displayFeatures = features.map((feature, index) => (
+            <IconButton
+                key={index}
+                sx={{
+                    fontSize: '10px',
+                    backgroundColor: '#0844A4',
+                    color: 'white',
+                    padding: '5px',
+                    borderRadius: '10px',
+                    margin: '0 4px',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                    transition: 'background-color 0.3s',
+                    ':hover': {
+                        backgroundColor: '#0A5CE8',
+                    },
+                }}
+            >
+                {feature.name}
+            </IconButton>
+        ));
+    } else {
+        // Render nothing if features is empty
+        displayFeatures = null;
+    }
     const handleAddFeature = () => {
         if (selectedFeatureType && newFeature) {
             setFeatures([
@@ -96,20 +104,54 @@ const MapEdit = () => {
     }
     const handleRedo = () => {
     }
+    const handleFeatureSelect = (value) => {
+        setSelectedFeatureType(value);
+    }
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-              const data = JSON.parse(e.target.result);
-              setGeojsonData(data);
-      
-              // Extract center coordinates from GeoJSON data
-            //   mapRef.current.fitBounds(data.getBounds());
+                const data = JSON.parse(e.target.result);
+
+                if (data.features && data.features.length > 0) {
+                    const commonProperties = Object.keys(data.features[0].properties);
+
+                    const addedFeatures = [];
+
+                    for (const feature of data.features) {
+                        const featureProperties = Object.keys(feature.properties);
+
+                        const newCommonProperties = commonProperties.filter((property) =>
+                            featureProperties.includes(property)
+                        );
+
+                        commonProperties.length = 0;
+                        commonProperties.push(...newCommonProperties);
+
+                        for (const property of commonProperties) {
+                            const propertyType = typeof feature.properties[property];
+
+                            const existingFeature = addedFeatures.find((f) => f.name === property);
+                            if (!existingFeature) {
+                                addedFeatures.push({ type: propertyType, name: property });
+                            } else {
+                                if (existingFeature.type !== propertyType) {
+                                    existingFeature.type = "Mixed";
+                                }
+                            }
+                        }
+                    }
+                    setFeatures(addedFeatures);
+                }
+
+                setGeojsonData(data);
+                // Other operations with the GeoJSON data as needed
+                // mapRef.current.fitBounds(data.getBounds());
             };
             reader.readAsText(file);
-          }
-      };
+        }
+    };
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -136,8 +178,8 @@ const MapEdit = () => {
                             A pretty CSS3 popup. <br /> Easily customizable.
                         </Popup>
                     </Marker> */}
-                    {geojsonData && <GeoJSON data={geojsonData} />}
-                    <Choropleth color={pickColor}/> 
+                    {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={selectedFeatureType} />}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -205,80 +247,95 @@ const MapEdit = () => {
                         />
                     </CardContent>
                 </Card>
-                <Button variant="contained"                     sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', 
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                    }} onClick={handleAddFeature}> Add More Features</Button>
+                <Button variant="contained" sx={{
+                    borderRadius: '10px',
+                    backgroundColor: '#0844A4',
+                    color: 'white', // Text color
+                    marginTop: '10px',
+                }} onClick={handleAddFeature}> Add More Features</Button>
                 <Box sx={{ paddingY: 2 }} />
 
-                <Typography>
-                    Feature for Choropleth
-                </Typography>
-                <TextField label="Choose a Feature"></TextField>
+                <Autocomplete
+                    value={selectedFeatureType}
+                    onChange={(e, value) => handleFeatureSelect(value)}
+                    options={[
+                        'None',
+                        ...features
+                            .filter((feature) => feature.type === 'number')
+                            .map((feature) => feature.name)
+                    ]}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Feature for Choropleth"
+                            size="small"
+                            fullWidth
+                        />
+                    )}
+                    style={{ minWidth: '200px', flex: 1 }}
+                />
                 <Typography> Choose a Color: {pickColor}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <SquareIcon
-        sx={{
-          color: 'red',
-          padding: 1,
-          border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setPickColor('red')}
-      />
-      <SquareIcon
-        sx={{
-          color: 'blue',
-          padding: 1,
-          border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setPickColor('blue')}
-      />
-      <SquareIcon
-        sx={{
-          color: 'yellow',
-          padding: 1,
-          border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setPickColor('yellow')}
-      />
-      <SquareIcon
-        sx={{
-          color: 'green',
-          padding: 1,
-          border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setPickColor('green')}
-      />
-      <SquareIcon
-        sx={{
-          color: 'purple',
-          padding: 1,
-          border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onClick={() => setPickColor('purple')}
-      />
-    </Box>
+                    <SquareIcon
+                        sx={{
+                            color: 'red',
+                            padding: 1,
+                            border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('red')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'blue',
+                            padding: 1,
+                            border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('blue')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'yellow',
+                            padding: 1,
+                            border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('yellow')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'green',
+                            padding: 1,
+                            border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('green')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'purple',
+                            padding: 1,
+                            border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('purple')}
+                    />
+                </Box>
 
                 <Box>
-                    <Button variant="contained"                     sx={{
+                    <Button variant="contained" sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
                         color: 'white', // Text color
                         marginTop: '10px',
                     }}> Rank It</Button>
-                    <Button variant="contained"                     sx={{
+                    <Button variant="contained" sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
                         color: 'white', // Text color
