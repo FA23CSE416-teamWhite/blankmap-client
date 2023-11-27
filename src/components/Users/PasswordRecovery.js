@@ -29,16 +29,11 @@ export default function PasswordRecovery() {
             return;
         }
     // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
-        axios
-            .get("http://localhost:8000/api/users", {
-                params:{
-                email: email,
-                }
-            })
+        auth.getQuestion(email)
             .then(function (res) { 
                 const data = res.data
-                setRecoveryQuestion(data.recoveryQuestion)
-                setRecoveryAnswer(data.recoveryAnswer)
+                setRecoveryQuestion(data.question)
+                setRecoveryAnswer(data.answer)
                 setReset(true)
                 // window.location.reload();
             })
@@ -51,6 +46,10 @@ export default function PasswordRecovery() {
         if (password === ""  ||
             passwordConfirm === "") {
             alert("Please fill all fields");
+            return;
+        }
+        if(recoveryAnswer !== recoveryQuestion){
+            alert("incorrect answer!")
             return;
         }
     // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users

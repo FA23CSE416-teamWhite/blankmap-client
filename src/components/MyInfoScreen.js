@@ -2,11 +2,18 @@ import React from "react";
 import ProfileMenu from "./ProfileMenu";
 
 import  avatar from "./images/avatar.png";
-import { Paper, Typography, Box, Button, Grid } from "@mui/material";
+import { Paper, Typography, Box, Button, Grid, TextField } from "@mui/material";
 import AuthContext from "../auth";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 const MyInfoScreen = () => {
+  const [edit, setEdit] = useState(true);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+
   const { auth } = useContext(AuthContext);
   
   
@@ -16,12 +23,23 @@ const MyInfoScreen = () => {
     return <div>Loading...</div>;
   }
   const info=auth.user;
+
   const dateObject = new Date(auth.user.dateJoined);
   const formattedDate = dateObject.toLocaleDateString();
     const avatarUrl = avatar;
     const handleGetLoggin = () => {
-      auth.getLoggedIn();
+      setEdit(!edit)
     }
+
+    const handleProfileUpdate = () => {
+      auth.updateProfile(auth.user.userName, email, firstName, lastName, phone, bio)
+      .then(function(res){
+          console.log(res)
+          setEdit(!edit)
+        }
+      )
+    }
+
  return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
       <Grid item xs={12} sm={3}>
@@ -47,13 +65,26 @@ const MyInfoScreen = () => {
         <div className="user-info" style={{ marginTop: '20px' }}>
           <Typography variant="h5">User Information</Typography>
           <div>
-            <strong>Username:</strong> {info.userName}
+            <strong>Username: </strong>
+            {info.userName}
+          </div>
+          <div>
+            <strong>firstName: </strong>
+            {edit && info.firstName}
+            {!edit && <TextField size='small'  label ={info.firstName} onChange={(e) => setFirstName(e.target.value)}/>}
+          </div>
+          <div>
+            <strong>lastName: </strong>
+            {edit && info.lastName}
+            {!edit && <TextField size='small'  label ={info.lastName} onChange={(e) => setLastName(e.target.value)}/>}
           </div>
           <div>
             <strong>Email:</strong> {info.email}
           </div>
           <div>
-            <strong>Phone:</strong> {info.phone}
+            <strong>Phone: </strong>
+            {edit && info.phone}
+            {!edit && <TextField size='small'  label ={info.phone} onChange={(e) => setPhone(e.target.value)}/>}
           </div>
           <div>
             <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
@@ -66,10 +97,14 @@ const MyInfoScreen = () => {
             <strong>Number of Maps:</strong> {info.mapLength}
           </div>
           <div>
-            <strong>Bio:</strong> {info.bio}
+            <strong>Bio: </strong>
+            {edit && info.bio}
+            {!edit && <TextField size='small'  label ={info.bio} onChange={(e) => setBio(e.target.value)}/>}
           </div>
+          
         </div>
-        <Button variant="contained" onClick={() => handleGetLoggin()} style={{ marginTop: '20px' }}>Edit</Button>
+        {edit && <Button variant="contained" onClick={() => handleGetLoggin()} style={{ marginTop: '20px' }}>Edit</Button>}
+        {!edit && <Button variant="contained" onClick={() => handleProfileUpdate()} style={{ marginTop: '20px' }}>Confirm</Button>}
       </Paper>
       </Grid>
     </Box>

@@ -4,6 +4,7 @@ const api = axios.create({
     baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`, { cache: 'no-cache' });
+export const getQuestion = (email) => api.get(`/question/${email}`);
 export const loginUser = (userName, password) => {
     return api.post(`/login/`, {
         userName : userName,
@@ -25,16 +26,33 @@ export const registerUser = (firstName, lastName, email, userName, password, pas
 }
 
 export const resetPassword = (email, password) => {
-    return api.post(`/reset/`, {
-        email : email,
-        password : password
+    return api.post(`/update`, {
+        params:{
+            email:email
+        },
+        password: password
+    })
+}
+
+export const updateUser = (username, email, firstName, lastName, phone, bio) => {
+    return api.post(`/update`, {
+        params:{
+            userName:username
+        },
+        email:email,
+        firstName:firstName,
+        lastName:lastName,
+        phone:phone,
+        bio:bio
     })
 }
 const apis = {
     getLoggedIn,
+    getQuestion,
     registerUser,
     loginUser,
     logoutUser,
+    updateUser,
     resetPassword
 }
 
