@@ -44,6 +44,7 @@ const MapCreationPage = () => {
                 return;
         }
         auth.getLoggedIn()
+        navigate("/edit")
         globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile)
     }
     const handleStartWithBlank = () => {
