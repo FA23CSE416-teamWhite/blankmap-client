@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import Tags from "./Tags";
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
@@ -8,9 +8,14 @@ import List from '@mui/material/List';
 import { Link } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { GlobalStoreContext } from '../store/index'; 
 
 const MapOverview = ({ mapInfo }) => {
+  const { globalStore } = useContext(GlobalStoreContext);
   const { title, description, author, tags, mapSnapshot, createdDate } = mapInfo;
+  const handleSendMapInfo = (mapData) => {
+    localStorage.setItem('mapInfo', JSON.stringify(mapData));
+  };
   return (
     <Card style={{ marginBottom: '25px', backgroundColor: '#EBEBEB', marginTop: '15px', borderRadius: '10px' }}>  <CardContent style={{ padding: '0px' }}>
       <Link to={`/detail`} style={{ textDecoration: "none" }}>
@@ -18,7 +23,8 @@ const MapOverview = ({ mapInfo }) => {
           sx={{ borderRadius: "10px", p: "10px", display: 'flex', p: 1 }}
           style={{ transform: "translate(1%,0%)", width: '98%', fontSize: '32pt' }}
           onClick={(event) => {
-
+            console.log(mapInfo)
+            handleSendMapInfo(mapInfo);
           }}
         >
           <Grid container>

@@ -35,7 +35,7 @@ const createMap = async (mapName, isPublic, description, tags, selectedCategory,
 
 const mapApi = {
     fetchMaps,
-    createMap
+    createMap,
   };
 
 export default mapApi;

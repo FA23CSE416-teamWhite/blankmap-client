@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Tags from './Tags.js';
 import {
     Box,
@@ -16,6 +16,7 @@ import UpvoteIcon from '@mui/icons-material/ThumbUp';
 import DownvoteIcon from '@mui/icons-material/ThumbDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
+import { GlobalStoreContext } from '../store/index'; 
 
 const Comment = ({ comment }) => {
     const [likes, setLikes] = useState(comment.likes);
@@ -24,7 +25,7 @@ const Comment = ({ comment }) => {
     const [dislikeClicked, setDislikeClicked] = useState(false);
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [replyText, setReplyText] = useState('');
-    const [replyList, setReplyList] = useState(comment.replys);
+    const [replyList, setReplyList] = useState(comment.replies);
 
     const onReply = () => {
         const showInput = showReplyInput === true ? false : true;
@@ -122,17 +123,22 @@ const Comment = ({ comment }) => {
     );
 };
 
-const MapDetailScreen = ({ mapDetails }) => {
-    const { title, description, tags, mapImage, likes, dislikes, comments } = mapDetails;
+const MapDetailScreen = () => {
+    const { globalStore } = useContext(GlobalStoreContext);
+    // const currentMapPage = globalStore.currentMapPage
+    const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
+    console.log("Got MapInfo in MapDetailScreen");
+    console.log(tempMapInfo)
+    
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
-    const [commentList, setCommentList] = useState(comments);
+    const [commentList, setCommentList] = useState(tempMapInfo.comments);
     // const [newDescription, setDescription] = useState(description);
-    const [tagList, setTagList] = useState(tags);
+    const [tagList, setTagList] = useState(tempMapInfo.tags);
     const [likeColor, setLikeColor] = useState('grey');
-    const [newLikes, setLikes] = useState(likes);
+    const [newLikes, setLikes] = useState(tempMapInfo.upVotes);
     const [dislikeColor, setDislikeColor] = useState('grey');
-    const [newDislikes, setDislikes] = useState(dislikes);
+    const [newDislikes, setDislikes] = useState(tempMapInfo.downVotes);
     const navigate = useNavigate();
 
     const handleAddComment = () => {
@@ -172,14 +178,14 @@ const MapDetailScreen = ({ mapDetails }) => {
         const newColor = likeColor === 'grey' ? 'steelblue' : 'grey';
         setLikeColor(newColor);
         if (newColor === 'grey') {
-            setLikes(likes);
+            setLikes(tempMapInfo.upVotes);
         }
         else if (newColor === 'steelblue') {
             setLikes(newLikes + 1);
         }
         if (dislikeColor === 'red') {
             setDislikeColor('grey')
-            setDislikes(dislikes)
+            setDislikes(tempMapInfo.downVotes)
         }
 
     };
@@ -187,14 +193,14 @@ const MapDetailScreen = ({ mapDetails }) => {
         const newColor = dislikeColor === 'grey' ? 'red' : 'grey';
         setDislikeColor(newColor);
         if (newColor === 'grey') {
-            setDislikes(dislikes);
+            setDislikes(tempMapInfo.downVotes);
         }
         else if (newColor === 'red') {
             setDislikes(newDislikes + 1);
         }
         if (likeColor === 'steelblue') {
             setLikeColor('grey')
-            setLikes(likes)
+            setLikes(tempMapInfo.upVotes)
         }
     };
     return (
@@ -212,12 +218,12 @@ const MapDetailScreen = ({ mapDetails }) => {
                                 rows = {10}
                                 sx={{ height: '100%', width: '100%' }} 
                             /> */}
-                        <Typography>{description}</Typography>
+                        <Typography>{tempMapInfo.description}</Typography>
                     </Paper>
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Tags</Typography>
-                        <Tags tags={tags}></Tags>
+                        <Tags tags={tagList}></Tags>
                     </Paper>
 
                     <Box>
@@ -233,7 +239,7 @@ const MapDetailScreen = ({ mapDetails }) => {
                 <Grid item xs={12} md={8}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            <Typography variant="h4">{title}</Typography>
+                            <Typography variant="h4">{tempMapInfo.title}</Typography>
                             <IconButton onClick={() => console.log('download button clicked')}>
                                 <DownloadIcon />
                             </IconButton>
