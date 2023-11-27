@@ -125,7 +125,7 @@ describe('Home Pages test', () => {
 
 });
 
-describe('Home Pages test', () => {
+describe('Profile Pages test', () => {
     it('Create in home should successfully redirect to create', () => {
         // Visit the login page
         cy.visit(url + '/login');
