@@ -45,6 +45,7 @@ function GlobalStoreContextProvider(props) {
                     payload: response.data.map
                 })
             }
+            console.log(response.data.map)
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
     }
     globalStore.updateCurrentMapPage = function(){
