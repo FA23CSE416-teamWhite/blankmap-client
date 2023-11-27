@@ -19,6 +19,7 @@ import {
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 
+
 const MapCreationPage = () => {
     const { globalStore, setQueryString } = useContext(GlobalStoreContext);
     // State for form inputs
@@ -48,7 +49,7 @@ const MapCreationPage = () => {
         console.log("Is Public: ", isPublic);
         console.log("Description: ", description);
         navigate("/" + routerAdd)
-        mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
+        // mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
         // Logic to handle starting with a blank map
         console.log("Start with Blank Map");
     };
