@@ -28,6 +28,7 @@ function AuthContextProvider(props) {
     }, []);
     console.log(auth.user)
     const authReducer = (action) => {
+        console.log(action)
         const { type, payload } = action;
         switch (type) {
             case AuthActionType.GET_LOGGED_IN: {
@@ -130,6 +131,14 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.getQuestion = async function (email) {
+        const response = await api.getQuestion(email);
+        console.log("response status")
+        console.log(response.status)
+        console.log(response.data)
+        return response
+    }
+
 
     auth.registerUser = async function(firstName, lastName, email, userName, password, passwordVerify,recoveryQuestion,recoveryAnswer) {
         console.log("REGISTERING USER");
@@ -211,17 +220,23 @@ function AuthContextProvider(props) {
     //     return initials;
     // }
 
-    // auth.resetPassword = async function(email, answer, password, passwordVerify) {
-    //     console.log(email)
-    //     const response = await api.resetPassword(email, password);
-    //     if (response.status === 200) {
-    //         authReducer( {
-    //             type: AuthActionType.LOGOUT_USER,
-    //             payload: null
-    //         })
-    //         history("/");
-    //     }
-    // }
+    auth.resetPassword = async function(email, answer, password, passwordVerify) {
+        console.log(email, password)
+        const response = await api.resetPassword(email, password);
+        if (response.status === 200) {
+            authReducer( {
+                type: AuthActionType.LOGOUT_USER,
+                payload: null
+            })
+            history("/");
+        }
+        return response
+    }
+
+    auth.updateProfile = async function(username, email, firstName, lastName, phone, bio) {
+        const response = await api.updateUser(username, email, firstName, lastName, phone, bio);
+        return response
+    }
 
     return (
         <AuthContext.Provider value={{
