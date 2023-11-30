@@ -28,6 +28,10 @@ export default function LoginScreen() {
             return;
         }
         auth.loginUser(username, password)
+        if(!auth.user){
+            // alert(auth.errorMessage)
+        }
+        
 
 
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users

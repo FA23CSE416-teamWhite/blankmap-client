@@ -1,22 +1,65 @@
 import React from "react";
 import ProfileMenu from "./ProfileMenu";
-import NavBar from "./NavBar";
+
 import  avatar from "./images/avatar.png";
-import { Paper, Typography, Box, Button, Grid } from "@mui/material";
+import { Paper, Typography, Box, Button, Grid, TextField } from "@mui/material";
+import AuthContext from "../auth";
+import { useContext, useState } from "react";
 
-const MyInfoScreen = ({userInfo}) => {
-  var info=userInfo
-  info={
-    username: "testuser",
-    email : "email@email.email",
-    phone : "123-456-7890",
-    memberSince : "1/1/2014",
-    numberOfMaps : "2",
-    bio : "Nice to meet you!"
+const MyInfoScreen = () => {
+  const [edit, setEdit] = useState(true);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
 
+  const { auth } = useContext(AuthContext);
+  
+  if(!auth.user){
+    console.log("GETT LOGGG IN")
+    auth.getLoggedIn();
+    return <div>Loading...</div>;
   }
-    
+  const info=auth.user;
+  const dateObject = new Date(auth.user.dateJoined);
+  const formattedDate = dateObject.toLocaleDateString();
     const avatarUrl = avatar;
+    const handleGetLoggin = () => {
+      setEdit(!edit)
+    }
+
+    const handleProfileUpdate = () => {
+      if(lastName == ""){
+        setLastName(info.lastName)
+      }else{
+        info.lastName =lastName
+      }
+      if(firstName == ""){
+        setFirstName(info.firstName)
+      }else{
+        info.firstName = firstName
+      }
+      if(phone == ""){
+        setPhone(info.phone)
+      }else{
+        info.phone = phone
+      }
+      if(bio == ""){
+        setBio(info.bio)
+      }else{
+        info.bio = bio
+      }
+
+
+      auth.updateProfile(auth.user.userName, email, firstName, lastName, phone, bio)
+      .then(function(res){
+          console.log(res)
+          setEdit(!edit)
+          // window.location.reload(false)
+        }
+      )
+    }
 
  return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
