@@ -39,33 +39,72 @@ const MyInfoScreen = ({userInfo}) => {
         <div className="avatar-section">
           <img src={avatarUrl} alt="User Avatar" className="avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
         </div>
+        
+        {edit &&
+          <div className="user-info" style={{ marginTop: '20px' }}>
+            <Typography variant="h5">User Information</Typography>
+            <div>
+              <strong>Username: </strong>
+              {info.userName}
+            </div>
+            <div>
+              <strong>firstName: </strong>
+              {info.firstName }
+            </div>
+            <div>
+              <strong>lastName: </strong>
+              {info.lastName}
+            </div>
+            <div>
+              <strong>Email:</strong> {info.email}
+            </div>
+            <div>
+              <strong>Phone: </strong>
+              {info.phone}
+            </div>
+            <div>
+              <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
+              {/* Ideally, avoid displaying passwords for security reasons */}
+            </div>
+            <div>
+              <strong>Member Since:</strong> {formattedDate}
+            </div>
+            <div>
+              <strong>Number of Maps:</strong> {info.mapLength}
+            </div>
+            <div>
+              <strong>Bio: </strong>
+              {info.bio}
+            </div>
+            
+          </div>
+        }
+        {!edit && 
+          <Box sx={{display:'flex', flex:1, flexDirection: 'column',alignItems: 'left', justifyContent: 'left' }}>
+            <Typography variant="h5" sx={{display:'flex', alignItems:'center', justifyContent:'center'}}>Edit Information</Typography>
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>FirstName: </strong>
+              <TextField size='small'  label ={info.firstName} onChange={(e) => setFirstName(e.target.value)}/>
+            </Box>
 
-        <div className="user-info" style={{ marginTop: '20px' }}>
-          <Typography variant="h5">User Information</Typography>
-          <div>
-            <strong>Username:</strong> {info.username}
-          </div>
-          <div>
-            <strong>Email:</strong> {info.email}
-          </div>
-          <div>
-            <strong>Phone:</strong> {info.phone}
-          </div>
-          <div>
-            <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
-            {/* Ideally, avoid displaying passwords for security reasons */}
-          </div>
-          <div>
-            <strong>Member Since:</strong> {info.memberSince}
-          </div>
-          <div>
-            <strong>Number of Maps:</strong> {info.numberOfMaps}
-          </div>
-          <div>
-            <strong>Bio:</strong> {info.bio}
-          </div>
-        </div>
-        <Button variant="contained" onClick={() => console.log('Edit button clicked')} style={{ marginTop: '20px' }}>Edit</Button>
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>LastName: </strong>
+              <TextField size='small'  label ={info.lastName} onChange={(e) => setLastName(e.target.value)}/>
+            </Box>
+
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>Phone: </strong>
+              <TextField size='small'  label ={info.phone} onChange={(e) => setPhone(e.target.value)}/>
+            </Box>
+
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>Bio: </strong>
+              <TextField size='small'  label ={info.bio} onChange={(e) => setBio(e.target.value)}/>
+            </Box>
+          </Box>
+        }
+        {edit && <Button variant="contained" onClick={() => handleGetLoggin()} style={{ marginTop: '20px' }}>Edit</Button>}
+        {!edit && <Button variant="contained" onClick={() => handleProfileUpdate()} style={{ marginTop: '20px' }}>Confirm</Button>}
       </Paper>
       </Grid>
     </Box>
