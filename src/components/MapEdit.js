@@ -31,6 +31,8 @@ import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 
 const MapEdit = () => {
+    const { globalStore } = useContext(GlobalStoreContext);
+    const file_created= globalStore.selectedFile;
     const tempMapData = {
         addedFeatures: [
             { type: "String", name: "Name" },
@@ -41,6 +43,7 @@ const MapEdit = () => {
         baseData: [],
         mapType: "Choropleth"
     }
+    // console.log(globalStore.currentMap)
     const [features, setFeatures] = useState([]);
     const [newFeature, setNewFeature] = useState("");
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
@@ -135,7 +138,13 @@ const MapEdit = () => {
         setSelectedFeatureType(event.target.value);
     };
     const handleFileUpload = (event) => {
-        const file = event.target.files[0];
+        let file = null;
+        if(event !=null){
+            file =event.target.files[0];
+            
+        }else{
+            file =file_created;
+        }
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -179,6 +188,12 @@ const MapEdit = () => {
             reader.readAsText(file);
         }
     };
+    let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
+    if(file_created!=null &&geojsonData===null){
+        inputButton=null;
+        handleFileUpload();
+        console.log("should be null")
+    }
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -217,7 +232,8 @@ const MapEdit = () => {
                     }}>
                     Add a New Region
                 </Button>
-                <input type="file" accept=".geojson" onChange={handleFileUpload} />
+                {inputButton}
+                {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>

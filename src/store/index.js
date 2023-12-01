@@ -14,7 +14,8 @@ export const GlobalStoreActionType = {
 
 function GlobalStoreContextProvider(props) {
     const [globalStore, setGlobalStore] = useState({
-        currentMap:null
+        currentMap:null,
+        selectedFile:null
     });
     const navigate = useNavigate();
     console.log("inside useGlobalStore");
@@ -24,12 +25,15 @@ function GlobalStoreContextProvider(props) {
         switch (type) {
             case GlobalStoreActionType.CREATE_MAP: {
                 return setGlobalStore({
-                    currentMap: payload
+                    currentMap: payload.map,
+                    selectedFile: payload.file
+                    
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
                 return setGlobalStore({
-                    currentMap: payload
+                    currentMap: payload,
+                    selectedFile: null
                 });
             }
         }
@@ -39,13 +43,17 @@ function GlobalStoreContextProvider(props) {
         console.log("hi")
         async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
             let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
-            if (response.data.success) {
+            if (response.status===201) {
+                console.log("success")
                 storeReducer({
                     type: GlobalStoreActionType.CREATE_MAP,
-                    payload: response.data.map
+                    payload:{
+                        file:file,
+                        map:response.data.map
+                    } 
                 })
             }
-            console.log(response.data.map)
+            navigate("/edit")
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
     }
     globalStore.updateCurrentMapPage = function(){
