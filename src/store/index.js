@@ -9,13 +9,15 @@ export const GlobalStoreContext = createContext({});
 console.log("create GlobalStoreContext");
 export const GlobalStoreActionType = {
     CREATE_NEW_MAP: "CREATE_NEW_MAP",
-    SET_CURRENT_MAP_PAGE: "SET_CURRENT_MAP_PAGE"
+    SET_CURRENT_MAP_PAGE: "SET_CURRENT_MAP_PAGE",
+    LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
 }
 
 function GlobalStoreContextProvider(props) {
     const [globalStore, setGlobalStore] = useState({
         currentMap:null,
-        selectedFile:null
+        selectedFile:null,
+        idNamePairs:null,
     });
     const navigate = useNavigate();
     console.log("inside useGlobalStore");
@@ -26,14 +28,23 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.CREATE_MAP: {
                 return setGlobalStore({
                     currentMap: payload.map,
-                    selectedFile: payload.file
+                    selectedFile: payload.file,
+                    idNamePairs: globalStore.idNamePairs
                     
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
                 return setGlobalStore({
                     currentMap: payload,
-                    selectedFile: null
+                    selectedFile: globalStore.selectedFile,
+                    idNamePairs: globalStore.idNamePairs
+                });
+            }
+            case GlobalStoreActionType.LOAD_ID_NAME_PAIRS:{
+                return setGlobalStore({
+                    currentMap: globalStore.currentMap,
+                    selectedFile: globalStore.selectedFile,
+                    idNamePairs: payload
                 });
             }
         }
@@ -55,6 +66,42 @@ function GlobalStoreContextProvider(props) {
             }
             navigate("/edit")
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
+    }
+    //sets idnamepairs to that of the users (used for user profile display)
+    globalStore.loadUserIdNamePairs = function () {
+        async function asyncLoadUserIdNamePairs() {
+            const response = await api.getMapPagePairs();
+            if (response.data.success) {
+                let pairsArray = response.data.idNamePairs;
+                console.log(pairsArray);
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: pairsArray
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadUserIdNamePairs();
+    }
+    //SET IDAMEPAIRS TO ALL PUBLIC MAPS FOR SEARCH AND DISPLAY
+    globalStore.loadPublicMapPairs = function () {
+        async function asyncPublicIdNamePairs() {
+            const response = await api.getPublicMapPagePairs();
+            if (response.data.success) {
+                let pairsArray = response.data.idNamePairs;
+                console.log(pairsArray);
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: pairsArray
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncPublicIdNamePairs();
     }
     globalStore.updateCurrentMapPage = function(){
         async function asyncUpdateCurrentMapPage() {

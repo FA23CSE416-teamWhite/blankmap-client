@@ -21,6 +21,7 @@ const updateMapPage = (id, mappage) => {
     })
 }
 export const getMapPagePairs = () => api.get(`/mappagepairs/`)
+export const getPublicMapPagePairs = () => api.get(`/publicMapPagePairs/`)
 export const getMapPage = () => api.get(`/mappages/`)
 export const getMapPageById = (id) => api.get(`/mappage/:id/`)
 const apis = {
@@ -28,7 +29,8 @@ const apis = {
     updateMapPage,
     getMapPagePairs,
     getMapPage,
-    getMapPageById
+    getMapPageById,
+    getPublicMapPagePairs
 }
 
 export default apis
