@@ -10,7 +10,7 @@ import MyMapScreen from './MyMapScreen'
 import MyInfoScreen from './MyInfoScreen'
 import MessageCenter from './MessageCenter'
 import MapEdit from './MapEdit'
-import MapEditHeat from './MapEditHeat'
+import MapEditHeat from './HeatMap/MapEditHeat'
 import RegionalEdit from './RegionalEdit'
 import MainPage from './MainPage'
 /*

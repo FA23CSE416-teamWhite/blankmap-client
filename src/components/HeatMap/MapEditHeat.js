@@ -1,68 +1,50 @@
-import React, { useState, useEffect, Component } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import {
     Box,
     Typography,
     TextField,
-    TextareaAutosize,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    Select,
-    MenuItem,
-    Switch,
     Button,
-    CardContent,
 } from "@mui/material";
-import tempMap from '../assets/heat.png'
+import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
+
+import HeatMap from "./HeatMap";
 import UndoIcon from '@mui/icons-material/Undo';
-import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
-import Card from "@mui/material/Card";
 import SquareIcon from '@mui/icons-material/Square';
+import { MapContainer, TileLayer, useMapEvents,Marker} from 'react-leaflet';
 
 const MapEditHeat = () => {
-    const [features, setFeatures] = useState([]);
-
-    const [selectedFeatureType, setSelectedFeatureType] = useState("");
-    const [featureName, setFeatureName] = useState("");
+    const [points, setPoints] = useState([]);
+    const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    const [intensity, setIntensity] = useState("");
+    const [pointLocation, setPointLocation] = useState("");
+    const [geojsonData, setGeojsonData] = useState(null);
+    const mapRef = React.useRef();
     useEffect(() => {
-        setFeatures([
-            { type: "String", name: "Name" },
-            { type: "Number", name: "Population" },
-            { type: "Number", name: "Area" },
-            { type: "Number", name: "GDP" },
-            { type: "Number", name: "HDI" },
+        setPoints([
         ]);
     }, []);
 
-    const handleAddFeature = () => {
-        if (selectedFeatureType && featureName) {
-            setFeatures([
-                ...features,
-                { type: selectedFeatureType, name: featureName },
+    const handleAddPoint = () => {
+        if (intensity && pointLocation) {
+            setPoints([
+                ...points,
+                [...pointLocation, intensity],
             ]);
-
-            setSelectedFeatureType("");
-            setFeatureName("");
+            console.log(points)
         }
     };
 
-    const handleEditFeature = (index) => {
-        const updatedFeatures = [...features];
-        updatedFeatures.splice(index, 1);
-        setFeatures(updatedFeatures);
+    const LocationFinder = () => {
+        const map = useMapEvents({
+            click(e) {
+                setPointLocation(Object.values(e.latlng));
+                console.log(pointLocation)
+            },
+        });
+        return null;
     };
-
-    const handleRenderChoropleth = () => {
-        console.log("Rendering as choropleth map...");
-    };
-
-    const handleRankFeatures = () => {
-        console.log("Ranking features...");
-    };
-
     return (
         <Grid container>
             <Grid item xs={12} sm={1}></Grid>
@@ -78,9 +60,23 @@ const MapEditHeat = () => {
                 >
                     A Heat Map Example
                 </Typography>
-                <img src={tempMap} alt="fireSpot" height="480" width="700" />
-                <Button variant="contained">
-                    Add a New Region
+                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    {/* <Marker position={[51.505, -0.09]}>
+                        <Popup>
+                            A pretty CSS3 popup. <br /> Easily customizable.
+                        </Popup>
+                    </Marker> */}
+                    {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
+                    {<HeatMap addressPoints={points}/>}
+                    <LocationFinder/>
+                    <Marker position={pointLocation} ></Marker>)
+                </MapContainer>
+                <Button variant="contained" onClick={handleAddPoint}>
+                    Add a point
                 </Button>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
@@ -112,11 +108,12 @@ const MapEditHeat = () => {
                         </Box>
                     </Grid>
                 </Grid>
-
-                <Typography>
-                    Intensity Name:
-                </Typography>
-                <TextField label="Name"></TextField>
+                <Typography> Intensity:</Typography>
+                <TextField
+                    placeholder="Type a number…"
+                    inputProps={{ type: 'number'}}
+                    onChange={(e) => setIntensity(e.target.value)}
+                    />
                 <Typography> Choose a Color</Typography>
                 <Box sx={{ paddingY: 1 }}>
                     <SquareIcon sx={{ color: "red", paddingX: 1 }} />
