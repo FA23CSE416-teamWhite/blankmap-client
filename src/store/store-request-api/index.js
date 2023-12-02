@@ -20,9 +20,15 @@ const updateMapPage = (id, mappage) => {
         mappage: mappage
     })
 }
+export const getMapPagePairs = () => api.get(`/mappagepairs/`)
+export const getMapPage = () => api.get(`/mappages/`)
+export const getMapPageById = (id) => api.get(`/mappage/:id/`)
 const apis = {
     createMap,
-    updateMapPage
+    updateMapPage,
+    getMapPagePairs,
+    getMapPage,
+    getMapPageById
 }
 
 export default apis
