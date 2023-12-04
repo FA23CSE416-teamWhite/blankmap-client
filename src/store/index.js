@@ -50,7 +50,7 @@ function GlobalStoreContextProvider(props) {
         }
     }
     
-    globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file){
+    globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file, routerAdd){
         console.log("hi")
         async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
             let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
@@ -64,7 +64,7 @@ function GlobalStoreContextProvider(props) {
                     } 
                 })
             }
-            navigate("/edit")
+            navigate("/"+routerAdd)
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
     }
     globalStore.getMapWithId = function(id){

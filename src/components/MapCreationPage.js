@@ -44,7 +44,7 @@ const MapCreationPage = () => {
                 return;
         }
         auth.getLoggedIn()
-        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile)
+        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile, routerAdd)
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
