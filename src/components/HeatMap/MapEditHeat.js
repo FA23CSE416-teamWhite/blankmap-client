@@ -16,6 +16,7 @@ import { MapContainer, TileLayer, useMapEvents,Marker, Popup} from 'react-leafle
 
 const MapEditHeat = () => {
     const [points, setPoints] = useState([]);
+    const [undoPoints, setUndoPoints] = useState([]);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [intensity, setIntensity] = useState(0);
     const [pointLocation, setPointLocation] = useState([0,0]);
@@ -32,7 +33,7 @@ const MapEditHeat = () => {
                 ...points,
                 [...pointLocation, intensity],
             ]);
-            console.log(points)
+            setUndoPoints([])
         }else{
             alert("Pick a Point and Intensity!")
         }
@@ -47,13 +48,28 @@ const MapEditHeat = () => {
         return null;
     };
     const handleDeletePoint = (i) =>{
-        console.log(i)
         points.splice(i,1)
         setPoints(points)
     }
 
-    const handleSaveMap = () =>{
+    const handleUndo = () =>{
+        if(points.length > 0){
+            undoPoints.push(points.splice(points.length-1,1))
+            setUndoPoints(undoPoints)
+            setPoints(points)
+        }
+    }
 
+    const handleRedo = () =>{
+        if(undoPoints.length > 0){
+            points.push(undoPoints.pop())
+            setPoints(points)
+            setUndoPoints(undoPoints)
+        }
+    }
+
+    const handleSaveMap = () =>{
+        
     }
     return (
         <Grid container>
@@ -124,7 +140,7 @@ const MapEditHeat = () => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                         <Box>
-                            <UndoIcon sx={{ mr: 1 }} />
+                            <UndoIcon sx={{ mr: 1 }} onClick={handleUndo} />
                             <Redo />
                         </Box>
                     </Grid>
@@ -144,7 +160,7 @@ const MapEditHeat = () => {
                     <SquareIcon sx={{ color: "purple", paddingX: 1 }} />
                 </Box> */}
 
-                <Box sx={{ paddingY: 2 } } >
+                <Box sx={{ paddingY: 1 }} onClick={handleSaveMap} >
 
                     <Button variant="contained" href="/create">
                         Save
