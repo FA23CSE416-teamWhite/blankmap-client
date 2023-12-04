@@ -267,8 +267,6 @@ const MapEdit = () => {
                     }}>
                     Close the drawn panel
                 </Button>}
-                {inputButton}
-                {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
