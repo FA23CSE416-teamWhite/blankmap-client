@@ -58,8 +58,67 @@ const RegionalEdit = () => {
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
+    const navigate = useNavigate();
     useEffect(() => {
-        setFile_created(globalStore.selectedFile);
+        const readFile = () => {
+            try {
+                if (globalStore.selectedFile) {
+                    setFile_created(globalStore.selectedFile);
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const data = JSON.parse(e.target.result);
+
+                        if (data.features && data.features.length > 0) {
+                            const commonProperties = Object.keys(data.features[0].properties);
+                            const addedFeatures = [];
+
+                            for (const feature of data.features) {
+                                // Check if the "color" property exists in the feature
+                                if (!feature.properties.hasOwnProperty("color")) {
+                                    // If not, add "color" with the value "gray"
+                                    feature.properties.color = "gray";
+                                }
+                                const featureProperties = Object.keys(feature.properties);
+
+                                const newCommonProperties = commonProperties.filter((property) =>
+                                    featureProperties.includes(property)
+                                );
+
+                                commonProperties.length = 0;
+                                commonProperties.push(...newCommonProperties);
+
+                                for (const property of commonProperties) {
+                                    const propertyType = typeof feature.properties[property];
+
+                                    const existingFeature = addedFeatures.find((f) => f.name === property);
+                                    if (!existingFeature) {
+                                        addedFeatures.push({ type: propertyType, name: property });
+                                    } else {
+                                        if (existingFeature.type !== propertyType) {
+                                            existingFeature.type = "Mixed";
+                                        }
+                                    }
+                                }
+                            }
+
+                            setFeatures(addedFeatures);
+                        }
+
+                        setGeojsonData(data);
+                        // Other operations with the GeoJSON data as needed
+                        // mapRef.current.fitBounds(data.getBounds());
+                    };
+                    reader.readAsText(globalStore.selectedFile);
+                } else {
+                    setGeojsonData({ type: 'FeatureCollection', features: [] });
+                }
+            } catch (error) {
+                console.error("Error reading file:", error);
+            }
+        };
+
+        readFile();
     }, [globalStore.selectedFile]);
     let displayFeatures;
 
@@ -172,65 +231,6 @@ const RegionalEdit = () => {
         link.click();
         document.body.removeChild(link);
     }
-    const handleFileUpload = (event) => {
-        let file = null;
-        if (event != null) {
-            file = event.target.files[0];
-        } else {
-            file = file_created;
-        }
-    
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const data = JSON.parse(e.target.result);
-    
-                if (data.features && data.features.length > 0) {
-                    const addedFeatures = [];
-    
-                    for (const feature of data.features) {
-                        // Check if the "color" property exists in the feature
-                        if (!feature.properties.hasOwnProperty("color")) {
-                            // If not, add "color" with the value "gray"
-                            feature.properties.color = "gray";
-                        }
-    
-                        const featureProperties = Object.keys(feature.properties);
-    
-                        const newCommonProperties = addedFeatures.filter((f) =>
-                            featureProperties.includes(f.name)
-                        );
-    
-                        for (const property of featureProperties) {
-                            const propertyType = typeof feature.properties[property];
-    
-                            const existingFeature = newCommonProperties.find((f) => f.name === property);
-                            if (!existingFeature) {
-                                addedFeatures.push({ type: propertyType, name: property });
-                            } else {
-                                if (existingFeature.type !== propertyType) {
-                                    existingFeature.type = "Mixed";
-                                }
-                            }
-                        }
-                    }
-    
-                    setFeatures(addedFeatures);
-                }
-    
-                setGeojsonData(data);
-                // Other operations with the GeoJSON data as needed
-                // mapRef.current.fitBounds(data.getBounds());
-            };
-            reader.readAsText(file);
-        }
-    };
-    // let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
-    if (file_created != null && geojsonData === null) {
-        // inputButton=null;
-        handleFileUpload();
-        console.log("should be null")
-    }
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -258,13 +258,13 @@ const RegionalEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <ColorLayer geojsonData={geojsonData} colorProperty="color" />}
-                    {drawPanelOpen&&<DrawLayer/>}
+                    {geojsonData && geojsonData.features.length > 0 && <ColorLayer geojsonData={geojsonData} colorProperty="color" />}
+                    {drawPanelOpen&&<DrawLayer initialGeoJSON={geojsonData} onSave={handleSave}/>}
                 </MapContainer>
-                {(drawPanelOpen===false)&&<Button variant="contained"
-                onClick={() => {
-                    setDrawPanelOpen(true);
-                }}
+                {(drawPanelOpen === false) && <Button variant="contained"
+                    onClick={() => {
+                        setDrawPanelOpen(true);
+                    }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -273,10 +273,10 @@ const RegionalEdit = () => {
                     }}>
                     Add a New Region
                 </Button>}
-                {drawPanelOpen&&<Button variant="contained"
-                onClick={() => {
-                    setDrawPanelOpen(false);
-                }}
+                {drawPanelOpen && <Button variant="contained"
+                    onClick={() => {
+                        setDrawPanelOpen(false);
+                    }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -399,7 +399,7 @@ const RegionalEdit = () => {
                         color: 'white', // Text color
                         marginTop: '10px',
                         marginLeft: '10px'
-                    }} href="/create">
+                    }} onClick={()=>{navigate('/home')}}>
                         Render as Simple Region
                     </Button>
                     <Button variant="contained" sx={{

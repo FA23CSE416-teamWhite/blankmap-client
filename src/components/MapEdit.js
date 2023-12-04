@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component, useContext } from "react";
+import React, { useState, useEffect, Component, useContext, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalStoreContext } from '../store/index';
 import Grid from "@mui/material/Grid";
@@ -36,20 +36,6 @@ import Choropleth from "./Choropleth"
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const [file_created, setFile_created] = useState(null);
-    useEffect(() => {
-        setFile_created(globalStore.selectedFile);
-    }, [globalStore.selectedFile]);
-    const tempMapData = {
-        addedFeatures: [
-            { type: "String", name: "Name" },
-            { type: "Number", name: "Population" },
-            { type: "Number", name: "Area" },
-            { type: "Number", name: "GDP" },
-            { type: "Number", name: "HDI" },],
-        baseData: [],
-        mapType: "Choropleth"
-    }
-    // console.log(globalStore.currentMap)
     const [features, setFeatures] = useState([]);
     const [newFeature, setNewFeature] = useState("");
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
@@ -60,8 +46,64 @@ const MapEdit = () => {
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
+    const navigate = useNavigate();
+    useEffect(() => {
+        const readFile = () => {
+          try {
+            if (globalStore.selectedFile) {
+              setFile_created(globalStore.selectedFile);
+    
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const data = JSON.parse(e.target.result);
+    
+                if (data.features && data.features.length > 0) {
+                  const commonProperties = Object.keys(data.features[0].properties);
+                  const addedFeatures = [];
+    
+                  for (const feature of data.features) {
+                    const featureProperties = Object.keys(feature.properties);
+    
+                    const newCommonProperties = commonProperties.filter((property) =>
+                      featureProperties.includes(property)
+                    );
+    
+                    commonProperties.length = 0;
+                    commonProperties.push(...newCommonProperties);
+    
+                    for (const property of commonProperties) {
+                      const propertyType = typeof feature.properties[property];
+    
+                      const existingFeature = addedFeatures.find((f) => f.name === property);
+                      if (!existingFeature) {
+                        addedFeatures.push({ type: propertyType, name: property });
+                      } else {
+                        if (existingFeature.type !== propertyType) {
+                          existingFeature.type = "Mixed";
+                        }
+                      }
+                    }
+                  }
+    
+                  setFeatures(addedFeatures);
+                }
+    
+                setGeojsonData(data);
+                // Other operations with the GeoJSON data as needed
+                // mapRef.current.fitBounds(data.getBounds());
+              };
+              reader.readAsText(globalStore.selectedFile);
+            } else {
+              setGeojsonData({ type: 'FeatureCollection', features: [] });
+            }
+          } catch (error) {
+            console.error("Error reading file:", error);
+          }
+        };
+    
+        readFile();
+      }, [globalStore.selectedFile]);
     let displayFeatures;
-
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
             <IconButton
@@ -171,63 +213,7 @@ const MapEdit = () => {
         link.click();
         document.body.removeChild(link);
     }
-    const handleFileUpload = (event) => {
-        let file = null;
-        if (event != null) {
-            file = event.target.files[0];
-
-        } else {
-            file = file_created;
-        }
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const data = JSON.parse(e.target.result);
-
-                if (data.features && data.features.length > 0) {
-                    const commonProperties = Object.keys(data.features[0].properties);
-
-                    const addedFeatures = [];
-
-                    for (const feature of data.features) {
-                        const featureProperties = Object.keys(feature.properties);
-
-                        const newCommonProperties = commonProperties.filter((property) =>
-                            featureProperties.includes(property)
-                        );
-
-                        commonProperties.length = 0;
-                        commonProperties.push(...newCommonProperties);
-
-                        for (const property of commonProperties) {
-                            const propertyType = typeof feature.properties[property];
-
-                            const existingFeature = addedFeatures.find((f) => f.name === property);
-                            if (!existingFeature) {
-                                addedFeatures.push({ type: propertyType, name: property });
-                            } else {
-                                if (existingFeature.type !== propertyType) {
-                                    existingFeature.type = "Mixed";
-                                }
-                            }
-                        }
-                    }
-                    setFeatures(addedFeatures);
-                }
-
-                setGeojsonData(data);
-                // Other operations with the GeoJSON data as needed
-                // mapRef.current.fitBounds(data.getBounds());
-            };
-            reader.readAsText(file);
-        }
-    };
     // let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
-    if (file_created != null && geojsonData === null) {
-        // inputButton=null;
-        handleFileUpload();
-        console.log("should be null")
-    }
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -255,8 +241,8 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                    {drawPanelOpen&&<DrawLayer/>}
+                    {geojsonData && geojsonData.features.length > 0 && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
+                    {drawPanelOpen&&<DrawLayer initialGeoJSON={geojsonData} onSave={handleSave}/>}
                 </MapContainer>
                 {(drawPanelOpen===false)&&<Button variant="contained"
                 onClick={() => {
@@ -471,7 +457,7 @@ const MapEdit = () => {
                         color: 'white', // Text color
                         marginTop: '10px',
                         marginLeft: '10px'
-                    }} href="/create">
+                    }} onClick={()=>{navigate('/home')}}>
                         Render as Choropleth Map
                     </Button>
                     <Button variant="contained" sx={{

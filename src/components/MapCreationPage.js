@@ -54,7 +54,7 @@ const MapCreationPage = () => {
         navigate("/" + routerAdd)
         // mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
         // Logic to handle starting with a blank map
-        console.log("Start with Blank Map");
+        // console.log("Start with Blank Map");
     };
 
     const handleLoadFromMap = async () => {
