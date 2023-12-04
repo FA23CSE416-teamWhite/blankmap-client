@@ -12,7 +12,7 @@ import { GlobalStoreContext } from '../store/index';
 
 const MapOverview = ({ mapInfo }) => {
   const { globalStore } = useContext(GlobalStoreContext);
-  const { title, description, author, tags, mapSnapshot, createdDate } = mapInfo;
+  const { title, description, owner, tags, mapSnapshot, creationDate } = mapInfo;
   const handleSendMapInfo = (mapData) => {
     localStorage.setItem('mapInfo', JSON.stringify(mapData));
   };
@@ -58,10 +58,10 @@ const MapOverview = ({ mapInfo }) => {
                   },
                 }} varient='h3'>{title}</Typography>
                 <Typography sx={{ color: 'black', fontSize: "12px" }}>Desciption: {description}</Typography>
-                  <Tags tags={tags}></Tags>
+                  {/* <Tags tags={tags}></Tags> */}
               </Box>
               <Typography sx={{ fontSize: "12px", textAlign: 'right', color: '#0844A4' }}>
-                By {author} on {createdDate}
+                By {owner} on {creationDate}
               </Typography>
             </Grid>
           </Grid>

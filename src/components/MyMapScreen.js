@@ -10,29 +10,41 @@ import temp_map from './images/temp_map.png';
 import NavBar from "./NavBar";
 import Typography from '@mui/material/Typography';
 import AuthContext from "../auth";
-import { useContext } from "react";
+import { useContext,useEffect } from "react";
+import GlobalStoreContext from "../store";
 
 const MyMapScreen = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [mapFilter, setMapFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  
+  const{globalStore} = useContext(GlobalStoreContext)
+  const [mapList, setMapList] = useState([]);
+  useEffect(() => {
+    if (!globalStore.idNamePairs) {
+      globalStore.loadUserIdNamePairs();
+    } else {
+      setMapList(globalStore.idNamePairs);
+    }
+  }, [globalStore]);
   
   if(!auth.user){
     console.log("GETT LOGGG IN")
     auth.getLoggedIn();
     return <div>Loading...</div>;
   }
-  const mapList=auth.user.map;
+ 
+
+  
+  
   let filteredMaps =[]
   if(mapList){
    filteredMaps = mapList.filter((map) => {
     // Apply filtering logic based on mapFilter and searchTerm
-    if (mapFilter === "public" && !(map.setting==="public")) {
+    if (mapFilter === "public" && !(map.publicStatus===true)) {
       return false;
     }
-    if (mapFilter === "private" && !(map.setting==="private")) {
+    if (mapFilter === "private" && !(map.publicStatus===false)) {
       return false;
     }
     if (searchTerm && !map.title.toLowerCase().includes(searchTerm.toLowerCase())) {
