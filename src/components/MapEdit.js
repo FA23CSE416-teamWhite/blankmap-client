@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GlobalStoreContext } from '../store/index';
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
-import DataEditPanel  from './DataEditPanel';
+import DataEditPanel from './DataEditPanel';
 import {
     Box,
     Typography,
@@ -17,13 +17,14 @@ import {
     Switch,
     Button,
     CardContent,
-    Autocomplete
+    Autocomplete,
+    Card,
+    Paper,
 } from "@mui/material";
 import tempMap from '../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
-import Card from "@mui/material/Card";
 import SquareIcon from '@mui/icons-material/Square';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
@@ -152,9 +153,12 @@ const MapEdit = () => {
         // Implement your logic to save the edited data, e.g., updating state or sending it to a server
         console.log('Saving edited data:', editedData);
         setGeojsonData(editedData);
-        setPanelOpen(false);
+        // setPanelOpen(false);
         // You can update your geojsonData state or perform other actions here
-      };
+    };
+    const panelClose = () => {
+        setPanelOpen(false);
+    }
     const handleFileUpload = (event) => {
         let file = null;
         if (event != null) {
@@ -239,7 +243,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData}/>}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -444,8 +448,16 @@ const MapEdit = () => {
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
-            {panelOpen && <DataEditPanel geojsonData={geojsonData} onSave={handleSave} features={features}/>}
-        </Grid>
+            {panelOpen && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Paper elevation={3} style={{ padding: '10px', border: '1px solid #ccc', marginTop: '20px', marginInline: '20px', marginBottom: '20px' }}>
+                            <Typography variant="h5" style={{ marginBottom: '20px' }}>Data Edit Panel</Typography>
+                            <DataEditPanel geojsonData={geojsonData} onSave={handleSave} features={features} panelClose={panelClose}/>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            )}</Grid> 
     );
 };
 

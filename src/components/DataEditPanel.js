@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 
-const DataEditPanel = ({ geojsonData, onSave, features }) => {
+const DataEditPanel = ({ geojsonData, onSave, features, panelClose }) => {
     const [editedData, setEditedData] = useState(null);
     const [selectedLabel, setSelectedLabel] = useState("None");
-
+    const [initialScrollPosition, setInitialScrollPosition] = useState(0);
+    const formRef = useRef(null);
     const handleEdit = (feature) => {
         setEditedData({ ...feature });
+        setInitialScrollPosition(window.scrollY);
     };
+    useEffect(() => {
+        if (editedData) {
+            formRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [editedData]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -40,7 +47,10 @@ const handleSave = () => {
 
   // Reset the state
   setEditedData(null);
-  setSelectedLabel("None");
+  window.scrollTo({
+    top: initialScrollPosition,
+    behavior: 'smooth',
+  });
 };
 
     const handleReferenceLabSelect = (value) => {
@@ -65,6 +75,7 @@ const handleSave = () => {
                 )}
                 style={{ minWidth: '200px', flex: 1 }}
             />
+            <button onClick={panelClose}>Cancel</button>
             {(selectedLabel!=="None") && geojsonData.features.map((feature) => (
                 <div key={feature.id}>
                     <p>{feature.properties[selectedLabel]}</p>
@@ -75,7 +86,7 @@ const handleSave = () => {
             {editedData && (
                 <div>
                     <h3>Edit Properties</h3>
-                    <form>
+                    <form ref={formRef}>
                         {Object.entries(editedData.properties).map(([key, value]) => (
                             <div key={key}>
                                 <label htmlFor={key}>{key}:</label>
@@ -90,6 +101,7 @@ const handleSave = () => {
                         ))}
                     </form>
                     <button onClick={handleSave}>Save</button>
+                    
                 </div>
             )}
         </div>
