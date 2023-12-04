@@ -64,12 +64,12 @@ const MapCreationPage = () => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        if (!file || !(file.name.endsWith('.json') || file.name.endsWith('.geojson'))) {
+        if (!file || !file.name.endsWith('.json')|| !file.name.endsWith('.geojson')) {
             // Display an error message or handle it as needed
-            console.error('Please select a valid JSON or GeoJSON file.');
+            console.error('Please select a valid JSON file.');
             return;
         }
-        console.log(file);
+        console.log(file)
         // Do something with the selected file, for example, store it in state
         setSelectedFile(file);
         setSelectedFileName(file.name);
