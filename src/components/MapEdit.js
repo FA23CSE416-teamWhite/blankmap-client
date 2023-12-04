@@ -159,6 +159,16 @@ const MapEdit = () => {
     const panelClose = () => {
         setPanelOpen(false);
     }
+    const handleDownload = () => {
+        const geoJsonString = JSON.stringify(geojsonData, null, 2);
+        const blob = new Blob([geoJsonString], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.download = 'title.geojson';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     const handleFileUpload = (event) => {
         let file = null;
         if (event != null) {
@@ -445,6 +455,15 @@ const MapEdit = () => {
                         marginLeft: '10px'
                     }} href="/create">
                         Render as Choropleth Map
+                    </Button>
+                    <Button variant="contained" sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginTop: '10px',
+                        marginLeft: '10px'
+                    }} onClick={handleDownload}>
+                        download
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
@@ -453,11 +472,11 @@ const MapEdit = () => {
                     <Grid item xs={12}>
                         <Paper elevation={3} style={{ padding: '10px', border: '1px solid #ccc', marginTop: '20px', marginInline: '20px', marginBottom: '20px' }}>
                             <Typography variant="h5" style={{ marginBottom: '20px' }}>Data Edit Panel</Typography>
-                            <DataEditPanel geojsonData={geojsonData} onSave={handleSave} features={features} panelClose={panelClose}/>
+                            <DataEditPanel geojsonData={geojsonData} onSave={handleSave} features={features} panelClose={panelClose} />
                         </Paper>
                     </Grid>
                 </Grid>
-            )}</Grid> 
+            )}</Grid>
     );
 };
 
