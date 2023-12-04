@@ -281,6 +281,7 @@ const MapCreationPage = () => {
                         Load From Map
                     </Button>
                     <input
+                        id = "fileInput"
                         type="file"
                         accept=".json, .geojson"
                         ref={fileInputRef}

@@ -39,7 +39,7 @@ export default function HomeBanner() {
           }}
         />
       </form>
-      <button type="button" onClick={performSearch} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+      <button id="searchButton" type="button" onClick={performSearch} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
           <SearchIcon sx={{ ml: '1rem' , color: 'white'}} />
         </button>
     </Box>
