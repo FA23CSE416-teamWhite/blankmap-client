@@ -5,20 +5,35 @@ import ProfileMenu from './ProfileMenu'; // Import your ProfileMenu component
 import Message from './Message';
 import Grid from "@mui/material/Grid";
 import AuthContext from "../auth";
-import { useContext } from "react";
+import { useContext,useEffect,useState } from "react";
+import GlobalStoreContext from '../store';
 
 const MessageCenter = () => {
   const { auth } = useContext(AuthContext);
+  const{globalStore} = useContext(GlobalStoreContext)
+  const [mapList, setMapList] = useState([]);
+  useEffect(() => {
+    if (!globalStore.idNamePairs) {
+      globalStore.loadUserIdNamePairs();
+    } else {
+      setMapList(globalStore.idNamePairs);
+    }
+  }, [globalStore]);
   if(!auth.user){
     console.log("GETT LOGGG IN")
     auth.getLoggedIn();
     return <div>Loading...</div>;
   }
-    const messages = auth.user.comments
-    // let messages=[]
-    // if(userMessages){
-    //   messages=auth.user.comments
-    // }
+    
+  let messages = [];
+
+  if (mapList && mapList.length > 0) {
+    mapList.forEach(map => {
+      if (map.comments && map.comments.length > 0) {
+        messages.push(...map.comments);
+      }
+    });
+  }
    
 
   return (
