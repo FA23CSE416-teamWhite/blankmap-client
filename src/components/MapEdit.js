@@ -213,7 +213,6 @@ const MapEdit = () => {
         link.click();
         document.body.removeChild(link);
     }
-    // let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -268,7 +267,7 @@ const MapEdit = () => {
                     }}>
                     Close the drawn panel
                 </Button>}
-                {/* {inputButton} */}
+                {inputButton}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
             </Grid>

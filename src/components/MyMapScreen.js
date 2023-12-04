@@ -24,6 +24,7 @@ const MyMapScreen = () => {
     if (!globalStore.idNamePairs) {
       globalStore.loadUserIdNamePairs();
     } else {
+      console.log(globalStore.idNamePairs)
       setMapList(globalStore.idNamePairs);
     }
   }, [globalStore]);
