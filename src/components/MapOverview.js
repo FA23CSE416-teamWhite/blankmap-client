@@ -58,7 +58,7 @@ const MapOverview = ({ mapInfo }) => {
                   },
                 }} varient='h3'>{title}</Typography>
                 <Typography sx={{ color: 'black', fontSize: "12px" }}>Desciption: {description}</Typography>
-                  {/* <Tags tags={tags}></Tags> */}
+                  <Tags tags={tags}></Tags>
               </Box>
               <Typography sx={{ fontSize: "12px", textAlign: 'right', color: '#0844A4' }}>
                 By {owner} on {creationDate}

@@ -33,9 +33,6 @@ const MyMapScreen = () => {
     auth.getLoggedIn();
     return <div>Loading...</div>;
   }
- 
-
-  
   
   let filteredMaps =[]
   if(mapList){

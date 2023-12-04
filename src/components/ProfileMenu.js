@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, List, ListItemButton, ListItemText, ListItem, Typography } from '@mui/material';
-import AuthContext from "../auth";
+import GlobalStoreContext from "../store";
 import { useContext } from "react";
 const ProfileMenu = () => {
-  const { auth } = useContext(AuthContext);
+  const { globalStore } = useContext(GlobalStoreContext);
   const handleSignOut = () => {
-    auth.logoutUser(); // Call the logout function from your auth module
+    globalStore.resetGlobalStore(); // Call the logout function from your auth module
     // Perform any additional sign-out related logic here if needed
   };
   return (

@@ -21,6 +21,7 @@ function GlobalStoreContextProvider(props) {
     });
     const navigate = useNavigate();
     console.log("inside useGlobalStore");
+    const {auth}=useContext(AuthContext)
     
     const storeReducer = (action) => {
         const { type, payload } = action;
@@ -93,7 +94,14 @@ function GlobalStoreContextProvider(props) {
                     payload: pairsArray
                 });
             }
-            else {
+            else if(response.data.success ===false && response.status===200) {
+                let pairsArray = response.data.mappages;
+                console.log(pairsArray);
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: pairsArray
+                });
+            }else{
                 console.log("API FAILED TO GET THE LIST PAIRS");
             }
         }
@@ -129,6 +137,16 @@ function GlobalStoreContextProvider(props) {
         }
         asyncUpdateCurrentMapPage();
     }
+    globalStore.resetGlobalStore = function(){
+        console.log("GLOBAL LOG OUT USER")
+        auth.logoutUser();
+        setGlobalStore({
+          currentMap: null,
+          selectedFile: null,
+          idNamePairs: null,
+        });
+        
+      };
     globalStore.setDescription = function(description) {
 
     };
