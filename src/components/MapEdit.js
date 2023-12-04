@@ -222,9 +222,9 @@ const MapEdit = () => {
             reader.readAsText(file);
         }
     };
-    // let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
+    let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
     if (file_created != null && geojsonData === null) {
-        // inputButton=null;
+        inputButton=null;
         handleFileUpload();
         console.log("should be null")
     }
@@ -282,7 +282,7 @@ const MapEdit = () => {
                     }}>
                     Close the drawn panel
                 </Button>}
-                {/* {inputButton} */}
+                {inputButton}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
             </Grid>
