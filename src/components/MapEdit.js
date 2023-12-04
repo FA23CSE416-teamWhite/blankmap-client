@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GlobalStoreContext } from '../store/index';
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
+import DataEditPanel  from './DataEditPanel';
 import {
     Box,
     Typography,
@@ -55,6 +56,7 @@ const MapEdit = () => {
     const [geojsonData, setGeojsonData] = useState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
+    const [panelOpen, setPanelOpen] = useState(false);
     let displayFeatures;
 
     if (features.length > 0) {
@@ -81,6 +83,9 @@ const MapEdit = () => {
     } else {
         // Render nothing if features is empty
         displayFeatures = null;
+    }
+    const handlePanelOpen = () => {
+        setPanelOpen(true);
     }
     const handleAddFeature = () => {
         if (geojsonData && selectedFeatureType && newFeature) {
@@ -140,6 +145,16 @@ const MapEdit = () => {
     const handleFeatureTypeChange = (event) => {
         setSelectedFeatureType(event.target.value);
     };
+    const updateGeojsonData = (newData) => {
+        setGeojsonData(newData);
+    };
+    const handleSave = (editedData) => {
+        // Implement your logic to save the edited data, e.g., updating state or sending it to a server
+        console.log('Saving edited data:', editedData);
+        setGeojsonData(editedData);
+        setPanelOpen(false);
+        // You can update your geojsonData state or perform other actions here
+      };
     const handleFileUpload = (event) => {
         let file = null;
         if (event != null) {
@@ -224,7 +239,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} />}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData}/>}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -274,7 +289,7 @@ const MapEdit = () => {
                     <Typography>
                         Features: {displayFeatures}
                     </Typography>
-                    <Link>edit</Link>
+                    {features && features.length > 0 && <Button onClick={handlePanelOpen}>Data Edit</Button>}
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />
@@ -353,8 +368,8 @@ const MapEdit = () => {
                         <MenuItem value="5"> 5 </MenuItem>
                         <MenuItem value="10">10</MenuItem>
                         <MenuItem value="20">20</MenuItem>
-                        <MenuItem value="50">50</MenuItem>
-                        <MenuItem value="100">100</MenuItem>
+                        {/* <MenuItem value="50">50</MenuItem>
+                        <MenuItem value="100">100</MenuItem> */}
                     </Select>
                 </FormControl>
                 <Typography> Choose a Color: {pickColor}</Typography>
@@ -429,6 +444,7 @@ const MapEdit = () => {
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
+            {panelOpen && <DataEditPanel geojsonData={geojsonData} onSave={handleSave} features={features}/>}
         </Grid>
     );
 };
