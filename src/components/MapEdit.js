@@ -32,7 +32,10 @@ import Choropleth from "./Choropleth"
 
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
-    const file_created= globalStore.selectedFile;
+    const [file_created, setFile_created] = useState(null);
+    useEffect(() => {
+        setFile_created(globalStore.selectedFile);
+    }, [globalStore.selectedFile]);
     const tempMapData = {
         addedFeatures: [
             { type: "String", name: "Name" },
@@ -139,11 +142,11 @@ const MapEdit = () => {
     };
     const handleFileUpload = (event) => {
         let file = null;
-        if(event !=null){
-            file =event.target.files[0];
-            
-        }else{
-            file =file_created;
+        if (event != null) {
+            file = event.target.files[0];
+
+        } else {
+            file = file_created;
         }
         if (file) {
             const reader = new FileReader();
@@ -188,9 +191,9 @@ const MapEdit = () => {
             reader.readAsText(file);
         }
     };
-    let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
-    if(file_created!=null &&geojsonData===null){
-        inputButton=null;
+    // let inputButton= <input type="file" accept=".geojson" onChange={handleFileUpload} />;
+    if (file_created != null && geojsonData === null) {
+        // inputButton=null;
         handleFileUpload();
         console.log("should be null")
     }
@@ -221,7 +224,7 @@ const MapEdit = () => {
                         </Popup>
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep}/>}
+                    {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} />}
                 </MapContainer>
                 <Button variant="contained"
                     sx={{
@@ -232,7 +235,7 @@ const MapEdit = () => {
                     }}>
                     Add a New Region
                 </Button>
-                {inputButton}
+                {/* {inputButton} */}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
             </Grid>

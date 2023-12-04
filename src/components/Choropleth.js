@@ -33,11 +33,32 @@ export default function Choropleth({color, geojsonData, featureForChoropleth, st
             layer.bindPopup(formattedProperties);
           }
       });
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = function () {
+        var div = L.DomUtil.create('div', 'info legend')
+        var limits = choroplethLayer.options.limits
+        var colors = choroplethLayer.options.colors
+        var labels = []
+    
+        // Add min & max
+        div.innerHTML = '<div>'+featureForChoropleth+'</div><div class="labels"><div class="min">' + limits[0] + '</div><div class="max">' + limits[limits.length - 1] + '</div></div>'
+    
+        limits.forEach(function (limit, index) {
+          labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+        })
+    
+        div.innerHTML += '<ul>' + labels.join('') + '</ul>'
+        return div
+      };
 
         choroplethLayer.addTo(map);
+        if(featureForChoropleth!==""){
+          legend.addTo(map);
+        }
         map.fitBounds(choroplethLayer.getBounds());
             return () => {
       map.removeLayer(choroplethLayer);
+      map.removeControl(legend);
     };
 
         // If you need to fit the map bounds to the choropleth layer

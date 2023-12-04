@@ -282,7 +282,7 @@ const MapCreationPage = () => {
                     </Button>
                     <input
                         type="file"
-                        accept=".json"
+                        accept=".json, .geojson"
                         ref={fileInputRef}
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
