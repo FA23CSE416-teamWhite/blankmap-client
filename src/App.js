@@ -50,7 +50,7 @@ import IconBanner from './components/IconBanner';
             <Route path="/register" element={<RegisterScreen />} />
             <Route path="/home" element={<HomeScreen />} />
             <Route path="/create" element={<MapCreationPage />} />
-            <Route path="/detail" element={<MapDetailScreen />} />
+            <Route path="/detail/:id" element={<MapDetailScreen />} />
             <Route path="/profile" element={<MyInfoScreen />} />
             <Route path="/profile/my-maps" element={<MyMapScreen />} />
             <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
