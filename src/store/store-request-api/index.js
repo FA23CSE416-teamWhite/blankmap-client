@@ -6,6 +6,7 @@ const api = axios.create({
 
 // export const createMap = () => api.post(`/map/`);
 export const createMap = (title,description,publicStatus,selectedCategory,tags,file) => {
+    console.log(file)
     return api.post(`/map/createMap`, {
         title: title,
         description: description,

@@ -16,7 +16,7 @@ const MapOverview = ({ mapInfo }) => {
   const navigate = useNavigate();
   const handleSendMapInfo = async (mapData) => {
     try {
-        const mappage = await globalStore.setMapPage(mapData.id);
+        const mappage = await globalStore.setMapPage(mapData.id,mapData.map);
         if (mappage) {
             navigate(`/detail/${mapData.id}`);
         } else {

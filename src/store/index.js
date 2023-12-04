@@ -36,8 +36,8 @@ function GlobalStoreContextProvider(props) {
             }
             case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
                 return setGlobalStore({
-                    currentMap: payload,
-                    selectedFile: globalStore.selectedFile,
+                    currentMap: payload.map,
+                    selectedFile: payload.selectedFile,
                     idNamePairs: globalStore.idNamePairs
                 });
             }
@@ -52,7 +52,7 @@ function GlobalStoreContextProvider(props) {
     }
     
     globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file, routerAdd){
-        console.log("hi")
+        console.log(file)
         async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
             let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
             if (response.status===201) {
@@ -126,22 +126,25 @@ function GlobalStoreContextProvider(props) {
         asyncPublicIdNamePairs();
     }
     //set the current map page to view
-    globalStore.setMapPage = async function (id) {
+    globalStore.setMapPage = async function (id,map) {
         console.log("inside setMapPage using ID: ", id);
-        async function setMapPageById(id) {
+        async function setMapPageById(id,map) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
                 let mappage = response.data.mappage;
                 console.log("inside setMapPage, setting mappage: ", mappage);
                 storeReducer({
                     type: GlobalStoreActionType.SET_CURRENT_MAP_PAGE,
-                    payload: mappage
+                    payload:{
+                        selectedFile:map,
+                        map:mappage
+                    } 
                 });
                 return mappage; // Return the fetched mappage
             }
             throw new Error("Failed to fetch map page");
         }
-        return setMapPageById(id); // Return the setMapPageById promise
+        return setMapPageById(id,map); // Return the setMapPageById promise
     }
     //update the mappage
     globalStore.updateCurrentMapPage = function(){

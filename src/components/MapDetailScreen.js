@@ -19,6 +19,7 @@ import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index'; 
 import AuthContext from '../auth';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
@@ -26,6 +27,7 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const [dislikes, setDislikes] = useState(comment.dislikes);
     const [dislikeClicked, setDislikeClicked] = useState(false);
     const [showReplyInput, setShowReplyInput] = useState(false);
+    
     const [replyText, setReplyText] = useState('');
     const [replyList, setReplyList] = useState(comment.replies);
 
@@ -173,6 +175,38 @@ const MapDetailScreen = () => {
         console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
         localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
     }
+    // //console.log(globalStore.currentMap)
+    // const newMap = globalStore.setMapPage(id);
+    console.log(globalStore.selectedFile)
+    const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             if (globalStore.currentMap == null || globalStore.currentMap._id !== id) {
+    //                 // Fetch the map page data using globalStore.setMapPage(id)
+    //                 const mapPageData = await globalStore.setMapPage(id);
+    //                 console.log("mapPageData inside the async ",mapPageData);
+    //                 // Update the currentMapPage state if mapPageData exists
+    //                 if (mapPageData) {
+    //                     setCurrentMapPage(mapPageData);
+    //                 } else {
+    //                     console.log('Map page data not found');
+    //                 }
+    //             } else {
+    //                 // If the currentMapPage matches the ID, set it to state directly
+    //                 setCurrentMapPage(globalStore.currentMap);
+    //                 const mapPageData = await globalStore.setMapPage(id);
+    //                 console.log("testing to see mappage data:", mapPageData)
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching map page:', error);
+    //         }
+    //     };
+
+    //     fetchData();
+    // }, [globalStore, id]);
+    // console.log("Current map page: ", currentMapPage)
+    
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
     const [commentList, setCommentList] = useState(currentMapPage.comments);
@@ -291,6 +325,7 @@ const MapDetailScreen = () => {
             globalStore.addMapPageLikes(currentMapPage._id, currentMapPage.upvotes);
         }
     };
+    const mapRef = React.useRef();
     return (
         <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2 }}>
             <Grid container spacing={2}>
@@ -340,7 +375,16 @@ const MapDetailScreen = () => {
                             </IconButton>
                             {newDislikes}
                         </Box>
-                        <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} />
+                        <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            
+                            {/* {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
+                            {drawPanelOpen&&<DrawLayer/>} */}
+                    </MapContainer>
+                        {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
                     </Paper>
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
