@@ -84,7 +84,7 @@ const MyInfoScreen = () => {
         </div>
         
         {edit &&
-          <div className="user-info" style={{ marginTop: '20px' }}>
+          <div className="user-info" id="userInfo" style={{ marginTop: '20px' }}>
             <Typography variant="h5">User Information</Typography>
             <div>
               <strong>Username: </strong>
