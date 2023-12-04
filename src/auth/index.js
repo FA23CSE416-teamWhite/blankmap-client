@@ -19,14 +19,16 @@ function AuthContextProvider(props) {
         user: null,
         loggedIn: false,
         errorMessage: null,
-        extra: ""
+        extra: "",
+        loading: true
     });
     const history = useNavigate();
 
     useEffect(() => {
         auth.getLoggedIn();
+        console.log(auth.user)
     }, []);
-    console.log(auth.user)
+    
     const authReducer = (action) => {
         console.log(action)
         const { type, payload } = action;
@@ -35,7 +37,8 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: payload.user,
                     loggedIn: payload.loggedIn,
-                    errorMessage: null
+                    errorMessage: null,
+                    loading:payload.loading
                 });
             }
             case AuthActionType.LOGIN_USER: {
@@ -125,7 +128,8 @@ function AuthContextProvider(props) {
                 type: AuthActionType.GET_LOGGED_IN,
                 payload: {
                     loggedIn: response.data.loggedIn,
-                    user: response.data.user
+                    user: response.data.user,
+                    loading: false
                 }
             });
         }
@@ -242,7 +246,11 @@ function AuthContextProvider(props) {
         <AuthContext.Provider value={{
             auth
         }}>
-            {props.children}
+            {!auth.loading ? ( // Render children only when loading is false
+                props.children
+            ) : (
+                <div>Loading...</div> // Render a loading indicator while fetching user data
+            )}
         </AuthContext.Provider>
     );
 }

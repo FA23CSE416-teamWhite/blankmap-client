@@ -21,7 +21,7 @@ function GlobalStoreContextProvider(props) {
     });
     const navigate = useNavigate();
     console.log("inside useGlobalStore");
-    const { auth } = useContext(AuthContext);
+    
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
@@ -66,6 +66,20 @@ function GlobalStoreContextProvider(props) {
             }
             navigate("/edit")
         }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
+    }
+    globalStore.getMapWithId = function(id){
+        async function asyncGetMapWithId(id){
+            let response= await api.getMapPageById(id)
+            if (response.status===201) {
+                console.log("success")
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_MAP_PAGE,
+                    payload:response.data.map
+                    
+                })
+            }
+            navigate("/edit")
+        }asyncGetMapWithId(id)
     }
     //sets idnamepairs to that of the users (used for user profile display)
     globalStore.loadUserIdNamePairs = function () {
