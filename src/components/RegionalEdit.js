@@ -349,7 +349,7 @@ const RegionalEdit = () => {
                 }} onClick={handleAddFeature}> Add More Features</Button>
                 <Box sx={{ paddingY: 2 }} />
 
-                <Autocomplete
+                {/* <Autocomplete
                     value={featureForChoropleth}
                     onChange={(e, value) => handleChoroplethSelect(value)}
                     options={[
@@ -367,82 +367,7 @@ const RegionalEdit = () => {
                         />
                     )}
                     style={{ minWidth: '200px', flex: 1 }}
-                />
-                <FormControl fullWidth size="small" style={{ marginTop: '10px' }}>
-                    <InputLabel id="step-type-label">Choropleth Step:</InputLabel>
-                    <Select
-                        labelId="step-type-label"
-                        id="step-type"
-                        value={choroStep}
-                        onChange={(e) => setChoroStep(e.target.value)}
-                        label="Choropleth Step:"
-                        inputProps={{
-                            style: { height: '36px' },
-                        }}
-                    >
-                        <MenuItem value="1">1</MenuItem>
-                        <MenuItem value="3">3</MenuItem>
-                        <MenuItem value="5"> 5 </MenuItem>
-                        <MenuItem value="10">10</MenuItem>
-                        <MenuItem value="20">20</MenuItem>
-                        {/* <MenuItem value="50">50</MenuItem>
-                        <MenuItem value="100">100</MenuItem> */}
-                    </Select>
-                </FormControl>
-                <Typography> Choose a Color: {pickColor}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SquareIcon
-                        sx={{
-                            color: 'red',
-                            padding: 1,
-                            border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('red')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'blue',
-                            padding: 1,
-                            border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('blue')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'yellow',
-                            padding: 1,
-                            border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('yellow')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'green',
-                            padding: 1,
-                            border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('green')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'purple',
-                            padding: 1,
-                            border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('purple')}
-                    />
-                </Box>
-
+                /> */}
                 <Box>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
@@ -457,7 +382,7 @@ const RegionalEdit = () => {
                         marginTop: '10px',
                         marginLeft: '10px'
                     }} href="/create">
-                        Render as Choropleth Map
+                        Render as Simple Region
                     </Button>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
