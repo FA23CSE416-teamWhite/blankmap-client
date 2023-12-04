@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useParams } from "react-router-dom"
 import Tags from './Tags.js';
 import {
     Box,
@@ -18,7 +19,7 @@ import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index'; 
 import AuthContext from '../auth';
-const Comment = ({ comment }) => {
+const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
     const [likeClicked, setLikeClicked] = useState(false);
@@ -33,30 +34,40 @@ const Comment = ({ comment }) => {
         setShowReplyInput(showInput);
     };
     const onUpvote = () => {
+        let newCommentValue = comment
         if(!likeClicked){
             setLikes(likes + 1)
+            newCommentValue.likes = likes + 1
         }
         else{
             setLikes(comment.likes)
+            newCommentValue.likes = comment.likes
         }
         setLikeClicked(!likeClicked)
         if(dislikeClicked){
             setDislikes(comment.dislikes)
             setDislikeClicked(!dislikeClicked)
+            newCommentValue.dislikes = comment.dislikes
         }
+        updateComment(comment.commentId, newCommentValue)
     }
     const onDownvote = () => {
+        let newCommentValue = comment
         if(!dislikeClicked){
             setDislikes(dislikes + 1)
+            newCommentValue.dislikes = dislikes + 1
         }
         else{
             setDislikes(comment.dislikes)
+            newCommentValue.dislikes = comment.dislikes
         }
         setDislikeClicked(!dislikeClicked)
         if(likeClicked){
             setLikes(comment.likes)
             setLikeClicked(!likeClicked)
+            newCommentValue.likes = comment.likes
         }
+        updateComment(comment.commentId, newCommentValue)
     }
     const handleAddReply = () => {
         if (replyText == ''){
@@ -75,13 +86,18 @@ const Comment = ({ comment }) => {
             else{
                 username = "Guest"
             }
+            let newReplyList;
             const newReply = { user: username, reply: replyText };
             if(!replyList){
-                setReplyList([newReply]);
+                newReplyList = [newReply];
+                setReplyList(newReplyList);
             }
             else{
-                setReplyList([...replyList, newReply]);
+                newReplyList = [...replyList, newReply];
+                setReplyList(newReplyList);
             }
+            console.log("Key is:", comment.commentId)
+            updateReplies(comment.commentId, newReplyList)
         }
     }
     let replyDisplay;
@@ -145,19 +161,38 @@ const MapDetailScreen = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
     const [currentMapPage, setCurrentMapPage] = useState(globalStore.currentMap);
+    let { id } = useParams();
+    // console.log("mapPageId is " + id);
+    // //console.log(globalStore.currentMap)
+    // const newMap = globalStore.setMapPage(id);
+    // console.log(globalStore.currentMap)
     useEffect(() => {
-        if (!globalStore.currentMap) {
-            let mapId = localStorage.getItem('mapPageId')
-            console.log('mapId', mapId)
-            globalStore.setMapPage(mapId);
-        } else {
-            setCurrentMapPage(globalStore.currentMap);
-        }
-    }, [globalStore]);
-    console.log("Current map page: ", currentMapPage)
-    localStorage.setItem('mapPageId', globalStore.currentMap._id);
-    // const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
-    // console.log("Got MapInfo in MapDetailScreen");
+        const fetchData = async () => {
+            try {
+                if (globalStore.currentMap == null || globalStore.currentMap._id !== id) {
+                    // Fetch the map page data using globalStore.setMapPage(id)
+                    const mapPageData = await globalStore.setMapPage(id);
+                    console.log("mapPageData inside the async ",mapPageData);
+                    // Update the currentMapPage state if mapPageData exists
+                    if (mapPageData) {
+                        setCurrentMapPage(mapPageData);
+                    } else {
+                        console.log('Map page data not found');
+                    }
+                } else {
+                    // If the currentMapPage matches the ID, set it to state directly
+                    setCurrentMapPage(globalStore.currentMap);
+                    const mapPageData = await globalStore.setMapPage(id);
+                    console.log("testing to see mappage data:", mapPageData)
+                }
+            } catch (error) {
+                console.error('Error fetching map page:', error);
+            }
+        };
+
+        fetchData();
+    }, [globalStore, id]);
+    // console.log("Current map page: ", currentMapPage)
     
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
@@ -170,10 +205,24 @@ const MapDetailScreen = () => {
     const [newDislikes, setDislikes] = useState(currentMapPage.downvotes);
     const navigate = useNavigate();
 
+    const updateCommentReplies = (commentIndex, newReplies) => {
+        console.log('updateCommentReplies', commentIndex, newReplies)
+        const updatedComments = [...commentList];
+        updatedComments[commentIndex].replies = newReplies;
+        setCommentList(updatedComments);
+        globalStore.setMapPageComments(currentMapPage._id, updatedComments)
+    };
+    const updateComment = (commentIndex, comment) => {
+        const updatedComments = [...commentList];
+        updatedComments[commentIndex].likes = comment.likes;
+        updatedComments[commentIndex].dislikes = comment.dislikes;
+        setCommentList(updatedComments);
+        globalStore.setMapPageComments(currentMapPage._id, updatedComments)
+    };
     let commentDisplay;
     if (commentList != []){
         commentDisplay = commentList.map((comment, index) => (
-            <Comment key={index} comment={comment} />
+            <Comment key={comment.commentId} comment={comment} updateReplies={updateCommentReplies} updateComment={updateComment}/>
         ))
     }
     const handleAddComment = () => {
@@ -207,6 +256,7 @@ const MapDetailScreen = () => {
             globalStore.setMapPageComments(currentMapPage._id,newComments)
         }
     };
+    
     // const handleUpdateDescription = () => {
     //     console.log('Updating description:', newDescription);
     // }
@@ -232,14 +282,16 @@ const MapDetailScreen = () => {
         setLikeColor(newColor);
         if (newColor === 'grey') {
             setLikes(currentMapPage.upvotes);
+            globalStore.addMapPageLikes(currentMapPage._id, currentMapPage.upvotes);
         }
         else if (newColor === 'steelblue') {
             setLikes(newLikes + 1);
-            globalStore.addMapPageLikes(currentMapPage._id)
+            globalStore.addMapPageLikes(currentMapPage._id, newLikes + 1);
         }
         if (dislikeColor === 'red') {
             setDislikeColor('grey')
             setDislikes(currentMapPage.downvotes)
+            globalStore.addMapPageDislikes(currentMapPage._id, currentMapPage.downvotes)
         }
         // globalStore.setMapPageLikes(newLikes);
     };
@@ -248,14 +300,16 @@ const MapDetailScreen = () => {
         setDislikeColor(newColor);
         if (newColor === 'grey') {
             setDislikes(currentMapPage.downvotes);
+            globalStore.addMapPageDislikes(currentMapPage._id, currentMapPage.downvotes)
         }
         else if (newColor === 'red') {
             setDislikes(newDislikes + 1);
-            globalStore.addMapPageDislikes(currentMapPage._id)
+            globalStore.addMapPageDislikes(currentMapPage._id, newDislikes + 1)
         }
         if (likeColor === 'steelblue') {
             setLikeColor('grey')
             setLikes(currentMapPage.upvotes)
+            globalStore.addMapPageLikes(currentMapPage._id, currentMapPage.upvotes);
         }
     };
     return (

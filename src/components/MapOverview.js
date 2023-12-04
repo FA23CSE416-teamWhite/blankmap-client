@@ -18,7 +18,7 @@ const MapOverview = ({ mapInfo }) => {
     try {
         const mappage = await globalStore.setMapPage(mapData.id);
         if (mappage) {
-            navigate('/detail');
+            navigate(`/detail/${mapData.id}`);
         } else {
             console.error("Failed to set map page: Invalid response");
             // Handle error if necessary
@@ -27,7 +27,6 @@ const MapOverview = ({ mapInfo }) => {
         console.error("Error setting map page:", error);
         // Handle error if necessary
     }
-    localStorage.setItem('mapPageId', mapData.id);
 };
   return (
     <Card style={{ marginBottom: '25px', backgroundColor: '#EBEBEB', marginTop: '15px', borderRadius: '10px' }}>  <CardContent style={{ padding: '0px' }}>

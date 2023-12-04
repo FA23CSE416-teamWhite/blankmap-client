@@ -169,12 +169,13 @@ function GlobalStoreContextProvider(props) {
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage()
     };
-    globalStore.addMapPageLikes = function(id){
+    globalStore.addMapPageLikes = function(id, newLikes){
         async function asyncAddMapLikes(id) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
                 let mappage = response.data.mappage;
-                mappage.upvotes += 1;
+                mappage.upvotes = newLikes;
+                console.log("inside addMapPageLikes:",mappage)
                 async function updateMapPage(mappage) {
                     response = await api.updateMapPage(mappage._id, mappage);
                     if (response.data.success) {
@@ -196,12 +197,12 @@ function GlobalStoreContextProvider(props) {
         }
         asyncAddMapLikes(id);
     }
-    globalStore.addMapPageDislikes = function(id){
+    globalStore.addMapPageDislikes = function(id, newDislikes) {
         async function asyncAddMapDislikes(id) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
                 let mappage = response.data.mappage;
-                mappage.downvotes += 1;
+                mappage.downvotes = newDislikes;
                 async function updateMapPage(mappage) {
                     response = await api.updateMapPage(mappage._id, mappage);
                     if (response.data.success) {
