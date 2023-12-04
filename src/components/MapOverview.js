@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { GlobalStoreContext } from '../store/index'; 
@@ -13,17 +13,29 @@ import { GlobalStoreContext } from '../store/index';
 const MapOverview = ({ mapInfo }) => {
   const { globalStore } = useContext(GlobalStoreContext);
   const { title, description, owner, tags, mapSnapshot, creationDate } = mapInfo;
-  const handleSendMapInfo = (mapData) => {
-    localStorage.setItem('mapInfo', JSON.stringify(mapData));
-  };
+  const navigate = useNavigate();
+  const handleSendMapInfo = async (mapData) => {
+    try {
+        const mappage = await globalStore.setMapPage(mapData.id);
+        if (mappage) {
+            navigate('/detail');
+        } else {
+            console.error("Failed to set map page: Invalid response");
+            // Handle error if necessary
+        }
+    } catch (error) {
+        console.error("Error setting map page:", error);
+        // Handle error if necessary
+    }
+    localStorage.setItem('mapPageId', mapData.id);
+};
   return (
     <Card style={{ marginBottom: '25px', backgroundColor: '#EBEBEB', marginTop: '15px', borderRadius: '10px' }}>  <CardContent style={{ padding: '0px' }}>
-      <Link to={`/detail`} style={{ textDecoration: "none" }}>
         <ListItem
           sx={{ borderRadius: "10px", p: "10px", display: 'flex', p: 1 }}
           style={{ transform: "translate(1%,0%)", width: '98%', fontSize: '32pt' }}
           onClick={(event) => {
-            console.log(mapInfo)
+            console.log("mapinfo:",mapInfo)
             handleSendMapInfo(mapInfo);
           }}
         >
@@ -66,7 +78,7 @@ const MapOverview = ({ mapInfo }) => {
             </Grid>
           </Grid>
         </ListItem>
-      </Link>
+      
     </CardContent>
     </Card>
     // <div className="map-overview">

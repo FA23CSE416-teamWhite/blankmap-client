@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Tags from './Tags.js';
 import {
     Box,
@@ -96,7 +96,7 @@ const Comment = ({ comment }) => {
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                <Typography><span style={{ color: 'steelblue' }}>{comment.user}</span> says: {comment.comment}</Typography>
+                <Typography><span style={{ color: 'steelblue' }}>{comment.commenter}</span> says: {comment.content}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <div className="comment-actions">
                         <Button onClick={onReply} color="primary" size="small">
@@ -144,24 +144,34 @@ const Comment = ({ comment }) => {
 const MapDetailScreen = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
-    // const currentMapPage = globalStore.currentMapPage
-    const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
-    console.log("Got MapInfo in MapDetailScreen");
-    console.log(tempMapInfo)
+    const [currentMapPage, setCurrentMapPage] = useState(globalStore.currentMap);
+    useEffect(() => {
+        if (!globalStore.currentMap) {
+            let mapId = localStorage.getItem('mapPageId')
+            console.log('mapId', mapId)
+            globalStore.setMapPage(mapId);
+        } else {
+            setCurrentMapPage(globalStore.currentMap);
+        }
+    }, [globalStore]);
+    console.log("Current map page: ", currentMapPage)
+    localStorage.setItem('mapPageId', globalStore.currentMap._id);
+    // const tempMapInfo = JSON.parse(localStorage.getItem('mapInfo'))
+    // console.log("Got MapInfo in MapDetailScreen");
     
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
-    const [commentList, setCommentList] = useState(tempMapInfo.comments);
+    const [commentList, setCommentList] = useState(currentMapPage.comments);
     // const [newDescription, setDescription] = useState(description);
-    const [tagList, setTagList] = useState(tempMapInfo.tags);
+    const [tagList, setTagList] = useState(currentMapPage.tags);
     const [likeColor, setLikeColor] = useState('grey');
-    const [newLikes, setLikes] = useState(tempMapInfo.upVotes);
+    const [newLikes, setLikes] = useState(currentMapPage.upvotes);
     const [dislikeColor, setDislikeColor] = useState('grey');
-    const [newDislikes, setDislikes] = useState(tempMapInfo.downVotes);
+    const [newDislikes, setDislikes] = useState(currentMapPage.downvotes);
     const navigate = useNavigate();
 
     let commentDisplay;
-    if (commentList){
+    if (commentList != []){
         commentDisplay = commentList.map((comment, index) => (
             <Comment key={index} comment={comment} />
         ))
@@ -183,61 +193,69 @@ const MapDetailScreen = () => {
             else{
                 username = "Guest"
             }
-            const newCommentObject = { user: username, comment: newComment, replys: [], likes: 0, dislikes: 0 };
+            let newCommentObject = { commenter: username, commentId: 0, content: newComment, likes: 0, dislikes: 0, replies: []};
+            let newComments;
             if(!commentList){
                 setCommentList([newCommentObject]);
+                newComments = [newCommentObject]
             }
             else{
+                newCommentObject.commentId = commentList.length
                 setCommentList([...commentList, newCommentObject]);
+                newComments = [...commentList, newCommentObject]
             }
+            globalStore.setMapPageComments(currentMapPage._id,newComments)
         }
     };
     // const handleUpdateDescription = () => {
     //     console.log('Updating description:', newDescription);
     // }
-    const handleAddTag = () => {
-        if (newTags == ''){
-            console.log("Empty tag")
-        }
-        else {
-            // Implement logic to add a comment (you may want to update your data structure)
-            console.log('Adding tag:', newTags);
-            setNewTags('');
-            // Update the comment list
-            setTagList([...tagList, newTags]);
-        }
-    }
-    const handleDeleteTag = () => {
-        console.log('Deleting Tag:', newTags)
-        setNewTags('');
-    }
+    // const handleAddTag = () => {
+    //     if (newTags == ''){
+    //         console.log("Empty tag")
+    //     }
+    //     else {
+    //         // Implement logic to add a comment (you may want to update your data structure)
+    //         console.log('Adding tag:', newTags);
+    //         setNewTags('');
+    //         // Update the comment list
+    //         setTagList([...tagList, newTags]);
+    //     }
+    // }
+    // const handleDeleteTag = () => {
+    //     console.log('Deleting Tag:', newTags)
+    //     setNewTags('');
+    // }
     const handleLike = () => {
+        console.log('newLikes:', newLikes)
         const newColor = likeColor === 'grey' ? 'steelblue' : 'grey';
         setLikeColor(newColor);
         if (newColor === 'grey') {
-            setLikes(tempMapInfo.upVotes);
+            setLikes(currentMapPage.upvotes);
         }
         else if (newColor === 'steelblue') {
             setLikes(newLikes + 1);
+            globalStore.addMapPageLikes(currentMapPage._id)
         }
         if (dislikeColor === 'red') {
             setDislikeColor('grey')
-            setDislikes(tempMapInfo.downVotes)
+            setDislikes(currentMapPage.downvotes)
         }
-
+        // globalStore.setMapPageLikes(newLikes);
     };
     const handleDislike = () => {
         const newColor = dislikeColor === 'grey' ? 'red' : 'grey';
         setDislikeColor(newColor);
         if (newColor === 'grey') {
-            setDislikes(tempMapInfo.downVotes);
+            setDislikes(currentMapPage.downvotes);
         }
         else if (newColor === 'red') {
             setDislikes(newDislikes + 1);
+            globalStore.addMapPageDislikes(currentMapPage._id)
         }
         if (likeColor === 'steelblue') {
             setLikeColor('grey')
-            setLikes(tempMapInfo.upVotes)
+            setLikes(currentMapPage.upvotes)
         }
     };
     return (
@@ -255,7 +273,7 @@ const MapDetailScreen = () => {
                                 rows = {10}
                                 sx={{ height: '100%', width: '100%' }} 
                             /> */}
-                        <Typography>{tempMapInfo.description}</Typography>
+                        <Typography>{currentMapPage.description}</Typography>
                     </Paper>
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
@@ -276,7 +294,7 @@ const MapDetailScreen = () => {
                 <Grid item xs={12} md={8}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            <Typography variant="h4">{tempMapInfo.title}</Typography>
+                            <Typography variant="h4">{currentMapPage.title}</Typography>
                             <IconButton onClick={() => console.log('download button clicked')}>
                                 <DownloadIcon />
                             </IconButton>

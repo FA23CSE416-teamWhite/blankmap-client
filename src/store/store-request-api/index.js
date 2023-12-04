@@ -16,17 +16,23 @@ export const createMap = (title,description,publicStatus,selectedCategory,tags,f
     })
 }
 const updateMapPage = (id, mappage) => {
-    return api.put(`/map/updateMapPage/${id}`, {
+    return api.put(`/map/updateMapPage/${id}/`, {
+        mappage: mappage
+    })
+}
+const updateMapPageGeneral = (id, mappage) => {
+    return api.put(`/map/updateMapPageGeneral/${id}/`, {
         mappage: mappage
     })
 }
 export const getMapPagePairs = () => api.get(`/map/mappagepairs/`)
 export const getPublicMapPagePairs = () => api.get(`/map/publicMapPagePairs/`)
 export const getMapPage = () => api.get(`/map/mappages/`)
-export const getMapPageById = (id) => api.get(`/map/mappage/${id}`)
+export const getMapPageById = (id) => api.get(`/map/mappage/${id}/`)
 const apis = {
     createMap,
     updateMapPage,
+    updateMapPageGeneral,
     getMapPagePairs,
     getMapPage,
     getMapPageById,
