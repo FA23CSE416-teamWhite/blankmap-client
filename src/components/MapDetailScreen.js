@@ -160,40 +160,19 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
 const MapDetailScreen = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
-    const [currentMapPage, setCurrentMapPage] = useState(globalStore.currentMap);
     let { id } = useParams();
+    let currentMapPage = globalStore.currentMap
     // console.log("mapPageId is " + id);
-    // //console.log(globalStore.currentMap)
-    // const newMap = globalStore.setMapPage(id);
-    // console.log(globalStore.currentMap)
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (globalStore.currentMap == null || globalStore.currentMap._id !== id) {
-                    // Fetch the map page data using globalStore.setMapPage(id)
-                    const mapPageData = await globalStore.setMapPage(id);
-                    console.log("mapPageData inside the async ",mapPageData);
-                    // Update the currentMapPage state if mapPageData exists
-                    if (mapPageData) {
-                        setCurrentMapPage(mapPageData);
-                    } else {
-                        console.log('Map page data not found');
-                    }
-                } else {
-                    // If the currentMapPage matches the ID, set it to state directly
-                    setCurrentMapPage(globalStore.currentMap);
-                    const mapPageData = await globalStore.setMapPage(id);
-                    console.log("testing to see mappage data:", mapPageData)
-                }
-            } catch (error) {
-                console.error('Error fetching map page:', error);
-            }
-        };
-
-        fetchData();
-    }, [globalStore, id]);
-    // console.log("Current map page: ", currentMapPage)
-    
+    if (!globalStore.currentMap){
+        console.log("mapPage is null", globalStore.currentMap);
+        currentMapPage = JSON.parse(localStorage.getItem("mapData"))
+        console.log(JSON.parse(localStorage.getItem("mapData")));
+        console.log("mapPage is now", currentMapPage)
+    }
+    else{
+        console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
+        localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
+    }
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
     const [commentList, setCommentList] = useState(currentMapPage.comments);
