@@ -32,6 +32,7 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 import ColorLayer from "./ColorLayer";
+import DrawLayer from "./DrawLayer";
 
 const RegionalEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -56,6 +57,7 @@ const RegionalEdit = () => {
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
+    const [drawPanelOpen, setDrawPanelOpen] = useState(false);
     useEffect(() => {
         setFile_created(globalStore.selectedFile);
     }, [globalStore.selectedFile]);
@@ -257,8 +259,12 @@ const RegionalEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && <ColorLayer geojsonData={geojsonData} colorProperty="color" />}
+                    {drawPanelOpen&&<DrawLayer/>}
                 </MapContainer>
-                <Button variant="contained"
+                {(drawPanelOpen===false)&&<Button variant="contained"
+                onClick={() => {
+                    setDrawPanelOpen(true);
+                }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -266,7 +272,19 @@ const RegionalEdit = () => {
                         marginTop: '10px',
                     }}>
                     Add a New Region
-                </Button>
+                </Button>}
+                {drawPanelOpen&&<Button variant="contained"
+                onClick={() => {
+                    setDrawPanelOpen(false);
+                }}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginTop: '10px',
+                    }}>
+                    Close the drawn panel
+                </Button>}
                 {/* {inputButton} */}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 

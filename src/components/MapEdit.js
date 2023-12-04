@@ -26,6 +26,7 @@ import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
+import DrawLayer from './DrawLayer';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import omnivore from 'leaflet-omnivore';
@@ -58,6 +59,7 @@ const MapEdit = () => {
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
+    const [drawPanelOpen, setDrawPanelOpen] = useState(false);
     let displayFeatures;
 
     if (features.length > 0) {
@@ -254,8 +256,12 @@ const MapEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
+                    {drawPanelOpen&&<DrawLayer/>}
                 </MapContainer>
-                <Button variant="contained"
+                {(drawPanelOpen===false)&&<Button variant="contained"
+                onClick={() => {
+                    setDrawPanelOpen(true);
+                }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -263,7 +269,19 @@ const MapEdit = () => {
                         marginTop: '10px',
                     }}>
                     Add a New Region
-                </Button>
+                </Button>}
+                {drawPanelOpen&&<Button variant="contained"
+                onClick={() => {
+                    setDrawPanelOpen(false);
+                }}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginTop: '10px',
+                    }}>
+                    Close the drawn panel
+                </Button>}
                 {/* {inputButton} */}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
 
