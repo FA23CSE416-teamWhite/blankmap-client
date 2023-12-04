@@ -83,46 +83,69 @@ const MyInfoScreen = () => {
           <img src={avatarUrl} alt="User Avatar" className="avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
         </div>
         
-        <div id="userInfo" className="user-info" style={{ marginTop: '20px' }}>
-          <Typography variant="h5">User Information</Typography>
-          <div>
-            <strong>Username: </strong>
-            {info.userName}
+        {edit &&
+          <div className="user-info" style={{ marginTop: '20px' }}>
+            <Typography variant="h5">User Information</Typography>
+            <div>
+              <strong>Username: </strong>
+              {info.userName}
+            </div>
+            <div>
+              <strong>firstName: </strong>
+              {info.firstName }
+            </div>
+            <div>
+              <strong>lastName: </strong>
+              {info.lastName}
+            </div>
+            <div>
+              <strong>Email:</strong> {info.email}
+            </div>
+            <div>
+              <strong>Phone: </strong>
+              {info.phone}
+            </div>
+            <div>
+              <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
+              {/* Ideally, avoid displaying passwords for security reasons */}
+            </div>
+            <div>
+              <strong>Member Since:</strong> {formattedDate}
+            </div>
+            <div>
+              <strong>Number of Maps:</strong> {info.mapLength}
+            </div>
+            <div>
+              <strong>Bio: </strong>
+              {info.bio}
+            </div>
+            
           </div>
-          <div>
-            <strong>firstName: </strong>{edit && info.firstName }
-            {!edit && <TextField size='small'  label ={info.firstName} onChange={(e) => setFirstName(e.target.value)}/>}
-          </div>
-          <div>
-            <strong>lastName: </strong>
-            {edit && info.lastName}
-            {!edit && <TextField size='small'  label ={info.lastName} onChange={(e) => setLastName(e.target.value)}/>}
-          </div>
-          <div>
-            <strong>Email:</strong> {info.email}
-          </div>
-          <div>
-            <strong>Phone: </strong>
-            {edit && info.phone}
-            {!edit && <TextField size='small'  label ={info.phone} onChange={(e) => setPhone(e.target.value)}/>}
-          </div>
-          <div>
-            <strong>Password:</strong> ********* {/* Display password securely or provide an option to reset */}
-            {/* Ideally, avoid displaying passwords for security reasons */}
-          </div>
-          <div>
-            <strong>Member Since:</strong> {formattedDate}
-          </div>
-          <div>
-            <strong>Number of Maps:</strong> {info.mapLength}
-          </div>
-          <div>
-            <strong>Bio: </strong>
-            {edit && info.bio}
-            {!edit && <TextField size='small'  label ={info.bio} onChange={(e) => setBio(e.target.value)}/>}
-          </div>
-          
-        </div>
+        }
+        {!edit && 
+          <Box sx={{display:'flex', flex:1, flexDirection: 'column',alignItems: 'left', justifyContent: 'left' }}>
+            <Typography variant="h5" sx={{display:'flex', alignItems:'center', justifyContent:'center'}}>Edit Information</Typography>
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>FirstName: </strong>
+              <TextField size='small'  label ={info.firstName} onChange={(e) => setFirstName(e.target.value)}/>
+            </Box>
+
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>LastName: </strong>
+              <TextField size='small'  label ={info.lastName} onChange={(e) => setLastName(e.target.value)}/>
+            </Box>
+
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>Phone: </strong>
+              <TextField size='small'  label ={info.phone} onChange={(e) => setPhone(e.target.value)}/>
+            </Box>
+
+            <Box  sx={{display:'flex', flex:1, flexDirection: 'column',paddingY:'5px',alignItems: 'center', justifyContent: 'center' }}>
+              <strong>Bio: </strong>
+              <TextField size='small'  label ={info.bio} onChange={(e) => setBio(e.target.value)}/>
+            </Box>
+          </Box>
+        }
         {edit && <Button variant="contained" onClick={() => handleGetLoggin()} style={{ marginTop: '20px' }}>Edit</Button>}
         {!edit && <Button variant="contained" onClick={() => handleProfileUpdate()} style={{ marginTop: '20px' }}>Confirm</Button>}
       </Paper>

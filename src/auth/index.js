@@ -191,6 +191,7 @@ function AuthContextProvider(props) {
                 })
                 history("/home");
             }
+            return response
         } catch(error){
             authReducer({
                 type: AuthActionType.LOGIN_USER,
@@ -200,6 +201,7 @@ function AuthContextProvider(props) {
                     errorMessage: error.response.data.errorMessage
                 }
             })
+            return error.response
         }
     }
 

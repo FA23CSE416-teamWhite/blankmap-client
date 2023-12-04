@@ -21,17 +21,17 @@ export default function LoginScreen() {
     const navigate = useNavigate()
     const { auth } = useContext(AuthContext);
 
-    function handleLogin(event) {
+    async function handleLogin(event) {
         if (username === "" ||
             password === "") {
             alert("Please fill all fields");
             return;
         }
-        auth.loginUser(username, password)
-        if(!auth.user){
-            // alert(auth.errorMessage)
-        }
-        
+        await auth.loginUser(username, password).
+        then(function(res){
+        }).catch(function(res){
+            alert(res.data.errorMessage)
+        })
 
 
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
