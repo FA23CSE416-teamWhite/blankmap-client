@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useMap } from 'react-leaflet'
-import L from 'leaflet'
+import { useMap, Marker } from 'react-leaflet'
+import L, { point } from 'leaflet'
 import "leaflet.heat"
 
 export default function HeatMap({addressPoints}){
@@ -14,6 +14,7 @@ export default function HeatMap({addressPoints}){
        return [p[0], p[1], p[2]]; // lat lng intensity
        })
      : [];
+
     
      console.log(points)
      L.heatLayer(points).addTo(map);

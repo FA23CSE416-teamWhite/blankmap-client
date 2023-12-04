@@ -12,13 +12,13 @@ import HeatMap from "./HeatMap";
 import UndoIcon from '@mui/icons-material/Undo';
 import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
-import { MapContainer, TileLayer, useMapEvents,Marker} from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents,Marker, Popup} from 'react-leaflet';
 
 const MapEditHeat = () => {
     const [points, setPoints] = useState([]);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
-    const [intensity, setIntensity] = useState("");
-    const [pointLocation, setPointLocation] = useState("");
+    const [intensity, setIntensity] = useState(0);
+    const [pointLocation, setPointLocation] = useState([0,0]);
     const [geojsonData, setGeojsonData] = useState(null);
     const mapRef = React.useRef();
     useEffect(() => {
@@ -33,6 +33,8 @@ const MapEditHeat = () => {
                 [...pointLocation, intensity],
             ]);
             console.log(points)
+        }else{
+            alert("Pick a Point and Intensity!")
         }
     };
 
@@ -40,11 +42,19 @@ const MapEditHeat = () => {
         const map = useMapEvents({
             click(e) {
                 setPointLocation(Object.values(e.latlng));
-                console.log(pointLocation)
             },
         });
         return null;
     };
+    const handleDeletePoint = (i) =>{
+        console.log(i)
+        points.splice(i,1)
+        setPoints(points)
+    }
+
+    const handleSaveMap = () =>{
+
+    }
     return (
         <Grid container>
             <Grid item xs={12} sm={1}></Grid>
@@ -56,9 +66,10 @@ const MapEditHeat = () => {
                         display: "flex",
                         justifyContent: "left",
                         alignItems: "left",
+                        paddingY:2
                     }}
                 >
-                    A Heat Map Example
+                Title: <TextField placeholder="Enter Title"></TextField>
                 </Typography>
                 <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
@@ -73,11 +84,21 @@ const MapEditHeat = () => {
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {<HeatMap addressPoints={points}/>}
                     <LocationFinder/>
-                    <Marker position={pointLocation} ></Marker>)
+                    {points.map((position, idx) => 
+                    <Marker key={`marker-${idx}`} position={position}>
+                    <Popup>
+                        <Typography>Intensity: {points[idx][2]}</Typography>
+                        <Button onClick={()=> handleDeletePoint(idx)}> delete point </Button>
+                    </Popup>
+                    </Marker>)}
                 </MapContainer>
-                <Button variant="contained" onClick={handleAddPoint}>
-                    Add a point
-                </Button>
+                <Box display='flex' sx={{paddingY:2}}>
+                <Typography sx={{paddingX:2, fontSize:'24px'}}> Lat: {pointLocation[0]} </Typography>
+                <Typography sx={{paddingX:2, fontSize:'24px'}}> Long: {pointLocation[1]} </Typography>
+                    <Button variant="contained" onClick={handleAddPoint}>
+                        Add a point
+                    </Button>
+                </Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
 
@@ -114,19 +135,19 @@ const MapEditHeat = () => {
                     inputProps={{ type: 'number'}}
                     onChange={(e) => setIntensity(e.target.value)}
                     />
-                <Typography> Choose a Color</Typography>
+                {/* <Typography> Choose a Color</Typography>
                 <Box sx={{ paddingY: 1 }}>
                     <SquareIcon sx={{ color: "red", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "blue", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "yellow", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "green", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "purple", paddingX: 1 }} />
-                </Box>
+                </Box> */}
 
-                <Box>
+                <Box sx={{ paddingY: 2 } } >
 
-                    <Button variant="contained" sx={{ paddingY: 1, marginLeft: 2 } } href="/create">
-                        Render as Heat Map
+                    <Button variant="contained" href="/create">
+                        Save
                     </Button></Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
