@@ -64,7 +64,8 @@ const MapCreationPage = () => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        if (!file || !file.name.endsWith('.json')|| !file.name.endsWith('.geojson')) {
+        if (!file || !(file.name.endsWith('.json') || file.name.endsWith('.geojson'))) {
+
             // Display an error message or handle it as needed
             console.error('Please select a valid JSON file.');
             return;
