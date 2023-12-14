@@ -20,18 +20,19 @@ export default function LoginScreen() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate()
     const { auth } = useContext(AuthContext);
+    const [error, setError] = useState(null)
 
     async function handleLogin(event) {
         if (username === "" ||
             password === "") {
-            alert("Please fill all fields");
+            setError("Please fill all fields");
             return;
         }
-        await auth.loginUser(username, password).
-            then(function (res) {
-            }).catch(function (res) {
-                alert(res.data.errorMessage)
-            })
+        await auth.loginUser(username, password).then(function (res) {
+            setError(null)
+        }).catch(function (res) {
+            setError(res.data.errorMessage)
+        })
 
 
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
@@ -60,7 +61,6 @@ export default function LoginScreen() {
                         <Box>
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px' }}>
                                 <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
-
                             </Box>
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 4 }}>
                                 <span style={{ fontWeight: 'bold', fontSize: '1.4em' }}>Log in</span>
@@ -100,7 +100,7 @@ export default function LoginScreen() {
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", marginBottom: "20px" }}>
                                 <Link to="/home">Guest Login</Link>
                             </Box>
-
+                            {error && <p style={{ color: 'red', textAlign: 'center'}}>{error}</p>}
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", paddingY: 1, alignItems: 'center', justifyContent: 'center' }}>
                                 Don't have an account?
                                 <Link to="/register">Register Account</Link>

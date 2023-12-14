@@ -201,7 +201,7 @@ function AuthContextProvider(props) {
                     errorMessage: error.response.data.errorMessage
                 }
             })
-            return error.response
+            throw error.response
         }
     }
 
