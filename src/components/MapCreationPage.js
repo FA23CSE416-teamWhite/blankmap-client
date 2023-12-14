@@ -1,7 +1,7 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
-import { GlobalStoreContext } from '../store/index'; 
+import { GlobalStoreContext } from '../store/index';
 import AuthContext from "../auth";
 import {
     Box,
@@ -23,7 +23,7 @@ import { FormHelperText } from "@mui/material";
 
 const MapCreationPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
-    const {auth}= useContext(AuthContext)
+    const { auth } = useContext(AuthContext)
     // State for form inputs
     const [mapName, setMapName] = useState("");
     const [isPublic, setIsPublic] = useState(true);
@@ -34,23 +34,23 @@ const MapCreationPage = () => {
     const [routerAdd, setRouterAdd] = useState("edit")
     const fileInputRef = React.useRef();
 
-    const[selectedFile, setSelectedFile] = useState(null);  
+    const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const navigate = useNavigate();
     const [fileContent, setFileContent] = useState(null);
 
-    function handleSubmit(){
+    function handleSubmit() {
         if (!fileContent) {
             console.error('Please select a file.');
             return;
         }
-        if(mapName=== "" ||description===""||tags===""||selectedFile==="" ){
+        if (mapName === "" || description === "" || tags === "" || selectedFile === "") {
             alert("Please fill all fields");
-                return;
+            return;
         }
         const stringifiedFileContent = JSON.stringify(fileContent);
         auth.getLoggedIn()
-        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,stringifiedFileContent, routerAdd,selectedFile)
+        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
@@ -80,8 +80,8 @@ const MapCreationPage = () => {
         setSelectedFile(file);
         setSelectedFileName(file.name);
         const reader = new FileReader();
-        reader.onload = function(event) {
-            
+        reader.onload = function (event) {
+
             setFileContent(event.target.result)
         };
 
@@ -112,12 +112,12 @@ const MapCreationPage = () => {
         if (newTag.trim() === "") return;
         setTags([...tags, newTag]);
         setNewTag("");
-      };
-    
-      const removeTag = (tagToRemove) => {
+    };
+
+    const removeTag = (tagToRemove) => {
         const updatedTags = tags.filter((tag) => tag !== tagToRemove);
         setTags(updatedTags);
-      };
+    };
 
     return (
         <Grid container>
@@ -185,9 +185,8 @@ const MapCreationPage = () => {
                         rows={10}
                     />
                 </FormControl>
-                <FormControl fullWidth margin="normal" sx={{marginY:3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    
-                    <Box display="flex" alignItems="center">
+                <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
                     <TextField
                         id="mapTags"
                         type="text"
@@ -197,32 +196,33 @@ const MapCreationPage = () => {
                         variant="outlined"
                         multiline
                         sx={{
+                            width: '400px', // Set the width to make it square
+                            // height: '250px',
                             borderRadius: '8px', // Optional: Set the border-radius for rounded corners
                         }}
                         onChange={(e) => setNewTag(e.target.value)}
                         placeholder="Add some tags to highlight your map"
                     />
+                    <Box  sx={{ display: 'flex', justifyContent: 'center', width: '400px' }}>
                     <Button variant="contained"
                         onClick={addTag}
                         sx={{
                             borderRadius: '10px',
                             backgroundColor: '#0844A4', // Replace with your desired color
                             color: 'white', // Text color
-                            marginLeft:2
                         }}>
                         Add Tag
                     </Button>
                     </Box>
-                    <Box mt={1}>
+
                     {tags.map((tag, index) => (
                         <Chip
-                        key={index}
-                        label={tag}
-                        onDelete={() => removeTag(tag)}
-                        sx={{ margin: '0.5rem' }}
+                            key={index}
+                            label={tag}
+                            onDelete={() => removeTag(tag)}
+                            sx={{ margin: '0.5rem' }}
                         />
                     ))}
-                    </Box>
                 </FormControl>
 
                 {/* <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -301,7 +301,7 @@ const MapCreationPage = () => {
                         Load From Map
                     </Button>
                     <input
-                        id = "fileInput"
+                        id="fileInput"
                         type="file"
                         accept=".json, .geojson"
                         ref={fileInputRef}
@@ -310,17 +310,17 @@ const MapCreationPage = () => {
                     />
                 </Box>
                 <Button
-                        variant="contained"
-                        onClick={handleSubmit}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginY:2
-                        }}
-                    >
-                        Submit
-                    </Button>
+                    variant="contained"
+                    onClick={handleSubmit}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginY: 2
+                    }}
+                >
+                    Submit
+                </Button>
             </Grid>
         </Grid>
     );
