@@ -1,7 +1,9 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
+    // baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
+    // baseURL: 'http://localhost:8000/auth'
+    baseURL: process.env.NODE_ENV === 'production' ? 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth' : 'http://localhost:8000/auth'   
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`, { headers: { 'Cache-Control': 'no-cache' } });
 export const getQuestion = (email) => api.get(`/question/${email}`);

@@ -1,8 +1,9 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api/map'
+    // baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api/map'
     // baseURL: 'http://localhost:8000/api/map'
+    baseURL: process.env.NODE_ENV === 'production' ? 'https://blankmap-server-6de6d45e4291.herokuapp.com/api/map' : 'http://localhost:8000/api/map'   
 })
 
 const fetchMaps = async (query) => {
