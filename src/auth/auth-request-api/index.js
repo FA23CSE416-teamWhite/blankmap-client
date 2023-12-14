@@ -1,7 +1,10 @@
 import axios from 'axios'
+import apiUrl from '../../baseURL'
 axios.defaults.withCredentials = true;
+
 const api = axios.create({
-    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
+    // baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/auth'
+    baseURL: apiUrl+'/auth'
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`, { headers: { 'Cache-Control': 'no-cache' } });
 export const getQuestion = (email) => api.get(`/question/${email}`);

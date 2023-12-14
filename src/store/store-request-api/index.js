@@ -1,7 +1,10 @@
 import axios from 'axios'
+import apiUrl from '../../baseURL'
 axios.defaults.withCredentials = true;
+
 const api = axios.create({
-    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api'
+    // baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api'
+    baseURL: apiUrl+'/api'
 })
 
 // export const createMap = () => api.post(`/map/`);
