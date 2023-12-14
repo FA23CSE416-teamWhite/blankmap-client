@@ -140,16 +140,20 @@ const HomeScreen = () => {
 
       {/* Typography Button on the right */}
       <Button
-        variant="contained"
-        onClick={handleCreateMap}
-        sx={{
-          borderRadius: '10px',
-          backgroundColor: '#0844A4', // Replace with your desired color
-          color: 'white', // Text color
-        }}
-      >
-        Create Map
-      </Button>
+      variant="contained"
+      onClick={handleCreateMap}
+      sx={{
+        borderRadius: '10px',
+        backgroundColor: '#0844A4',
+        color: 'white',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        maxWidth: '150px', // Set your desired fixed width
+      }}
+    >
+      Create Map
+    </Button>
     </Box>
   );
 
