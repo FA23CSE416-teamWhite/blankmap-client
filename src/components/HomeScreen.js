@@ -50,7 +50,7 @@ const HomeScreen = () => {
     fetchData();
     return () => {
     };
-  }, [location.search, searchQuery]);
+  }, [location.search, searchQuery, location.pathname]);
   const [currentPage, setCurrentPage] = useState(1);
   const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
   const [sortOption, setSortOption] = useState('title');
