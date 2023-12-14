@@ -28,10 +28,10 @@ export default function LoginScreen() {
             return;
         }
         await auth.loginUser(username, password).
-        then(function(res){
-        }).catch(function(res){
-            alert(res.data.errorMessage)
-        })
+            then(function (res) {
+            }).catch(function (res) {
+                alert(res.data.errorMessage)
+            })
 
 
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
@@ -44,14 +44,14 @@ export default function LoginScreen() {
             justifyContent="center"
             alignItems="center"
             sx={{
-                height: 'calc(100vh )',
+                height: 'calc(95vh )',
                 background: `url(${backgroundImage}) center/cover no-repeat fixed`,
                 padding: '20px', // Adjust padding as needed
                 boxSizing: 'border-box',
             }}
         >
-            <Grid item xs={12} sm={8} md={6} lg={4}>
-                <Card variant="outlined" sx={{ width: 600, boxShadow: 3, borderRadius: 2 }}>
+            <Grid item xs={12} sm={8} md={8} lg={4} style={{ minWidth: '500px' }}>
+                <Card variant="outlined" sx={{ width: '100%', boxShadow: 3, borderRadius: 2 }}>
                     {/* <CardHeader color="blue"
                             title={<Typography noWrap sx={{textAlign: "center", fontWeight: "bold",  overflow: "hidden", textOverflow: "ellipsis"}}>LOGIN</Typography>}
                             sx = {{bgcolor:"CornflowerBlue"}}
@@ -88,7 +88,7 @@ export default function LoginScreen() {
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 3, alignItems: 'center', justifyContent: 'center' }}>
 
 
-                                <Button id = 'login' variant="contained" onClick={handleLogin}
+                                <Button id='login' variant="contained" onClick={handleLogin}
                                     sx={{ width: '100%', backgroundColor: 'black', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', height: '50px' }}>
                                     Log in
                                 </Button>
