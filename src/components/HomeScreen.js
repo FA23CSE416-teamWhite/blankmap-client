@@ -75,10 +75,13 @@ const HomeScreen = () => {
     if (sortOption === "title") {
       return a.title.localeCompare(b.title);
     } else if (sortOption === "Hight Upvotes") {
-      return b.upVotes - a.upVotes;
+      return b.upvotes - a.upvotes;
     } else if (sortOption === "Popular") {
-      return b.numberOfComments - a.numberOfComments;
-    }
+      return b.comments.length - a.comments.length;
+    } else if (sortOption === "Newest") {
+      // Assuming 'createdAt' is a timestamp or a Date object
+      return new Date(b.creationData) - new Date(b.creationData);
+  }
     // Add more sorting options as needed
     return 0;
   });
@@ -116,8 +119,9 @@ const HomeScreen = () => {
               <em>Select</em>
             </MenuItem>
             <MenuItem value="title">Title</MenuItem>
-            <MenuItem value="Hight Upvotes">Hight Upvotes</MenuItem>
+            <MenuItem value="Hight Upvotes">Most Upvoted</MenuItem>
             <MenuItem value="Popular">Popular</MenuItem>
+            <MenuItem value="Newest">Newest</MenuItem>
           </Select>
         </FormControl>
 
