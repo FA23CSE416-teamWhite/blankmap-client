@@ -37,14 +37,20 @@ const MapCreationPage = () => {
     const[selectedFile, setSelectedFile] = useState(null);  
     const [selectedFileName, setSelectedFileName] = useState("");
     const navigate = useNavigate();
+    const [fileContent, setFileContent] = useState(null);
 
     function handleSubmit(){
+        if (!fileContent) {
+            console.error('Please select a file.');
+            return;
+        }
         if(mapName=== "" ||description===""||tags===""||selectedFile==="" ){
             alert("Please fill all fields");
                 return;
         }
+        const stringifiedFileContent = JSON.stringify(fileContent);
         auth.getLoggedIn()
-        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,selectedFile, routerAdd)
+        globalStore.createMap(mapName,description,isPublic,selectedCategory,tags,stringifiedFileContent, routerAdd,selectedFile)
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
@@ -71,9 +77,16 @@ const MapCreationPage = () => {
             return;
         }
         console.log(file)
-        // Do something with the selected file, for example, store it in state
         setSelectedFile(file);
         setSelectedFileName(file.name);
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            
+            setFileContent(event.target.result)
+        };
+
+        reader.readAsText(file);
+        // Do something with the selected file, for example, store it in state
     };
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown

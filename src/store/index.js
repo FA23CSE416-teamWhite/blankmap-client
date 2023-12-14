@@ -51,7 +51,7 @@ function GlobalStoreContextProvider(props) {
         }
     }
     
-    globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file, routerAdd){
+    globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file, routerAdd,selectedFile){
         console.log(file)
         async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
             let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
@@ -60,7 +60,7 @@ function GlobalStoreContextProvider(props) {
                 storeReducer({
                     type: GlobalStoreActionType.CREATE_MAP,
                     payload:{
-                        file:file,
+                        file:selectedFile,
                         map:response.data.map
                     } 
                 })
