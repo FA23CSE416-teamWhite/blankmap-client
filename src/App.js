@@ -38,7 +38,7 @@ import IconBanner from './components/IconBanner';
     const showAppBanner = ['/Home','/home', '/create',"/detail","/profile","/profile/my-maps"
     ,"/profile/message-center","/profile/personal-information"
     ,"/edit","/edit-heat","/regional-edit","/search"];
-    const notShowAppBanner = ['/login','/register','/forgot','/sign-out','/Login'];
+    const notShowAppBanner = ['/login','/register','/forgot','/sign-out'];
     const shouldShowAppBanner = !notShowAppBanner.includes(location.pathname);
   
     return (

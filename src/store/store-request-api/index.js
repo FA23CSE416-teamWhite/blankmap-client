@@ -1,9 +1,7 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    // baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api'
-    // baseURL: 'http://localhost:8000/api'
-    baseURL: process.env.NODE_ENV === 'production' ? 'https://blankmap-server-6de6d45e4291.herokuapp.com/api' : 'http://localhost:8000/api'   
+    baseURL: 'https://blankmap-server-6de6d45e4291.herokuapp.com/api'
 })
 
 // export const createMap = () => api.post(`/map/`);
