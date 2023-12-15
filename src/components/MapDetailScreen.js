@@ -350,7 +350,7 @@ const MapDetailScreen = () => {
                     </Paper>
 
                     <Box>
-                        <Button variant="contained" onClick={() => navigate('/edit')} sx = {{height: '40px'}}>
+                        <Button variant="contained" onClick={() => navigate('/map-info-edit/'+currentMapPage._id)} sx = {{height: '40px'}}>
                             Open Edit As My Map
                         </Button>
                         <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx = {{height: '40px', marginLeft:'20px'}}>

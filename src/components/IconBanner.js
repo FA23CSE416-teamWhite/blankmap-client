@@ -17,17 +17,19 @@ import { useContext } from 'react';
 
 export default function IconBanner() {
     const { auth } = useContext(AuthContext);
-    let menu =<Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
+    let menu = <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
     let main = <Link to="/main" style={{ textDecoration: "none" }}>
-                    <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
-                </Link>
-    if(auth.loggedIn){
-        menu=<Link id="accountCircle" to="/profile" style={{ textDecoration: "none", color: '#0844A4'}}>
-                <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
-            </Link>
-        main=<img src={blankMapicon} alt="fireSpot" width="60" height="60" />
+        <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
+    </Link>
+    if (auth.loggedIn) {
+        menu = <Link id="accountCircle" to="/profile" style={{ textDecoration: "none", color: '#0844A4' }}>
+            <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
+        </Link>
+        main = <Link to="/home" style={{ textDecoration: "none" }}>
+            <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
+        </Link>
     }
-    
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ bgcolor: '#D6D6D6' }}>

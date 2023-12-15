@@ -34,9 +34,20 @@ const createMap = async (mapName, isPublic, description, tags, selectedCategory,
       }
 }
 
+const fetchMap = async (mapId) => {
+    try {
+        const response = await api.get(`/map/${mapId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching map:', error);
+        throw error;
+    }
+}
+
 const mapApi = {
     fetchMaps,
     createMap,
+    fetchMap
   };
 
 export default mapApi;

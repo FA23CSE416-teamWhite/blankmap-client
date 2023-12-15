@@ -20,9 +20,10 @@ import {
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import {useParams} from 'react-router-dom'
 
 
-const MapCreationPage = () => {
+const MapInfoEditPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext)
     // State for form inputs
@@ -42,6 +43,23 @@ const MapCreationPage = () => {
     const [error, setError] = useState(null);
     const [geojson, setGeojson] = useState(null);
     const [map, setMap] = useState(null);
+    const { id } = useParams();
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await mapApi.fetchMap(id);
+            console.log(data.mappage);
+            setMapName(data.mappage.title);
+            setIsPublic(data.mappage.publicStatus);
+            setDescription(data.mappage.description);  
+            setTags(data.mappage.tags);
+          } catch (error) {
+            console.error('Error fetching map:', error);
+            }
+        };
+    
+        fetchData();
+      }, [id]);
     // const [center, setCenter] = useState([0,0]);
 
     function handleSubmit() {
@@ -369,4 +387,4 @@ const MapCreationPage = () => {
     );
 };
 
-export default MapCreationPage;
+export default MapInfoEditPage;

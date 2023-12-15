@@ -13,6 +13,7 @@ import MapEdit from './MapEdit'
 import MapEditHeat from './HeatMap/MapEditHeat'
 import RegionalEdit from './RegionalEdit'
 import MainPage from './MainPage'
+import MapInfoEditPage from './MapInfoEditPage'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -33,6 +34,7 @@ export {
     MapEdit,
     MapEditHeat,
     RegionalEdit,
-    MainPage
+    MainPage,
+    MapInfoEditPage
 
 }

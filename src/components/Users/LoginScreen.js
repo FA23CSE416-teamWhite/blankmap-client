@@ -45,7 +45,7 @@ export default function LoginScreen() {
             justifyContent="center"
             alignItems="center"
             sx={{
-                height: 'calc(95vh )',
+                height: 'calc(94.7vh )',
                 background: `url(${backgroundImage}) center/cover no-repeat fixed`,
                 padding: '20px', // Adjust padding as needed
                 boxSizing: 'border-box',
