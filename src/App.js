@@ -58,7 +58,7 @@ import IconBanner from './components/IconBanner';
             <Route path="/profile/my-maps" element={<MyMapScreen />} />
             <Route path="/profile/personal-information" element ={<MyInfoScreen />} />
             <Route path="/profile/message-center" element ={<MessageCenter />} />
-            <Route path="/edit" element ={<MapEdit />} />
+            <Route path="/edit/:id" element ={<MapEdit />} />
             <Route path="/forgot" element={<PasswordRecovery />} />
             <Route path="/sign-out" element={<LoginScreen />} />
             <Route path="/edit-heat" element={<MapEditHeat />} />

@@ -15,14 +15,14 @@ export const GlobalStoreActionType = {
 
 function GlobalStoreContextProvider(props) {
     const [globalStore, setGlobalStore] = useState({
-        currentMap:null,
-        selectedFile:null,
-        idNamePairs:null,
+        currentMap: null,
+        selectedFile: null,
+        idNamePairs: null,
     });
     const navigate = useNavigate();
     console.log("inside useGlobalStore");
-    const {auth}=useContext(AuthContext)
-    
+    const { auth } = useContext(AuthContext)
+
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
@@ -31,7 +31,7 @@ function GlobalStoreContextProvider(props) {
                     currentMap: payload.map,
                     selectedFile: payload.file,
                     idNamePairs: globalStore.idNamePairs
-                    
+
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
@@ -41,7 +41,7 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: globalStore.idNamePairs
                 });
             }
-            case GlobalStoreActionType.LOAD_ID_NAME_PAIRS:{
+            case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
                 return setGlobalStore({
                     currentMap: globalStore.currentMap,
                     selectedFile: globalStore.selectedFile,
@@ -50,37 +50,48 @@ function GlobalStoreContextProvider(props) {
             }
         }
     }
-    
-    globalStore.createMap = function(title,description,publicStatus,selectedCategory,tags,file, routerAdd,selectedFile){
-        console.log(file)
-        async function asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file){
-            let response= await api.createMap(title,description,publicStatus,selectedCategory,tags,file)
-            if (response.status===201) {
-                console.log("success")
-                storeReducer({
-                    type: GlobalStoreActionType.CREATE_MAP,
-                    payload:{
-                        file:selectedFile,
-                        map:response.data.map
-                    } 
-                })
+
+    globalStore.createMap = function (title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile) {
+        console.log(file);
+
+        async function asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file) {
+            try {
+                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file);
+
+                if (response.status === 201) {
+                    console.log("success");
+                    console.log("here is the response"+response);
+                    storeReducer({
+                        type: GlobalStoreActionType.CREATE_MAP,
+                        payload: {
+                            file: selectedFile,
+                            map: response.data.map,
+                        },
+                    });
+                }
+
+                // console.log("map_id created: "+ response.data.map.map._id);
+                navigate("/" + routerAdd + "/" + response.data.map._id);
+            } catch (error) {
+                console.error("Error creating map:", error);
             }
-            navigate("/"+routerAdd)
-        }asyncCreateMap(title,description,publicStatus,selectedCategory,tags,file)
-    }
-    globalStore.getMapWithId = function(id){
-        async function asyncGetMapWithId(id){
-            let response= await api.getMapPageById(id)
-            if (response.status===201) {
+        }
+
+        asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file);
+    };
+    globalStore.getMapWithId = function (id) {
+        async function asyncGetMapWithId(id) {
+            let response = await api.getMapPageById(id)
+            if (response.status === 201) {
                 console.log("success")
                 storeReducer({
                     type: GlobalStoreActionType.SET_CURRENT_MAP_PAGE,
-                    payload:response.data.map
-                    
+                    payload: response.data.map
+
                 })
             }
             navigate("/edit")
-        }asyncGetMapWithId(id)
+        } asyncGetMapWithId(id)
     }
     //sets idnamepairs to that of the users (used for user profile display)
     globalStore.loadUserIdNamePairs = function () {
@@ -94,14 +105,14 @@ function GlobalStoreContextProvider(props) {
                     payload: pairsArray
                 });
             }
-            else if(response.data.success ===false && response.status===200) {
+            else if (response.data.success === false && response.status === 200) {
                 let pairsArray = response.data.mappages;
                 console.log(pairsArray);
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
                 });
-            }else{
+            } else {
                 console.log("API FAILED TO GET THE LIST PAIRS");
             }
         }
@@ -126,28 +137,28 @@ function GlobalStoreContextProvider(props) {
         asyncPublicIdNamePairs();
     }
     //set the current map page to view
-    globalStore.setMapPage = async function (id,map) {
+    globalStore.setMapPage = async function (id, map) {
         console.log("inside setMapPage using ID: ", id);
-        async function setMapPageById(id,map) {
+        async function setMapPageById(id, map) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
                 let mappage = response.data.mappage;
                 console.log("inside setMapPage, setting mappage: ", mappage);
                 storeReducer({
                     type: GlobalStoreActionType.SET_CURRENT_MAP_PAGE,
-                    payload:{
-                        selectedFile:map,
-                        map:mappage
-                    } 
+                    payload: {
+                        selectedFile: map,
+                        map: mappage
+                    }
                 });
                 return mappage; // Return the fetched mappage
             }
             throw new Error("Failed to fetch map page");
         }
-        return setMapPageById(id,map); // Return the setMapPageById promise
+        return setMapPageById(id, map); // Return the setMapPageById promise
     }
     //update the mappage
-    globalStore.updateCurrentMapPage = function(){
+    globalStore.updateCurrentMapPage = function () {
         async function asyncUpdateCurrentMapPage() {
             const response = await api.updateMapPage(globalStore.currentMap._id, globalStore.currentMap);
             if (response.data.success) {
@@ -160,25 +171,25 @@ function GlobalStoreContextProvider(props) {
         asyncUpdateCurrentMapPage();
     }
     // functions to set values for mappage
-    globalStore.setDescription = function(newDescription) {
+    globalStore.setDescription = function (newDescription) {
         let mappage = globalStore.currentMap
         mappage.description = newDescription
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage()
     };
-    globalStore.setPublicStatus = function(newPublicStatus){
+    globalStore.setPublicStatus = function (newPublicStatus) {
         let mappage = globalStore.currentMap
         mappage.publicStatus = newPublicStatus
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage()
     };
-    globalStore.addMapPageLikes = function(id, newLikes){
+    globalStore.addMapPageLikes = function (id, newLikes) {
         async function asyncAddMapLikes(id) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
                 let mappage = response.data.mappage;
                 mappage.upvotes = newLikes;
-                console.log("inside addMapPageLikes:",mappage)
+                console.log("inside addMapPageLikes:", mappage)
                 async function updateMapPage(mappage) {
                     response = await api.updateMapPage(mappage._id, mappage);
                     if (response.data.success) {
@@ -200,7 +211,7 @@ function GlobalStoreContextProvider(props) {
         }
         asyncAddMapLikes(id);
     }
-    globalStore.addMapPageDislikes = function(id, newDislikes) {
+    globalStore.addMapPageDislikes = function (id, newDislikes) {
         async function asyncAddMapDislikes(id) {
             let response = await api.getMapPageById(id);
             if (response.data.success) {
@@ -227,7 +238,7 @@ function GlobalStoreContextProvider(props) {
         }
         asyncAddMapDislikes(id);
     }
-    globalStore.setMapPageComments = function(id, newComments){
+    globalStore.setMapPageComments = function (id, newComments) {
         async function asyncSetMapComments(id) {
             console.log("setMapComments", newComments);
             let response = await api.getMapPageById(id);
@@ -255,26 +266,26 @@ function GlobalStoreContextProvider(props) {
         }
         asyncSetMapComments(id);
     }
-    globalStore.setMapPageTags = function(newTags){
+    globalStore.setMapPageTags = function (newTags) {
         let mappage = globalStore.currentMap
         mappage.tags = newTags
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage();
     }
-    globalStore.setMapPageTitle = function(newTitle){
+    globalStore.setMapPageTitle = function (newTitle) {
         let mappage = globalStore.currentMap
         mappage.title = newTitle
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage();
     }
-    globalStore.setNewMap = function(newMap){
+    globalStore.setNewMap = function (newMap) {
         let mappage = globalStore.currentMap
         mappage.map = newMap
         mappage.lastModified = Date.now
         globalStore.updateCurrentMapPage();
     }
     return (
-        <GlobalStoreContext.Provider value={{globalStore}}>
+        <GlobalStoreContext.Provider value={{ globalStore }}>
             {props.children}
         </GlobalStoreContext.Provider>
     );

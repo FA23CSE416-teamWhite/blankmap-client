@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component, useContext, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { GlobalStoreContext } from '../store/index';
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
@@ -32,6 +32,7 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import omnivore from 'leaflet-omnivore';
 import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
+import mapApi from '../api/mapApi';
 
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -39,70 +40,75 @@ const MapEdit = () => {
     const [features, setFeatures] = useState([]);
     const [newFeature, setNewFeature] = useState("");
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
-    const [featureForChoropleth, setFeatureForChoropleth] = useState("");
+    const [featureForChoropleth, setFeatureForChoropleth] = useState("None");
     const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
-    const navigate = useNavigate();
+    const [mapName, setMapName] = useState("Map Title");
+    const { id } = useParams();
+    const navigate = useNavigate(); 
     useEffect(() => {
-        const readFile = () => {
-          try {
-            if (globalStore.selectedFile) {
-              setFile_created(globalStore.selectedFile);
-    
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                const data = JSON.parse(e.target.result);
-    
-                if (data.features && data.features.length > 0) {
-                  const commonProperties = Object.keys(data.features[0].properties);
-                  const addedFeatures = [];
-    
-                  for (const feature of data.features) {
-                    const featureProperties = Object.keys(feature.properties);
-    
-                    const newCommonProperties = commonProperties.filter((property) =>
-                      featureProperties.includes(property)
-                    );
-    
-                    commonProperties.length = 0;
-                    commonProperties.push(...newCommonProperties);
-    
-                    for (const property of commonProperties) {
-                      const propertyType = typeof feature.properties[property];
-    
-                      const existingFeature = addedFeatures.find((f) => f.name === property);
-                      if (!existingFeature) {
-                        addedFeatures.push({ type: propertyType, name: property });
-                      } else {
-                        if (existingFeature.type !== propertyType) {
-                          existingFeature.type = "Mixed";
+        const fetchData = async () => {
+            try {
+                const data = await mapApi.fetchMap(id);
+                console.log("map edit content", data.mappage);
+                setMapName(data.mappage.title);
+
+                // Modify the code to read the fetched GeoJSON string directly
+                if (data.mappage.map.baseData) {
+                    try {
+                        const geojsonData = JSON.parse(data.mappage.map.baseData);
+
+                        if (geojsonData.features && geojsonData.features.length > 0) {
+                            const commonProperties = Object.keys(geojsonData.features[0].properties);
+                            const addedFeatures = [];
+
+                            for (const feature of geojsonData.features) {
+                                const featureProperties = Object.keys(feature.properties);
+
+                                const newCommonProperties = commonProperties.filter((property) =>
+                                    featureProperties.includes(property)
+                                );
+
+                                commonProperties.length = 0;
+                                commonProperties.push(...newCommonProperties);
+
+                                for (const property of commonProperties) {
+                                    const propertyType = typeof feature.properties[property];
+
+                                    const existingFeature = addedFeatures.find((f) => f.name === property);
+                                    if (!existingFeature) {
+                                        addedFeatures.push({ type: propertyType, name: property });
+                                    } else {
+                                        if (existingFeature.type !== propertyType) {
+                                            existingFeature.type = "Mixed";
+                                        }
+                                    }
+                                }
+                            }
+
+                            setFeatures(addedFeatures);
                         }
-                      }
+
+                        setGeojsonData(geojsonData);
+                        // Other operations with the GeoJSON data as needed
+                        // mapRef.current.fitBounds(data.getBounds());
+                    } catch (error) {
+                        console.error("Error parsing GeoJSON:", error);
                     }
-                  }
-    
-                  setFeatures(addedFeatures);
+                } else {
+                    setGeojsonData({ type: 'FeatureCollection', features: [] });
                 }
-    
-                setGeojsonData(data);
-                // Other operations with the GeoJSON data as needed
-                // mapRef.current.fitBounds(data.getBounds());
-              };
-              reader.readAsText(globalStore.selectedFile);
-            } else {
-              setGeojsonData({ type: 'FeatureCollection', features: [] });
+            } catch (error) {
+                console.error('Error fetching map:', error);
             }
-          } catch (error) {
-            console.error("Error reading file:", error);
-          }
         };
-    
-        readFile();
-      }, [globalStore.selectedFile]);
+
+        fetchData();
+    }, [id]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
@@ -173,8 +179,16 @@ const MapEdit = () => {
         setFeatures(updatedFeatures);
     };
 
-    const handleRenderChoropleth = () => {
-        console.log("Rendering as choropleth map...");
+    const handleConfirm = async() => {
+        console.log("Confirming...");
+        try {
+            const stringGeo = JSON.stringify(geojsonData);
+            console.log("stringGeo", stringGeo);
+            const updatedMap = await mapApi.updateMap(id, stringGeo);
+            console.log('Map updated successfully:', updatedMap);
+        } catch (error) {
+            console.error('Error updating map:', error);
+        }
     };
 
     const handleRankFeatures = () => {
@@ -227,7 +241,7 @@ const MapEdit = () => {
                         alignItems: "left",
                     }}
                 >
-                    Map Title
+                    {mapName}
                 </Typography>
                 <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
@@ -241,12 +255,12 @@ const MapEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && geojsonData.features.length > 0 && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                    {drawPanelOpen&&<DrawLayer initialGeoJSON={geojsonData} onSave={handleSave}/>}
+                    {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />}
                 </MapContainer>
-                {(drawPanelOpen===false)&&<Button variant="contained"
-                onClick={() => {
-                    setDrawPanelOpen(true);
-                }}
+                {(drawPanelOpen === false) && <Button variant="contained"
+                    onClick={() => {
+                        setDrawPanelOpen(true);
+                    }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -255,10 +269,10 @@ const MapEdit = () => {
                     }}>
                     Add a New Region
                 </Button>}
-                {drawPanelOpen&&<Button variant="contained"
-                onClick={() => {
-                    setDrawPanelOpen(false);
-                }}
+                {drawPanelOpen && <Button variant="contained"
+                    onClick={() => {
+                        setDrawPanelOpen(false);
+                    }}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -454,8 +468,8 @@ const MapEdit = () => {
                         color: 'white', // Text color
                         marginTop: '10px',
                         marginLeft: '10px'
-                    }} onClick={()=>{navigate('/home')}}>
-                        Render as Choropleth Map
+                    }} onClick={handleConfirm}>
+                        Save
                     </Button>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',

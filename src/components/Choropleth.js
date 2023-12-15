@@ -14,7 +14,7 @@ const style = {
 
 export default function Choropleth({ color, geojsonData, featureForChoropleth, step, updateGeojsonData }) {
   const map = useMap();
-  console.log(step)
+  // console.log(step)
   const [editedFeature, setEditedFeature] = useState(null);
   useEffect(() => {
     if (!geojsonData) return;
@@ -58,9 +58,10 @@ export default function Choropleth({ color, geojsonData, featureForChoropleth, s
     };
 
     choroplethLayer.addTo(map);
-    if (featureForChoropleth !== "") {
+    if (featureForChoropleth !== "" && featureForChoropleth !== null && featureForChoropleth !== undefined && featureForChoropleth !== "None") {
+      // console.log("feature for choropleth", featureForChoropleth);
       legend.addTo(map);
-    }
+  }
     map.fitBounds(choroplethLayer.getBounds());
     return () => {
       map.removeLayer(choroplethLayer);

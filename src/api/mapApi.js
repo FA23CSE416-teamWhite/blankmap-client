@@ -16,23 +16,23 @@ const fetchMaps = async (query) => {
     }
 }
 
-const createMap = async (mapName, isPublic, description, tags, selectedCategory, selectedFile) => {
-    try {
-        const formData = new FormData();
-        formData.append('mapName', mapName);
-        formData.append('isPublic', isPublic);
-        formData.append('description', description);
-        formData.append('tags', JSON.stringify(tags));
-        formData.append('selectedCategory', selectedCategory);
-        formData.append('selectedFile', selectedFile); // Assuming selectedFile is a File object
+// const createMap = async (mapName, isPublic, description, tags, selectedCategory, selectedFile) => {
+//     try {
+//         const formData = new FormData();
+//         formData.append('mapName', mapName);
+//         formData.append('isPublic', isPublic);
+//         formData.append('description', description);
+//         formData.append('tags', JSON.stringify(tags));
+//         formData.append('selectedCategory', selectedCategory);
+//         formData.append('selectedFile', selectedFile); // Assuming selectedFile is a File object
   
-        const response = await axios.post('/api/createMap', formData);
+//         const response = await axios.post('/api/createMap', formData);
 
-        console.log('Map created:', response.data);
-      } catch (error) {
-        console.error('Error creating map:', error);
-      }
-}
+//         console.log('Map created:', response.data);
+//       } catch (error) {
+//         console.error('Error creating map:', error);
+//       }
+// }
 
 const fetchMap = async (mapId) => {
     try {
@@ -44,10 +44,24 @@ const fetchMap = async (mapId) => {
     }
 }
 
+const updateMap = async (mapId, stringGeo) => {
+    try {
+        console.log('Map String:', stringGeo);
+        const response = await api.put(`/mapData/${mapId}`, {stringGeo: stringGeo});
+        return response.data;
+    } catch (error) {
+        console.error('Error updating map:', error);
+        throw error;
+    }
+}; 
+
+
+
 const mapApi = {
     fetchMaps,
-    createMap,
-    fetchMap
+    // createMap,
+    fetchMap,
+    updateMap
   };
 
 export default mapApi;
