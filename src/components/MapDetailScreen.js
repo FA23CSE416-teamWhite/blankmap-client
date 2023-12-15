@@ -19,6 +19,7 @@ import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index'; 
 import AuthContext from '../auth';
+import Choropleth from './Choropleth';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
@@ -172,9 +173,11 @@ const MapDetailScreen = () => {
         console.log("mapPage is now", currentMapPage)
     }
     else{
-        console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
+        // console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
         localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
     }
+    let geojsonData = JSON.parse(currentMapPage.map.baseData)
+    console.log("geojsonData is", geojsonData)  
     // //console.log(globalStore.currentMap)
     // const newMap = globalStore.setMapPage(id);
     console.log(globalStore.selectedFile)
@@ -380,9 +383,9 @@ const MapDetailScreen = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            
-                            {/* {geojsonData && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                            {drawPanelOpen&&<DrawLayer/>} */}
+                            {console.log("geojsonData when render is", geojsonData)}
+                            {geojsonData && geojsonData.features.length > 0 && <Choropleth color={"red"} geojsonData={geojsonData}  step={5} />}
+                            {/*{drawPanelOpen&&<DrawLayer/>} */}
                     </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
                     </Paper>
