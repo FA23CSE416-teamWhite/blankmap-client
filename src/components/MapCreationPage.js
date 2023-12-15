@@ -56,6 +56,7 @@ const MapCreationPage = () => {
             return;
         }
         const stringifiedFileContent = JSON.stringify(fileContent);
+        // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
         globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
     }

@@ -61,7 +61,7 @@ const MapEdit = () => {
                 if (data.mappage.map.baseData) {
                     try {
                         const geojsonData = JSON.parse(data.mappage.map.baseData);
-
+                        // console.log("geojsonData", geojsonData);
                         if (geojsonData.features && geojsonData.features.length > 0) {
                             const commonProperties = Object.keys(geojsonData.features[0].properties);
                             const addedFeatures = [];

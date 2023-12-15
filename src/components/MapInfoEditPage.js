@@ -48,11 +48,14 @@ const MapInfoEditPage = () => {
         const fetchData = async () => {
           try {
             const data = await mapApi.fetchMap(id);
+            const geojson = JSON.parse(data.mappage.map.baseData);
             console.log(data.mappage);
             setMapName(data.mappage.title);
             setIsPublic(data.mappage.publicStatus);
-            setDescription(data.mappage.description);  
+            setDescription(data.mappage.description); 
+            setSelectedCategory(data.mappage.map.mapType); 
             setTags(data.mappage.tags);
+            setGeojson(geojson);
           } catch (error) {
             console.error('Error fetching map:', error);
             }
@@ -63,17 +66,19 @@ const MapInfoEditPage = () => {
     // const [center, setCenter] = useState([0,0]);
 
     function handleSubmit() {
-        if (!fileContent) {
-            // console.error('Please select a file.');
-            setError("Please select a file.");
-            return;
-        }
+        // if (!fileContent) {
+        //     // console.error('Please select a file.');
+        //     setError("Please select a file.");
+        //     return;
+        // }
         if (mapName === "" || description === "" || tags === "" || selectedFile === "") {
             // alert("Please fill all fields");
             setError("Please fill all fields");
             return;
         }
-        const stringifiedFileContent = JSON.stringify(fileContent);
+        const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
+
+        // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
         globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
     }
@@ -315,7 +320,7 @@ const MapInfoEditPage = () => {
                 </Grid>
                 {selectedFileName}
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "10%", borderRadius: '10px' }}>
-                    {selectedFile && (
+                    {geojson && (
                         <MapContainer ref={setMap} center={[0, 0]} zoom={2} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }} >
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -324,7 +329,7 @@ const MapInfoEditPage = () => {
                             {geojson && <GeoJSON data={geojson} />}
                         </MapContainer>
                     )}
-                    {!selectedFile&& 
+                    {!geojson&& 
                     <Button
                         variant="contained"
                         onClick={handleStartWithBlank}
@@ -337,7 +342,7 @@ const MapInfoEditPage = () => {
                         Start With Blank
                     </Button>}
                     <Box sx={{ width: '10px' }}></Box>
-                    {!selectedFile && <Button
+                    {!geojson && <Button
                         variant="contained"
                         onClick={handleLoadFromMap}
                         sx={{
@@ -357,7 +362,7 @@ const MapInfoEditPage = () => {
                         onChange={handleFileChange}
                     />
                 </Box>
-                {selectedFile && <Button
+                {geojson && <Button
                     variant="contained"
                     onClick={handleSubmit}
                     sx={{
@@ -369,7 +374,7 @@ const MapInfoEditPage = () => {
                 >
                     Edit Map
                 </Button>}
-                {selectedFile && <Button
+                {geojson && <Button
                         variant="contained"
                         onClick={handleLoadFromMap}
                         sx={{
