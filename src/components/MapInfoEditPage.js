@@ -77,11 +77,18 @@ const MapInfoEditPage = () => {
             return;
         }
         const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
-
+        let modifiedTags = [...tags];
+        if (!tags.includes(selectedCategory)) {
+            modifiedTags = [...tags, selectedCategory]; // default add the category like "Choropleth" as a tag
+        }
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
-        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
-    }
+        try {
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+        } catch (error) {
+            console.log(error);
+            setError("Error creating map: ", error);
+        }    }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
         console.log("Map Name: ", mapName);
@@ -153,9 +160,12 @@ const MapInfoEditPage = () => {
 
     const addTag = () => {
         if (newTag.trim() === "") return;
-        setTags([...tags, newTag]);
+        // Check if the new tag already exists in the tags array
+        if (!tags.includes(newTag)) {
+          setTags([...tags, newTag]);
+        }
         setNewTag("");
-    };
+      };
 
     const removeTag = (tagToRemove) => {
         const updatedTags = tags.filter((tag) => tag !== tagToRemove);

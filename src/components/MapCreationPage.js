@@ -56,11 +56,15 @@ const MapCreationPage = () => {
             return;
         }
         const stringifiedFileContent = JSON.stringify(fileContent);
+        let modifiedTags = [...tags];
+        if (!tags.includes(selectedCategory)) {
+            modifiedTags = [...tags, selectedCategory]; // default add the category like "Choropleth" as a tag
+        }
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
-        try{
-        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
-        }catch(error){
+        try {
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+        } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
         }
@@ -92,17 +96,17 @@ const MapCreationPage = () => {
             console.error('Please select a valid JSON file.');
             return;
         }
-    
+
         console.log(file);
         setSelectedFile(file);
         setSelectedFileName(file.name);
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = function (event) {
             const fileContent = event.target.result;
             setFileContent(fileContent);
-    
+
             try {
                 const parsedContent = JSON.parse(fileContent);
                 setGeojson(parsedContent);
@@ -111,7 +115,7 @@ const MapCreationPage = () => {
                 console.error('Error parsing JSON:', error);
             }
         };
-    
+
         reader.readAsText(file);
     };
     const handleCategoryChange = (event) => {
@@ -136,9 +140,12 @@ const MapCreationPage = () => {
 
     const addTag = () => {
         if (newTag.trim() === "") return;
-        setTags([...tags, newTag]);
+        // Check if the new tag already exists in the tags array
+        if (!tags.includes(newTag)) {
+          setTags([...tags, newTag]);
+        }
         setNewTag("");
-    };
+      };
 
     const removeTag = (tagToRemove) => {
         const updatedTags = tags.filter((tag) => tag !== tagToRemove);
@@ -312,18 +319,18 @@ const MapCreationPage = () => {
                             {geojson && <GeoJSON data={geojson} />}
                         </MapContainer>
                     )}
-                    {!selectedFile&& 
-                    <Button
-                        variant="contained"
-                        onClick={handleStartWithBlank}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                        }}
-                    >
-                        Start With Blank
-                    </Button>}
+                    {!selectedFile &&
+                        <Button
+                            variant="contained"
+                            onClick={handleStartWithBlank}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                            }}
+                        >
+                            Start With Blank
+                        </Button>}
                     <Box sx={{ width: '10px' }}></Box>
                     {!selectedFile && <Button
                         variant="contained"
@@ -358,17 +365,17 @@ const MapCreationPage = () => {
                     Edit Map
                 </Button>}
                 {selectedFile && <Button
-                        variant="contained"
-                        onClick={handleLoadFromMap}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginLeft: '10px',
-                        }}
-                    >
-                        Load From Another
-                    </Button>}
+                    variant="contained"
+                    onClick={handleLoadFromMap}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginLeft: '10px',
+                    }}
+                >
+                    Load From Another
+                </Button>}
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Grid>
         </Grid>
