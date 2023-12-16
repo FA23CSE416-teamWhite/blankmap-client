@@ -163,29 +163,32 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
 const MapDetailScreen = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
+    const [error, setError] = useState(null);
     let { id } = useParams();
     let currentMapPage = globalStore.currentMap
     // console.log("mapPageId is " + id);
-    if (!globalStore.currentMap) {
-        console.log("mapPage is null", globalStore.currentMap);
-        currentMapPage = JSON.parse(localStorage.getItem("mapData"))
-        console.log(JSON.parse(localStorage.getItem("mapData")));
-    }
-    else {
-        // console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
-        localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
-    }
-    console.log("currentMapPage is", currentMapPage)
-    let type = currentMapPage.map.mapType
-    let geojsonData = JSON.parse(currentMapPage.map.baseData)
-    let color = 'red'
-    let step = 5
-    let featureForChoropleth = ""
-    if (type === "Choropleth" && currentMapPage.map.addedFeatures.length > 0) {
-        color = currentMapPage.map.addedFeatures[0].color
-        step = currentMapPage.map.addedFeatures[0].step
-        featureForChoropleth = currentMapPage.map.addedFeatures[0].featureChoropleth
-    }
+
+        if (!globalStore.currentMap) {
+            console.log("mapPage is null", globalStore.currentMap);
+            currentMapPage = JSON.parse(localStorage.getItem("mapData"))
+            console.log(JSON.parse(localStorage.getItem("mapData")));
+        }
+        else {
+            // console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
+            localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
+        }
+        console.log("currentMapPage is", currentMapPage)
+        let type = currentMapPage.map.mapType
+        let geojsonData = JSON.parse(currentMapPage.map.baseData)
+        let color = 'red'
+        let step = 5
+        let featureForChoropleth = ""
+        if (type === "Choropleth" && currentMapPage.map.addedFeatures.length > 0) {
+            color = currentMapPage.map.addedFeatures[0].color
+            step = currentMapPage.map.addedFeatures[0].step
+            featureForChoropleth = currentMapPage.map.addedFeatures[0].featureChoropleth
+        }
+
     // console.log("geojsonData is", geojsonData)  
     // //console.log(globalStore.currentMap)
     // const newMap = globalStore.setMapPage(id);
@@ -320,6 +323,7 @@ const MapDetailScreen = () => {
         }
         // globalStore.setMapPageLikes(newLikes);
     };
+
     const handleDislike = () => {
         const newColor = dislikeColor === 'grey' ? 'red' : 'grey';
         setDislikeColor(newColor);
@@ -368,6 +372,7 @@ const MapDetailScreen = () => {
                         <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx={{ height: '40px', marginLeft: '20px' }}>
                             Export Data
                         </Button>
+                        {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
                     </Box>
                 </Grid>
 
@@ -393,7 +398,7 @@ const MapDetailScreen = () => {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {console.log("geojsonData when render is", geojsonData)}
-                            {geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={color} geojsonData={geojsonData} step={step} featureForChoropleth={featureForChoropleth} />}
+                            {geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={color} geojsonData={geojsonData} step={step} featureForChoropleth={featureForChoropleth} setError={setError} />}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
                         </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}

@@ -111,7 +111,7 @@ const MapEdit = () => {
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
-                setError("Error fetching map:", error);
+                setError("Error fetching map: " + error.response.data.errorMessage);
             }
         };
         fetchData();
@@ -208,6 +208,8 @@ const MapEdit = () => {
             console.log("Map Updated:", updatedMap);
         } catch (error) {
             console.error('Error updating map:', error);
+            // console.log(error.response.data.errorMessage);
+            setError("Error updating map: " + error.response.data.errorMessage);
         }
     };
 
