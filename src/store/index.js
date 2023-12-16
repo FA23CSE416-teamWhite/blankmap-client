@@ -50,6 +50,14 @@ function GlobalStoreContextProvider(props) {
             }
         }
     }
+    globalStore.resetGlobalStore =function(){
+        setGlobalStore({
+            currentMap: null,
+            selectedFile: null,
+            idNamePairs: null,
+        });
+        auth.logoutUser();
+    };
 
     globalStore.createMap = function (title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile) {
         console.log(file);
