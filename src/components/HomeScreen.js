@@ -53,7 +53,7 @@ const HomeScreen = () => {
   }, [location.search, searchQuery, location.pathname]);
   const [currentPage, setCurrentPage] = useState(1);
   const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
-  const [sortOption, setSortOption] = useState('title');
+  const [sortOption, setSortOption] = useState('Newest');
   const [categoryFilter, setCategoryFilter] = useState('None');
 
   const handleCreateMap = () => {
@@ -115,9 +115,9 @@ const HomeScreen = () => {
               style: { height: '36px' },
             }}
           >
-            <MenuItem value="">
+            {/* <MenuItem value="">
               <em>Select</em>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem value="title">Title</MenuItem>
             <MenuItem value="Hight Upvotes">Most Upvoted</MenuItem>
             <MenuItem value="Popular">Popular</MenuItem>
