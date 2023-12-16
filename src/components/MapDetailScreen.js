@@ -17,7 +17,7 @@ import UpvoteIcon from '@mui/icons-material/ThumbUp';
 import DownvoteIcon from '@mui/icons-material/ThumbDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
-import { GlobalStoreContext } from '../store/index'; 
+import { GlobalStoreContext } from '../store/index';
 import AuthContext from '../auth';
 import Choropleth from './Choropleth';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
@@ -28,7 +28,7 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const [dislikes, setDislikes] = useState(comment.dislikes);
     const [dislikeClicked, setDislikeClicked] = useState(false);
     const [showReplyInput, setShowReplyInput] = useState(false);
-    
+
     const [replyText, setReplyText] = useState('');
     const [replyList, setReplyList] = useState(comment.replies);
 
@@ -38,16 +38,16 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     };
     const onUpvote = () => {
         let newCommentValue = comment
-        if(!likeClicked){
+        if (!likeClicked) {
             setLikes(likes + 1)
             newCommentValue.likes = likes + 1
         }
-        else{
+        else {
             setLikes(comment.likes)
             newCommentValue.likes = comment.likes
         }
         setLikeClicked(!likeClicked)
-        if(dislikeClicked){
+        if (dislikeClicked) {
             setDislikes(comment.dislikes)
             setDislikeClicked(!dislikeClicked)
             newCommentValue.dislikes = comment.dislikes
@@ -56,16 +56,16 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     }
     const onDownvote = () => {
         let newCommentValue = comment
-        if(!dislikeClicked){
+        if (!dislikeClicked) {
             setDislikes(dislikes + 1)
             newCommentValue.dislikes = dislikes + 1
         }
-        else{
+        else {
             setDislikes(comment.dislikes)
             newCommentValue.dislikes = comment.dislikes
         }
         setDislikeClicked(!dislikeClicked)
-        if(likeClicked){
+        if (likeClicked) {
             setLikes(comment.likes)
             setLikeClicked(!likeClicked)
             newCommentValue.likes = comment.likes
@@ -73,7 +73,7 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
         updateComment(comment.commentId, newCommentValue)
     }
     const handleAddReply = () => {
-        if (replyText == ''){
+        if (replyText == '') {
             console.log("Empty comment")
         }
         else {
@@ -86,16 +86,16 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
             if (auth.loggedIn) {
                 username = auth.user.userName
             }
-            else{
+            else {
                 username = "Guest"
             }
             let newReplyList;
             const newReply = { user: username, reply: replyText };
-            if(!replyList){
+            if (!replyList) {
                 newReplyList = [newReply];
                 setReplyList(newReplyList);
             }
-            else{
+            else {
                 newReplyList = [...replyList, newReply];
                 setReplyList(newReplyList);
             }
@@ -104,14 +104,14 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
         }
     }
     let replyDisplay;
-    if (replyList){
+    if (replyList) {
         replyDisplay = replyList.map((reply, index) => (
             <Typography style={{ fontSize: '12px' }}>
                 <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
             </Typography>
         ))
     }
-    
+
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
@@ -143,12 +143,12 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
                                 </Button>
                             </Box>
                         </Box>
-                        
+
                     )}
                 </Box>
                 {showReplyInput && (
                     <Box sx={{ marginLeft: '20px' }}>
-                        <Typography style={{ fontSize: '15px', color: "blue"}}>Replies</Typography>
+                        <Typography style={{ fontSize: '15px', color: "blue" }}>Replies</Typography>
                         <List>
                             {replyDisplay}
                         </List>
@@ -166,18 +166,27 @@ const MapDetailScreen = () => {
     let { id } = useParams();
     let currentMapPage = globalStore.currentMap
     // console.log("mapPageId is " + id);
-    if (!globalStore.currentMap){
+    if (!globalStore.currentMap) {
         console.log("mapPage is null", globalStore.currentMap);
         currentMapPage = JSON.parse(localStorage.getItem("mapData"))
         console.log(JSON.parse(localStorage.getItem("mapData")));
-        console.log("mapPage is now", currentMapPage)
     }
-    else{
+    else {
         // console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
         localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
     }
+    console.log("currentMapPage is", currentMapPage)
+    let type = currentMapPage.map.mapType
     let geojsonData = JSON.parse(currentMapPage.map.baseData)
-    console.log("geojsonData is", geojsonData)  
+    let color = 'red'
+    let step = 5
+    let featureForChoropleth = ""
+    if (type === "Choropleth" && currentMapPage.map.addedFeatures.length > 0) {
+        color = currentMapPage.map.addedFeatures[0].color
+        step = currentMapPage.map.addedFeatures[0].step
+        featureForChoropleth = currentMapPage.map.addedFeatures[0].featureChoropleth
+    }
+    // console.log("geojsonData is", geojsonData)  
     // //console.log(globalStore.currentMap)
     // const newMap = globalStore.setMapPage(id);
     // console.log(globalStore.selectedFile)
@@ -209,7 +218,7 @@ const MapDetailScreen = () => {
     //     fetchData();
     // }, [globalStore, id]);
     // console.log("Current map page: ", currentMapPage)
-    
+
     const [newComment, setNewComment] = useState('');
     const [newTags, setNewTags] = useState('');
     const [commentList, setCommentList] = useState(currentMapPage.comments);
@@ -236,13 +245,13 @@ const MapDetailScreen = () => {
         globalStore.setMapPageComments(currentMapPage._id, updatedComments)
     };
     let commentDisplay;
-    if (commentList != []){
+    if (commentList != []) {
         commentDisplay = commentList.map((comment, index) => (
-            <Comment key={comment.commentId} comment={comment} updateReplies={updateCommentReplies} updateComment={updateComment}/>
+            <Comment key={comment.commentId} comment={comment} updateReplies={updateCommentReplies} updateComment={updateComment} />
         ))
     }
     const handleAddComment = () => {
-        if (newComment == ''){
+        if (newComment == '') {
             console.log("Empty comment")
         }
         else {
@@ -255,24 +264,24 @@ const MapDetailScreen = () => {
             if (auth.loggedIn) {
                 username = auth.user.userName
             }
-            else{
+            else {
                 username = "Guest"
             }
-            let newCommentObject = { commenter: username, commentId: 0, content: newComment, likes: 0, dislikes: 0, replies: []};
+            let newCommentObject = { commenter: username, commentId: 0, content: newComment, likes: 0, dislikes: 0, replies: [] };
             let newComments;
-            if(!commentList){
+            if (!commentList) {
                 setCommentList([newCommentObject]);
                 newComments = [newCommentObject]
             }
-            else{
+            else {
                 newCommentObject.commentId = commentList.length
                 setCommentList([...commentList, newCommentObject]);
                 newComments = [...commentList, newCommentObject]
             }
-            globalStore.setMapPageComments(currentMapPage._id,newComments)
+            globalStore.setMapPageComments(currentMapPage._id, newComments)
         }
     };
-    
+
     // const handleUpdateDescription = () => {
     //     console.log('Updating description:', newDescription);
     // }
@@ -353,10 +362,10 @@ const MapDetailScreen = () => {
                     </Paper>
 
                     <Box>
-                        <Button variant="contained" onClick={() => navigate('/map-info-edit/'+currentMapPage._id)} sx = {{height: '40px'}}>
+                        <Button variant="contained" onClick={() => navigate('/map-info-edit/' + currentMapPage._id)} sx={{ height: '40px' }}>
                             Open Edit As My Map
                         </Button>
-                        <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx = {{height: '40px', marginLeft:'20px'}}>
+                        <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx={{ height: '40px', marginLeft: '20px' }}>
                             Export Data
                         </Button>
                     </Box>
@@ -370,11 +379,11 @@ const MapDetailScreen = () => {
                                 <DownloadIcon />
                             </IconButton>
                             <IconButton onClick={handleLike}>
-                                <UpvoteIcon style={{ color: likeColor }}/>
+                                <UpvoteIcon style={{ color: likeColor }} />
                             </IconButton>
                             {newLikes}
                             <IconButton onClick={handleDislike}>
-                                <DownvoteIcon style={{ color: dislikeColor }}/>
+                                <DownvoteIcon style={{ color: dislikeColor }} />
                             </IconButton>
                             {newDislikes}
                         </Box>
@@ -384,9 +393,9 @@ const MapDetailScreen = () => {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {console.log("geojsonData when render is", geojsonData)}
-                            {geojsonData && geojsonData.features.length > 0 && <Choropleth color={"red"} geojsonData={geojsonData}  step={5} />}
+                            {geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={color} geojsonData={geojsonData} step={step} featureForChoropleth={featureForChoropleth} />}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
-                    </MapContainer>
+                        </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
                     </Paper>
 
@@ -402,13 +411,13 @@ const MapDetailScreen = () => {
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
                                 size="small"
-                                sx={{ height: '40px' }} 
+                                sx={{ height: '40px' }}
                             />
                             <Button
                                 onClick={handleAddComment}
                                 variant="contained"
                                 size="small"
-                                sx={{ height: '40px', marginLeft: '8px' }} 
+                                sx={{ height: '40px', marginLeft: '8px' }}
                             >
                                 Add Comment
                             </Button>
