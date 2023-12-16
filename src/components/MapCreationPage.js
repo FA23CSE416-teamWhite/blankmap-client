@@ -58,7 +58,12 @@ const MapCreationPage = () => {
         const stringifiedFileContent = JSON.stringify(fileContent);
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
+        try{
         globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
+        }catch(error){
+            console.log(error);
+            setError("Error creating map: ", error);
+        }
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");

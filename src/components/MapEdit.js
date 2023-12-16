@@ -49,13 +49,19 @@ const MapEdit = () => {
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
     const [mapName, setMapName] = useState("Map Title");
     const { id } = useParams();
-    const navigate = useNavigate(); 
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await mapApi.fetchMap(id);
-                console.log("map edit content", data.mappage);
+                console.log("Map Fetched", data.mappage);
                 setMapName(data.mappage.title);
+                if (data.mappage.map.addedFeatures.length > 0) {
+                    setPickColor(data.mappage.map.addedFeatures[0].color);
+                    setChoroStep(data.mappage.map.addedFeatures[0].step);
+                    setFeatureForChoropleth(data.mappage.map.addedFeatures[0].featureChoropleth);
+                }
 
                 // Modify the code to read the fetched GeoJSON string directly
                 if (data.mappage.map.baseData) {
@@ -98,15 +104,16 @@ const MapEdit = () => {
                         // mapRef.current.fitBounds(data.getBounds());
                     } catch (error) {
                         console.error("Error parsing GeoJSON:", error);
+                        setError("Error parsing GeoJSON", error);
                     }
                 } else {
                     setGeojsonData({ type: 'FeatureCollection', features: [] });
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
+                setError("Error fetching map:", error);
             }
         };
-
         fetchData();
     }, [id]);
     let displayFeatures;
@@ -139,6 +146,10 @@ const MapEdit = () => {
         setPanelOpen(true);
     }
     const handleAddFeature = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
         if (geojsonData && selectedFeatureType && newFeature) {
             const isFeatureAlreadyExists = features.some(
                 (feature) => feature.name === newFeature
@@ -179,13 +190,22 @@ const MapEdit = () => {
         setFeatures(updatedFeatures);
     };
 
-    const handleConfirm = async() => {
+    const handleConfirm = async () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
         console.log("Confirming...");
         try {
             const stringGeo = JSON.stringify(geojsonData);
-            console.log("stringGeo", stringGeo);
-            const updatedMap = await mapApi.updateMap(id, stringGeo);
-            console.log('Map updated successfully:', updatedMap);
+            // console.log("stringGeo", stringGeo);
+            const addedFeatures = {
+                color: pickColor,
+                step: choroStep,
+                featureChoropleth: featureForChoropleth
+            }
+            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures);
+            console.log("Map Updated:", updatedMap);
         } catch (error) {
             console.error('Error updating map:', error);
         }
@@ -209,7 +229,7 @@ const MapEdit = () => {
     };
     const handleSave = (editedData) => {
         // Implement your logic to save the edited data, e.g., updating state or sending it to a server
-        console.log('Saving edited data:', editedData);
+        // console.log('Saving edited data:', editedData);
         setGeojsonData(editedData);
         // setPanelOpen(false);
         // You can update your geojsonData state or perform other actions here
@@ -218,6 +238,10 @@ const MapEdit = () => {
         setPanelOpen(false);
     }
     const handleDownload = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
         const blob = new Blob([geoJsonString], { type: 'application/json' });
         const link = document.createElement('a');
@@ -272,6 +296,7 @@ const MapEdit = () => {
                 {drawPanelOpen && <Button variant="contained"
                     onClick={() => {
                         setDrawPanelOpen(false);
+                        setError(null);
                     }}
                     sx={{
                         borderRadius: '10px',
@@ -279,7 +304,7 @@ const MapEdit = () => {
                         color: 'white', // Text color
                         marginTop: '10px',
                     }}>
-                    Close the drawn panel
+                    Save the draw
                 </Button>}
 
             </Grid>
@@ -480,6 +505,7 @@ const MapEdit = () => {
                     }} onClick={handleDownload}>
                         download
                     </Button></Box>
+                {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
             {panelOpen && (

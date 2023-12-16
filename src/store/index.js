@@ -82,6 +82,7 @@ function GlobalStoreContextProvider(props) {
                 navigate("/" + routerAdd + "/" + response.data.map._id);
             } catch (error) {
                 console.error("Error creating map:", error);
+                throw error;
             }
         }
 

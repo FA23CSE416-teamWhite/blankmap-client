@@ -180,7 +180,7 @@ const MapDetailScreen = () => {
     console.log("geojsonData is", geojsonData)  
     // //console.log(globalStore.currentMap)
     // const newMap = globalStore.setMapPage(id);
-    console.log(globalStore.selectedFile)
+    // console.log(globalStore.selectedFile)
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     // useEffect(() => {
     //     const fetchData = async () => {

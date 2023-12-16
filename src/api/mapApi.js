@@ -44,10 +44,13 @@ const fetchMap = async (mapId) => {
     }
 }
 
-const updateMap = async (mapId, stringGeo) => {
+const updateMap = async (mapId, stringGeo, addedFeatures) => {
     try {
-        console.log('Map String:', stringGeo);
-        const response = await api.put(`/mapData/${mapId}`, {stringGeo: stringGeo});
+        // console.log('Map String:', stringGeo);
+        const response = await api.put(`/mapData/${mapId}`, {
+            stringGeo: stringGeo,
+            addedFeatures: addedFeatures
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating map:', error);
