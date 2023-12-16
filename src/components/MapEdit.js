@@ -48,6 +48,7 @@ const MapEdit = () => {
     const [panelOpen, setPanelOpen] = useState(false);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
     const [mapName, setMapName] = useState("Map Title");
+    const [successMessage, setSuccessMessage] = useState(null);
     const { id } = useParams();
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -115,7 +116,7 @@ const MapEdit = () => {
             }
         };
         fetchData();
-    }, [id]);
+    }, [id,successMessage]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
@@ -206,6 +207,14 @@ const MapEdit = () => {
             }
             const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures);
             console.log("Map Updated:", updatedMap);
+            setSuccessMessage("Map updated successfully! Saving...");
+
+            // Optionally, clear any previous error message
+            setError(null);
+            console.log("/detail/" + id)
+            setTimeout(() => {
+                navigate("/detail/" + id);
+              }, 2000);
         } catch (error) {
             console.error('Error updating map:', error);
             // console.log(error.response.data.errorMessage);
@@ -229,6 +238,7 @@ const MapEdit = () => {
     const updateGeojsonData = (newData) => {
         setGeojsonData(newData);
     };
+    //this handleSave is for Data editor, not the whole map
     const handleSave = (editedData) => {
         // Implement your logic to save the edited data, e.g., updating state or sending it to a server
         // console.log('Saving edited data:', editedData);
@@ -507,6 +517,9 @@ const MapEdit = () => {
                     }} onClick={handleDownload}>
                         download
                     </Button></Box>
+                    {successMessage && (
+        <div style={{ color: 'green' }}>{successMessage}</div>
+      )}
                 {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
