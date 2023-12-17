@@ -11,16 +11,23 @@ import {
     IconButton,
     Paper,
     Grid,
+    Card,
+    CardContent,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/CloudDownload';
 import UpvoteIcon from '@mui/icons-material/ThumbUp';
 import DownvoteIcon from '@mui/icons-material/ThumbDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import temp_map from './images/temp_map.png'
 import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import AuthContext from '../auth';
 import Choropleth from './Choropleth';
+import SendIcon from '@mui/icons-material/Send';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
+import mapApi from '../api/mapApi';
+import ReplyIcon from '@mui/icons-material/Reply';
 const Comment = ({ key, comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
@@ -107,7 +114,7 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     if (replyList) {
         replyDisplay = replyList.map((reply, index) => (
             <Typography style={{ fontSize: '12px' }}>
-                <span style={{ color: 'steelblue' }}>{reply.user}</span> says: {reply.reply}
+                <span style={{ color: 'steelblue' }}>{reply.user}</span>: {reply.reply}
             </Typography>
         ))
     }
@@ -115,12 +122,15 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     return (
         <ListItem>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                <Typography><span style={{ color: 'steelblue' }}>{comment.commenter}</span> says: {comment.content}</Typography>
+                <Typography><span style={{ color: 'steelblue' }}>{comment.commenter}</span>: {comment.content}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <div className="comment-actions">
-                        <Button onClick={onReply} color="primary" size="small">
-                            Reply
-                        </Button>
+                        {!showReplyInput && <Button onClick={onReply} color="primary" size="small" endIcon={<ArrowDropDownIcon />}>
+                            Replies
+                        </Button>}
+                        {showReplyInput && <Button onClick={onReply} color="primary" size="small" endIcon={<ArrowDropUpIcon />}>
+                            Replies
+                        </Button>}
                         <Button onClick={onUpvote} color="primary" size="small">
                             Upvote {likes}
                         </Button>
@@ -128,31 +138,44 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
                             Downvote {dislikes}
                         </Button>
                     </div>
-                    {showReplyInput && (
-                        <Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
-                                <TextField
-                                    type="text"
-                                    placeholder="Add a reply..."
-                                    value={replyText}
-                                    onChange={(e) => setReplyText(e.target.value)}
-                                    size="small"
-                                />
-                                <Button onClick={handleAddReply} variant="contained" size="small">
-                                    Add Reply
-                                </Button>
-                            </Box>
-                        </Box>
-
-                    )}
                 </Box>
                 {showReplyInput && (
-                    <Box sx={{ marginLeft: '20px' }}>
-                        <Typography style={{ fontSize: '15px', color: "blue" }}>Replies</Typography>
-                        <List>
-                            {replyDisplay}
-                        </List>
-                    </Box>
+                    <Card sx={{ marginTop: '20px' }}>
+                        <CardContent>
+                            {showReplyInput && (
+                                <Box sx={{ marginLeft: '20px' }}>
+                                    <List>
+                                        {replyDisplay}
+                                    </List>
+                                    <TextField
+                                        type="text"
+                                        label="Reply"
+                                        variant="outlined"
+                                        placeholder="Add a reply..."
+                                        value={replyText}
+                                        onChange={(e) => setReplyText(e.target.value)}
+                                        size="small"
+                                        sx={{ borderRadius: '10px', }}
+                                        style={{ borderRadius: '10px' }}
+                                    // style={{height: '20px'}}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleAddReply}
+                                        endIcon={<SendIcon />}
+                                        sx={{
+                                            borderRadius: '10px',
+                                            backgroundColor: '#0844A4', // Replace with your desired color
+                                            color: 'white', // Text color
+                                            // marginLeft: '10px',
+                                            marginLeft: '8px',
+                                            height: '40px'
+                                        }}
+                                    ></Button>
+                                </Box>
+                            )}
+                        </CardContent>
+                    </Card>
                 )}
 
             </Box>
@@ -165,35 +188,76 @@ const MapDetailScreen = () => {
     const { auth } = useContext(AuthContext);
     const [error, setError] = useState(null);
     let { id } = useParams();
-    let currentMapPage = globalStore.currentMap
-    // console.log("mapPageId is " + id);
+    const [currentMapPage, setCurrentMapPage] = useState({
+        _id: '',
+        title: '',
+        description: '',
+        tags: [],
+        upvotes: 0,
+        downvotes: 0,
+        comments: [],
+        map: {
+            mapType: '',
+            baseData: '',
+            addedFeatures: [],
+        },
 
-        if (!globalStore.currentMap) {
-            console.log("mapPage is null", globalStore.currentMap);
-            currentMapPage = JSON.parse(localStorage.getItem("mapData"))
-            console.log(JSON.parse(localStorage.getItem("mapData")));
-        }
-        else {
-            // console.log("mapPage is " + JSON.stringify(globalStore.currentMap))
-            localStorage.setItem("mapData", JSON.stringify(globalStore.currentMap))
-        }
-        console.log("currentMapPage is", currentMapPage)
-        let type = currentMapPage.map.mapType
-        let geojsonData = JSON.parse(currentMapPage.map.baseData)
-        let color = 'red'
-        let step = 5
-        let featureForChoropleth = ""
-        if (type === "Choropleth" && currentMapPage.map.addedFeatures.length > 0) {
-            color = currentMapPage.map.addedFeatures[0].color
-            step = currentMapPage.map.addedFeatures[0].step
-            featureForChoropleth = currentMapPage.map.addedFeatures[0].featureChoropleth
-        }
+    });
+    const [choroplethAdded, setChoroplethAdded] = useState(null);
+    const [geojsonData, setGeojsonData] = useState(null);
+    const [type, setType] = useState(null);
+    const [newComment, setNewComment] = useState('');
+    // const [newTags, setNewTags] = useState('');
+    const [commentList, setCommentList] = useState([]);
+    // const [newDescription, setDescription] = useState(description);
+    const [tagList, setTagList] = useState([]);
+    const [likeColor, setLikeColor] = useState('grey');
+    const [newLikes, setLikes] = useState(0);
+    const [dislikeColor, setDislikeColor] = useState('grey');
+    const [newDislikes, setDislikes] = useState(0);
+    const [commenting, setCommenting] = useState(false);
+    const navigate = useNavigate();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // console.log("fetching map" + id);
+                const data = await mapApi.fetchMap(id);
+                // console.log("fetched map", data.mappage);
+                setCurrentMapPage(data.mappage);
+                setChoroplethAdded(data.mappage.map.addedFeatures[0])
+                setType(data.mappage.map.mapType)
+                setGeojsonData(JSON.parse(data.mappage.map.baseData))
+                setTagList(data.mappage.tags)
+                setLikes(data.mappage.upvotes)
+                setDislikes(data.mappage.downvotes)
+                setCommentList(data.mappage.comments)
+            } catch (error) {
+                console.error('Error fetching map:', error);
+                setError(error.message);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+
+
+    // console.log("currentMapPage is", currentMapPage)
+    // let type = currentMapPage.map.mapType
+    // let geojsonData = JSON.parse(currentMapPage.map.baseData)
+    // let color = 'red'
+    // let step = 5
+    // let featureForChoropleth = ""
+    // if (currentMapPage && type === "Choropleth" && currentMapPage.map.addedFeatures.length > 0) {
+    //     color = currentMapPage.map.addedFeatures[0].color
+    //     step = currentMapPage.map.addedFeatures[0].step
+    //     featureForChoropleth = currentMapPage.map.addedFeatures[0].featureChoropleth
+    // }
 
     // console.log("geojsonData is", geojsonData)  
     // //console.log(globalStore.currentMap)
     // const newMap = globalStore.setMapPage(id);
     // console.log(globalStore.selectedFile)
-    const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    // const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     // useEffect(() => {
     //     const fetchData = async () => {
     //         try {
@@ -221,17 +285,9 @@ const MapDetailScreen = () => {
     //     fetchData();
     // }, [globalStore, id]);
     // console.log("Current map page: ", currentMapPage)
-
-    const [newComment, setNewComment] = useState('');
-    const [newTags, setNewTags] = useState('');
-    const [commentList, setCommentList] = useState(currentMapPage.comments);
-    // const [newDescription, setDescription] = useState(description);
-    const [tagList, setTagList] = useState(currentMapPage.tags);
-    const [likeColor, setLikeColor] = useState('grey');
-    const [newLikes, setLikes] = useState(currentMapPage.upvotes);
-    const [dislikeColor, setDislikeColor] = useState('grey');
-    const [newDislikes, setDislikes] = useState(currentMapPage.downvotes);
-    const navigate = useNavigate();
+    const handleCommenting = () => {
+        setCommenting(true);
+    };
 
     const updateCommentReplies = (commentIndex, newReplies) => {
         console.log('updateCommentReplies', commentIndex, newReplies)
@@ -282,6 +338,7 @@ const MapDetailScreen = () => {
                 newComments = [...commentList, newCommentObject]
             }
             globalStore.setMapPageComments(currentMapPage._id, newComments)
+            setCommenting(false);
         }
     };
 
@@ -345,6 +402,86 @@ const MapDetailScreen = () => {
     return (
         <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2 }}>
             <Grid container spacing={2}>
+
+                <Grid item xs={12} md={8}>
+
+                    <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+                            {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
+                            <Typography variant="h4">{currentMapPage.title}</Typography>
+                            <IconButton onClick={() => console.log('download button clicked')}>
+                                <DownloadIcon />
+                            </IconButton>
+                            <IconButton onClick={handleLike}>
+                                <UpvoteIcon style={{ color: likeColor }} />
+                            </IconButton>
+                            {newLikes}
+                            <IconButton onClick={handleDislike}>
+                                <DownvoteIcon style={{ color: dislikeColor }} />
+                            </IconButton>
+                            {newDislikes}
+                        </Box>
+                        <MapContainer ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            {/* {console.log("geojsonData when render is", geojsonData)} */}
+                            {choroplethAdded && geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={choroplethAdded.color} geojsonData={geojsonData} step={choroplethAdded.step} featureForChoropleth={choroplethAdded.featureChoropleth} setError={setError} />}
+                            {/*{drawPanelOpen&&<DrawLayer/>} */}
+                        </MapContainer>
+                        {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
+                    </Paper>
+
+                    <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
+                        <Typography variant="h6">Comments</Typography>
+                        <List>
+                            {commentDisplay}
+                        </List>
+                        {commenting && <Box>
+                            <TextField
+                                type="text"
+                                label="Comment"
+                                variant="outlined"
+                                placeholder="Add a comment..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                size="small"
+                                sx={{ borderRadius: '10px', }}
+                                style={{ borderRadius: '10px' }}
+                            // style={{height: '20px'}}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={handleAddComment}
+                                endIcon={<SendIcon />}
+                                sx={{
+                                    borderRadius: '10px',
+                                    backgroundColor: '#0844A4', // Replace with your desired color
+                                    color: 'white', // Text color
+                                    // marginLeft: '10px',
+                                    marginLeft: '8px',
+                                    height: '40px'
+                                }}
+                            ></Button>
+                        </Box>
+                        }
+                        {!commenting && <Box><Button
+                            variant="contained"
+                            onClick={handleCommenting}
+                            endIcon={<ReplyIcon />}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                                // marginLeft: '10px',
+                                marginLeft: '8px',
+                                height: '40px'
+                            }}
+                        >Comment</Button>
+                        </Box>}
+                    </Paper>
+                </Grid>
                 <Grid item xs={12} md={4}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Typography variant="h6">Description</Typography>
@@ -366,68 +503,35 @@ const MapDetailScreen = () => {
                     </Paper>
 
                     <Box>
-                        <Button variant="contained" onClick={() => navigate('/map-info-edit/' + currentMapPage._id)} sx={{ height: '40px' }}>
+
+                        <Button
+                            variant="contained"
+                            onClick={() => navigate('/map-info-edit/' + currentMapPage._id)}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                                // marginLeft: '10px',
+                                marginTop: '10px',
+                            }}
+                        >
                             Open Edit As My Map
                         </Button>
-                        <Button variant="contained" onClick={() => console.log('Button 2 clicked')} sx={{ height: '40px', marginLeft: '20px' }}>
+                        <Button
+                            variant="contained"
+                            onClick={() => console.log('Button 2 clicked')}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                                marginLeft: '10px',
+                                marginTop: '10px',
+                            }}
+                        >
                             Export Data
                         </Button>
                         {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
                     </Box>
-                </Grid>
-
-                <Grid item xs={12} md={8}>
-                    <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            <Typography variant="h4">{currentMapPage.title}</Typography>
-                            <IconButton onClick={() => console.log('download button clicked')}>
-                                <DownloadIcon />
-                            </IconButton>
-                            <IconButton onClick={handleLike}>
-                                <UpvoteIcon style={{ color: likeColor }} />
-                            </IconButton>
-                            {newLikes}
-                            <IconButton onClick={handleDislike}>
-                                <DownvoteIcon style={{ color: dislikeColor }} />
-                            </IconButton>
-                            {newDislikes}
-                        </Box>
-                        <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {console.log("geojsonData when render is", geojsonData)}
-                            {geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={color} geojsonData={geojsonData} step={step} featureForChoropleth={featureForChoropleth} setError={setError} />}
-                            {/*{drawPanelOpen&&<DrawLayer/>} */}
-                        </MapContainer>
-                        {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
-                    </Paper>
-
-                    <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
-                        <Typography variant="h6">Comments</Typography>
-                        <List>
-                            {commentDisplay}
-                        </List>
-                        <Box>
-                            <TextField
-                                type="text"
-                                placeholder="Add a comment..."
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                size="small"
-                                sx={{ height: '40px' }}
-                            />
-                            <Button
-                                onClick={handleAddComment}
-                                variant="contained"
-                                size="small"
-                                sx={{ height: '40px', marginLeft: '8px' }}
-                            >
-                                Add Comment
-                            </Button>
-                        </Box>
-                    </Paper>
                 </Grid>
             </Grid>
         </Box>
