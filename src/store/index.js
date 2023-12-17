@@ -88,6 +88,76 @@ function GlobalStoreContextProvider(props) {
 
         asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file);
     };
+    globalStore.copyMap = function (title, description, publicStatus, selectedCategory, tags, file, features, routerAdd, selectedFile) {
+        console.log(file);
+        async function asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file) {
+            try {
+                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file);
+                let map = response.data.map
+                if (response.status === 201) {
+                    console.log("map features: "+ map.map.addedFeatures);
+                    map.map.addedFeatures = features
+                    console.log("map features after: "+ map.map.addedFeatures);
+                    console.log("success");
+                    async function updateMapPage(mappage) {
+                        response = await api.updateMapPage(mappage._id, mappage);
+                        if (response.data.success) {
+                            storeReducer({
+                                type: GlobalStoreActionType.CREATE_MAP,
+                                payload: {
+                                    file: selectedFile,
+                                    map: map,
+                                },
+                            });
+                        }
+                    }
+                    updateMapPage(map);
+                }
+                // console.log("map_id created: "+ response.data.map.map._id);
+                navigate("/" + routerAdd + "/" + response.data.map._id);
+            } catch (error) {
+                console.error("Error creating map:", error);
+                throw error;
+            }
+        }
+
+        asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file);
+    };
+    globalStore.updateMapInfo = function (id, title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile) {
+        async function asyncUpdateMapInfo(id, title, description, publicStatus, selectedCategory, tags, file,) {
+            let response = await api.getMapPageById(id);
+            if (response.data.success) {
+                let mappage = response.data.mappage;
+                mappage.title = title;
+                mappage.description = description;
+                mappage.publicStatus = publicStatus;
+                mappage.map.baseData = JSON.parse(file);
+                mappage.map.mapType = selectedCategory;
+                mappage.tags = tags;
+                console.log("inside updateMapInfo:", mappage)
+                async function updateMapPage(mappage) {
+                    response = await api.updateMapPage(mappage._id, mappage);
+                    if (response.data.success) {
+                        async function getMapPairs(mappage) {
+                            response = await api.getPublicMapPagePairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                storeReducer({
+                                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                                    payload: pairsArray
+                                });
+                            }
+                        }
+                        getMapPairs(mappage);
+                    }
+                }
+                updateMapPage(mappage);
+                
+            }
+        }
+        asyncUpdateMapInfo(id, title, description, publicStatus, selectedCategory, tags, file,);
+        navigate("/" + routerAdd + "/" + id);
+    }
     globalStore.getMapWithId = function (id) {
         async function asyncGetMapWithId(id) {
             let response = await api.getMapPageById(id)
@@ -180,18 +250,6 @@ function GlobalStoreContextProvider(props) {
         asyncUpdateCurrentMapPage();
     }
     // functions to set values for mappage
-    globalStore.setDescription = function (newDescription) {
-        let mappage = globalStore.currentMap
-        mappage.description = newDescription
-        mappage.lastModified = Date.now
-        globalStore.updateCurrentMapPage()
-    };
-    globalStore.setPublicStatus = function (newPublicStatus) {
-        let mappage = globalStore.currentMap
-        mappage.publicStatus = newPublicStatus
-        mappage.lastModified = Date.now
-        globalStore.updateCurrentMapPage()
-    };
     globalStore.addMapPageLikes = function (id, newLikes) {
         async function asyncAddMapLikes(id) {
             let response = await api.getMapPageById(id);

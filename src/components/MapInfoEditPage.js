@@ -84,7 +84,8 @@ const MapInfoEditPage = () => {
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
         try {
-            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+            globalStore.updateMapInfo(id, mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+            // globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
         } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
