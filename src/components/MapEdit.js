@@ -33,7 +33,28 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
-
+const SmallButton = ({ tag, color, onClick }) => {
+    return (
+      <IconButton
+        onClick={onClick}
+        sx={{
+          fontSize: '10px',
+          backgroundColor: color,
+          color: 'white',
+          padding: '5px',
+          borderRadius: '10px',
+          margin: '0 4px',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          transition: 'background-color 0.3s',
+          ':hover': {
+            backgroundColor: '#0A5CE8',
+          },
+        }}
+      >
+        {tag}
+      </IconButton>
+    );
+  };
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const [file_created, setFile_created] = useState(null);
@@ -240,12 +261,29 @@ const MapEdit = () => {
     };
     //this handleSave is for Data editor, not the whole map
     const handleSave = (editedData) => {
-        // Implement your logic to save the edited data, e.g., updating state or sending it to a server
-        // console.log('Saving edited data:', editedData);
-        setGeojsonData(editedData);
-        // setPanelOpen(false);
-        // You can update your geojsonData state or perform other actions here
-    };
+        // Assuming properties is an array of property names along with their types
+        console.log("Common properties:", features);
+      
+        // Update the GeoJSON data to ensure each feature has the required properties
+        const updatedGeojsonData = editedData.features.map((feature) => {
+          const updatedProperties = { ...feature.properties };
+      
+          features.forEach(({ name, type }) => {
+            if (!(name in updatedProperties)) {
+              // Property is missing, initialize based on type
+              updatedProperties[name] = type === 'string' ? 'New Created' : 0;
+            }
+          });
+      
+          return { ...feature, properties: updatedProperties };
+        });
+      
+        // Avoid triggering re-render if the state doesn't change
+        if (JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)) {
+          setGeojsonData({ ...editedData, features: updatedGeojsonData }); 
+        }
+        // setGeojsonData(editedData);
+      };
     const panelClose = () => {
         setPanelOpen(false);
     }
@@ -355,7 +393,7 @@ const MapEdit = () => {
                     <Typography>
                         Features: {displayFeatures}
                     </Typography>
-                    {features && features.length > 0 && <Button onClick={handlePanelOpen}>Data Edit</Button>}
+                    {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton><SmallButton tag="Delete" color="red" onClick={handlePanelOpen}></SmallButton></Box>}
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />

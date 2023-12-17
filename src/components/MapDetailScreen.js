@@ -28,7 +28,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import mapApi from '../api/mapApi';
 import ReplyIcon from '@mui/icons-material/Reply';
-const Comment = ({ key, comment, updateReplies, updateComment }) => {
+const Comment = ({ comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
     const [likeClicked, setLikeClicked] = useState(false);
@@ -113,7 +113,8 @@ const Comment = ({ key, comment, updateReplies, updateComment }) => {
     let replyDisplay;
     if (replyList) {
         replyDisplay = replyList.map((reply, index) => (
-            <Typography style={{ fontSize: '12px' }}>
+            console.log("reply is", reply),
+            <Typography key={reply._id }style={{ fontSize: '12px' }}>
                 <span style={{ color: 'steelblue' }}>{reply.user}</span>: {reply.reply}
             </Typography>
         ))
