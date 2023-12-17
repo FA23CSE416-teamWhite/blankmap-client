@@ -217,6 +217,10 @@ const MapDetailScreen = () => {
     const [dislikeColor, setDislikeColor] = useState('grey');
     const [newDislikes, setDislikes] = useState(0);
     const [commenting, setCommenting] = useState(false);
+    let editText = 'Open Edit As My Map'
+    if (auth.user.id === currentMapPage.owner){
+        editText = "Edit My Map"
+    }
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
@@ -399,6 +403,32 @@ const MapDetailScreen = () => {
             globalStore.addMapPageLikes(currentMapPage._id, currentMapPage.upvotes);
         }
     };
+    const handleEditPage =() => {
+        console.log(auth.user)
+        console.log("Viewer is: ",auth.user.id)
+        console.log("Owner is: ", currentMapPage.owner)
+        if (auth.user.id === currentMapPage.owner){
+            console.log("Is owner already - going to map-info-edit")
+            navigate('/map-info-edit/'+currentMapPage._id)
+        }
+        else{
+            console.log("Is only viewer!")
+            console.log(currentMapPage)
+            let routerAdd = 'map-info-edit'
+            console.log("selectedFile", globalStore.selectedFile)
+            const geojson = JSON.parse(currentMapPage.map.baseData);
+            const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
+            globalStore.copyMap(currentMapPage.title, 
+                currentMapPage.description, 
+                currentMapPage.publicStatus, 
+                currentMapPage.map.mapType, 
+                currentMapPage.tags, 
+                stringifiedFileContent, 
+                currentMapPage.map.addedFeatures, 
+                routerAdd, 
+                null)
+        }
+    }
     const mapRef = React.useRef();
     return (
         <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2 }}>
@@ -507,7 +537,7 @@ const MapDetailScreen = () => {
 
                         <Button
                             variant="contained"
-                            onClick={() => navigate('/map-info-edit/' + currentMapPage._id)}
+                            onClick={handleEditPage}
                             sx={{
                                 borderRadius: '10px',
                                 backgroundColor: '#0844A4', // Replace with your desired color
@@ -516,7 +546,7 @@ const MapDetailScreen = () => {
                                 marginTop: '10px',
                             }}
                         >
-                            Open Edit As My Map
+                            {editText}
                         </Button>
                         <Button
                             variant="contained"
