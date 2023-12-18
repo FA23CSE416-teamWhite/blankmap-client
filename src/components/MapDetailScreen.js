@@ -114,7 +114,7 @@ const Comment = ({ comment, updateReplies, updateComment }) => {
     if (replyList) {
         replyDisplay = replyList.map((reply, index) => (
             console.log("reply is", reply),
-            <Typography key={reply._id }style={{ fontSize: '12px' }}>
+            <Typography key={reply._id} style={{ fontSize: '12px' }}>
                 <span style={{ color: 'steelblue' }}>{reply.user}</span>: {reply.reply}
             </Typography>
         ))
@@ -218,7 +218,7 @@ const MapDetailScreen = () => {
     const [newDislikes, setDislikes] = useState(0);
     const [commenting, setCommenting] = useState(false);
     let editText = 'Open Edit As My Map'
-    if (auth.user.id === currentMapPage.owner){
+    if (auth.user.id === currentMapPage.owner) {
         editText = "Edit My Map"
     }
     const navigate = useNavigate();
@@ -403,29 +403,29 @@ const MapDetailScreen = () => {
             globalStore.addMapPageLikes(currentMapPage._id, currentMapPage.upvotes);
         }
     };
-    const handleEditPage =() => {
+    const handleEditPage = () => {
         console.log(auth.user)
-        console.log("Viewer is: ",auth.user.id)
+        console.log("Viewer is: ", auth.user.id)
         console.log("Owner is: ", currentMapPage.owner)
-        if (auth.user.id === currentMapPage.owner){
+        if (auth.user.id === currentMapPage.owner) {
             console.log("Is owner already - going to map-info-edit")
-            navigate('/map-info-edit/'+currentMapPage._id)
+            navigate('/map-info-edit/' + currentMapPage._id)
         }
-        else{
+        else {
             console.log("Is only viewer!")
             console.log(currentMapPage)
             let routerAdd = 'map-info-edit'
             console.log("selectedFile", globalStore.selectedFile)
             const geojson = JSON.parse(currentMapPage.map.baseData);
             const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
-            globalStore.copyMap(currentMapPage.title, 
-                currentMapPage.description, 
-                currentMapPage.publicStatus, 
-                currentMapPage.map.mapType, 
-                currentMapPage.tags, 
-                stringifiedFileContent, 
-                currentMapPage.map.addedFeatures, 
-                routerAdd, 
+            globalStore.copyMap(currentMapPage.title,
+                currentMapPage.description,
+                currentMapPage.publicStatus,
+                currentMapPage.map.mapType,
+                currentMapPage.tags,
+                stringifiedFileContent,
+                currentMapPage.map.addedFeatures,
+                routerAdd,
                 null)
         }
     }
@@ -438,7 +438,6 @@ const MapDetailScreen = () => {
 
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
                             <Typography variant="h4">{currentMapPage.title}</Typography>
                             <IconButton onClick={() => console.log('download button clicked')}>
                                 <DownloadIcon />
@@ -457,8 +456,16 @@ const MapDetailScreen = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            {/* {console.log("geojsonData when render is", geojsonData)} */}
-                            {choroplethAdded && geojsonData && geojsonData.features.length > 0 && type === "Choropleth" && <Choropleth color={choroplethAdded.color} geojsonData={geojsonData} step={choroplethAdded.step} featureForChoropleth={choroplethAdded.featureChoropleth} setError={setError} />}
+                            {choroplethAdded ? (
+                                geojsonData && geojsonData.features.length > 0 && type === "Choropleth" ? (
+                                    <Choropleth color={choroplethAdded.color} geojsonData={geojsonData} step={choroplethAdded.step} featureForChoropleth={choroplethAdded.featureChoropleth} setError={setError} />
+                                ) : null
+                            ) : (
+                                geojsonData && geojsonData.features.length > 0 && type === "Choropleth" ? (
+                                    <Choropleth geojsonData={geojsonData} color="red" step={5} featureForChoropleth="None" setError={setError} />
+                                ) : null
+
+                            )}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
                         </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}

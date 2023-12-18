@@ -149,8 +149,10 @@ const DataEditPanel = ({ geojsonData, onSave, features, panelClose }) => {
             </Button>
             {(selectedLabel !== "None") && geojsonData.features.map((feature, index) => {
                 const labelValue = feature.properties[selectedLabel];
+                const lowercaseLabelValue = String(labelValue).toLowerCase();
+                const lowercaseQuery = query.toLowerCase();
 
-                if ((typeof labelValue === 'string' && labelValue.includes(query)) || (typeof labelValue === 'number' && labelValue.toString().includes(query)) || query === "") {
+                if (lowercaseLabelValue.includes(lowercaseQuery) || lowercaseQuery === "") {
                     return (
                         <FeatureComponent
                             key={index}
