@@ -431,7 +431,7 @@ const MapDetailScreen = () => {
     }
     const mapRef = React.useRef();
     return (
-        <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2 }}>
+        <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2, marginBottom: 2 }}>
             <Grid container spacing={2}>
 
                 <Grid item xs={12} md={8}>

@@ -146,7 +146,7 @@ const MapEdit = () => {
 
             <IconButton
                 key={index}
-                onClick={()=>(deleteProperties(feature.name))}
+                onClick={() => (deleteProperties(feature.name))}
                 sx={{
                     fontSize: '10px',
                     backgroundColor: '#0844A4',
@@ -160,6 +160,7 @@ const MapEdit = () => {
                         backgroundColor: '#0A5CE8',
                     },
                 }}
+                style={{ marginBottom: '4px' }}
             >
                 {feature.name}
                 {deleteModel && <DeleteIcon fontSize="small" style={{ marginLeft: '4px', fontSize: '16px' }} />}
@@ -171,23 +172,23 @@ const MapEdit = () => {
         displayFeatures = null;
     }
     const deleteProperties = (propertyName) => {
-        if(deleteModel){
-            if(geojsonData && geojsonData.features.length > 0){
+        if (deleteModel) {
+            if (geojsonData && geojsonData.features.length > 0) {
                 const updatedGeojsonData = {
                     ...geojsonData,
                     features: geojsonData.features.map((feature) => {
-                      // Create a copy of the feature to avoid mutating it directly
-                      const updatedProperties = { ...feature.properties };
-              
-                      // Check if the property exists and delete it
-                      if (updatedProperties.hasOwnProperty(propertyName)) {
-                        delete updatedProperties[propertyName];
-                      }
-              
-                      // Update the feature with the modified properties
-                      return { ...feature, properties: updatedProperties };
+                        // Create a copy of the feature to avoid mutating it directly
+                        const updatedProperties = { ...feature.properties };
+
+                        // Check if the property exists and delete it
+                        if (updatedProperties.hasOwnProperty(propertyName)) {
+                            delete updatedProperties[propertyName];
+                        }
+
+                        // Update the feature with the modified properties
+                        return { ...feature, properties: updatedProperties };
                     }),
-                  };
+                };
                 setGeojsonData(updatedGeojsonData);
                 const updatedProperties = features.filter((prop) => prop.name !== propertyName);
                 console.log("updatedProperties", updatedProperties);
@@ -416,7 +417,7 @@ const MapEdit = () => {
             <Grid item xs={12} sm={4}>
                 <Box sx={{ height: "40px" }}></Box>
                 {/* Title */}
-                <Grid container>
+                <Grid container >
                     <Grid item xs={12} sm={9}>
                         <Box>
                             <Typography
@@ -446,7 +447,7 @@ const MapEdit = () => {
                         Features: {displayFeatures}
                     </Typography>
                     {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton>
-                        <SmallButton tag="Delete" color="red" onClick={handleDeleteModel}></SmallButton></Box>}
+                        {!deleteModel && <SmallButton tag="Delete" color="red" onClick={handleDeleteModel}></SmallButton>}{deleteModel && <SmallButton tag="Save" color="green" onClick={handleDeleteModel}></SmallButton>}</Box>}
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />
@@ -611,6 +612,7 @@ const MapEdit = () => {
                     <div style={{ color: 'green' }}>{successMessage}</div>
                 )}
                 {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
+                <Box sx={{ paddingY: 2 }} />
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
             {panelOpen && (
