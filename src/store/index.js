@@ -96,8 +96,14 @@ function GlobalStoreContextProvider(props) {
                 let map = response.data.map
                 if (response.status === 201) {
                     console.log(file)
-                    console.log(features[0])
-                    let response = await mapApi.updateMap(map._id, map.map.baseData, features[0])
+                    console.log("features",features)
+                    let copiedFeatures = features
+                    if (features.length > 0) {
+                        console.log("features[0]",features[0])
+                        copiedFeatures = features[0]
+                    }
+                    
+                    let response = await mapApi.updateMap(map._id, map.map.baseData, copiedFeatures)
                     console.log("map features after: "+ response.map);
                     console.log("success");
                     storeReducer({
@@ -118,6 +124,18 @@ function GlobalStoreContextProvider(props) {
 
         asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file);
     };
+    globalStore.deleteMapPage = function(id) {
+        async function processDelete(id) {
+            console.log("deleting map: " + id);
+            let response = await api.deleteMap(id);
+            if (response.data == 200) {
+                console.log("deleted success")
+                globalStore.loadUserIdNamePairs()
+            }
+        }
+        processDelete(id);
+        globalStore.loadUserIdNamePairs()
+    }
     globalStore.updateMapInfo = function (id, title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile) {
         async function asyncUpdateMapInfo(id, title, description, publicStatus, selectedCategory, tags, file,) {
             let response = await api.getMapPageById(id);
