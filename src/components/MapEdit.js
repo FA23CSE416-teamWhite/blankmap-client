@@ -34,6 +34,7 @@ import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useUndoRedoState from "./useUndoRedoState";
 const SmallButton = ({ tag, color, onClick }) => {
     return (
         <IconButton
@@ -59,12 +60,32 @@ const SmallButton = ({ tag, color, onClick }) => {
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const [file_created, setFile_created] = useState(null);
-    const [features, setFeatures] = useState([]);
+    // const [features, setFeatures] = useState([]);
+    const {
+        state: features,
+        setState: setFeatures,
+        resetState: resetFeatures,
+        index: featuresStateIndex,
+        lastIndex: featuresStateLastIndex,
+        goBack: undoFeatures,
+        goForward: redoFeatures,
+    } = useUndoRedoState([]);
+
     const [newFeature, setNewFeature] = useState("");
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
     const [featureForChoropleth, setFeatureForChoropleth] = useState("None");
     const [pickColor, setPickColor] = useState("red");
-    const [geojsonData, setGeojsonData] = useState(null);
+    const [index, setIndex] = useState(0);
+    // const [geojsonData, setGeojsonData] = useState(null);
+    const {
+        state: geojsonData,
+        setState: setGeojsonData,
+        resetState: resetgeojsonData,
+        index: geojsonStateIndex,
+        lastIndex: geojsonStateLastIndex,
+        goBack: undoGeo,
+        goForward: redoGeo,
+    } = useUndoRedoState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
@@ -238,11 +259,11 @@ const MapEdit = () => {
             setNewFeature('');
         }
     };
-    const handleEditFeature = (index) => {
-        const updatedFeatures = [...features];
-        updatedFeatures.splice(index, 1);
-        setFeatures(updatedFeatures);
-    };
+    // const handleEditFeature = (index) => {
+    //     const updatedFeatures = [...features];
+    //     updatedFeatures.splice(index, 1);
+    //     setFeatures(updatedFeatures);
+    // };
 
     const handleConfirm = async () => {
         if (drawPanelOpen) {
@@ -275,12 +296,18 @@ const MapEdit = () => {
         }
     };
 
-    const handleRankFeatures = () => {
-        console.log("Ranking features...");
-    };
+    // const handleRankFeatures = () => {
+    //     console.log("Ranking features...");
+    // };
     const handleUndo = () => {
+        undoGeo();
+        undoFeatures();
+        setIndex(index - 1);
     }
     const handleRedo = () => {
+        redoGeo();
+        redoFeatures();
+        setIndex(index + 1);
     }
     const handleChoroplethSelect = (value) => {
         setFeatureForChoropleth(value);
@@ -294,7 +321,7 @@ const MapEdit = () => {
     //this handleSave is for Data editor, not the whole map
     const handleSave = (editedData) => {
         // Assuming properties is an array of property names along with their types
-        console.log("Common properties:", features);
+        // console.log("Common properties:", features);
 
         // Update the GeoJSON data to ensure each feature has the required properties
         const updatedGeojsonData = editedData.features.map((feature) => {
@@ -313,11 +340,13 @@ const MapEdit = () => {
         // Avoid triggering re-render if the state doesn't change
         if (JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)) {
             setGeojsonData({ ...editedData, features: updatedGeojsonData });
+            setFeatures(features);
+            console.log("setGeojsonData", { ...editedData, features: updatedGeojsonData });
         }
-        // setGeojsonData(editedData);
     };
     const panelClose = () => {
         setPanelOpen(false);
+        setError(null);
     }
     const handleDownload = () => {
         if (drawPanelOpen) {
