@@ -18,6 +18,7 @@ export default function Choropleth({ color, geojsonData, featureForChoropleth, s
   const [editedFeature, setEditedFeature] = useState(null);
   useEffect(() => {
     try {
+      console.log("geojsonData in Choropleth: ", geojsonData);
       if (!geojsonData) return;
       const choroplethLayer = L.choropleth(geojsonData, {
         valueProperty: featureForChoropleth,

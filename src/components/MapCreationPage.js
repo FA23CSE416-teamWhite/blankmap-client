@@ -142,10 +142,10 @@ const MapCreationPage = () => {
         if (newTag.trim() === "") return;
         // Check if the new tag already exists in the tags array
         if (!tags.includes(newTag)) {
-          setTags([...tags, newTag]);
+            setTags([...tags, newTag]);
         }
         setNewTag("");
-      };
+    };
 
     const removeTag = (tagToRemove) => {
         const updatedTags = tags.filter((tag) => tag !== tagToRemove);
@@ -248,6 +248,15 @@ const MapCreationPage = () => {
                         </Button>
                     </Box>
 
+                </FormControl>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                        justifyContent: 'flex-start', // Align chips to the start of the container
+                    }}
+                >
                     {tags.map((tag, index) => (
                         <Chip
                             key={index}
@@ -256,7 +265,7 @@ const MapCreationPage = () => {
                             sx={{ margin: '0.5rem' }}
                         />
                     ))}
-                </FormControl>
+                </Box>
 
                 {/* <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
