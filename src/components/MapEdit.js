@@ -33,28 +33,29 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
+import DeleteIcon from '@mui/icons-material/Delete';
 const SmallButton = ({ tag, color, onClick }) => {
     return (
-      <IconButton
-        onClick={onClick}
-        sx={{
-          fontSize: '10px',
-          backgroundColor: color,
-          color: 'white',
-          padding: '5px',
-          borderRadius: '10px',
-          margin: '0 4px',
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-          transition: 'background-color 0.3s',
-          ':hover': {
-            backgroundColor: '#0A5CE8',
-          },
-        }}
-      >
-        {tag}
-      </IconButton>
+        <IconButton
+            onClick={onClick}
+            sx={{
+                fontSize: '10px',
+                backgroundColor: color,
+                color: 'white',
+                padding: '5px',
+                borderRadius: '10px',
+                margin: '0 4px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                transition: 'background-color 0.3s',
+                ':hover': {
+                    backgroundColor: '#0A5CE8',
+                },
+            }}
+        >
+            {tag}
+        </IconButton>
     );
-  };
+};
 const MapEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
     const [file_created, setFile_created] = useState(null);
@@ -73,6 +74,7 @@ const MapEdit = () => {
     const { id } = useParams();
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [deleteModel, setDeleteModel] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -137,12 +139,14 @@ const MapEdit = () => {
             }
         };
         fetchData();
-    }, [id,successMessage]);
+    }, [id, successMessage]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
+
             <IconButton
                 key={index}
+                onClick={()=>(deleteProperties(feature.name))}
                 sx={{
                     fontSize: '10px',
                     backgroundColor: '#0844A4',
@@ -158,11 +162,38 @@ const MapEdit = () => {
                 }}
             >
                 {feature.name}
+                {deleteModel && <DeleteIcon fontSize="small" style={{ marginLeft: '4px', fontSize: '16px' }} />}
             </IconButton>
+
         ));
     } else {
         // Render nothing if features is empty
         displayFeatures = null;
+    }
+    const deleteProperties = (propertyName) => {
+        if(deleteModel){
+            if(geojsonData && geojsonData.features.length > 0){
+                const updatedGeojsonData = {
+                    ...geojsonData,
+                    features: geojsonData.features.map((feature) => {
+                      // Create a copy of the feature to avoid mutating it directly
+                      const updatedProperties = { ...feature.properties };
+              
+                      // Check if the property exists and delete it
+                      if (updatedProperties.hasOwnProperty(propertyName)) {
+                        delete updatedProperties[propertyName];
+                      }
+              
+                      // Update the feature with the modified properties
+                      return { ...feature, properties: updatedProperties };
+                    }),
+                  };
+                setGeojsonData(updatedGeojsonData);
+                const updatedProperties = features.filter((prop) => prop.name !== propertyName);
+                console.log("updatedProperties", updatedProperties);
+                setFeatures(updatedProperties);
+            }
+        }
     }
     const handlePanelOpen = () => {
         setPanelOpen(true);
@@ -235,7 +266,7 @@ const MapEdit = () => {
             console.log("/detail/" + id)
             setTimeout(() => {
                 navigate("/detail/" + id);
-              }, 2000);
+            }, 2000);
         } catch (error) {
             console.error('Error updating map:', error);
             // console.log(error.response.data.errorMessage);
@@ -263,33 +294,37 @@ const MapEdit = () => {
     const handleSave = (editedData) => {
         // Assuming properties is an array of property names along with their types
         console.log("Common properties:", features);
-      
+
         // Update the GeoJSON data to ensure each feature has the required properties
         const updatedGeojsonData = editedData.features.map((feature) => {
-          const updatedProperties = { ...feature.properties };
-      
-          features.forEach(({ name, type }) => {
-            if (!(name in updatedProperties)) {
-              // Property is missing, initialize based on type
-              updatedProperties[name] = type === 'string' ? 'New Created' : 0;
-            }
-          });
-      
-          return { ...feature, properties: updatedProperties };
+            const updatedProperties = { ...feature.properties };
+
+            features.forEach(({ name, type }) => {
+                if (!(name in updatedProperties)) {
+                    // Property is missing, initialize based on type
+                    updatedProperties[name] = type === 'string' ? 'New Created' : 0;
+                }
+            });
+
+            return { ...feature, properties: updatedProperties };
         });
-      
+
         // Avoid triggering re-render if the state doesn't change
         if (JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)) {
-          setGeojsonData({ ...editedData, features: updatedGeojsonData }); 
+            setGeojsonData({ ...editedData, features: updatedGeojsonData });
         }
         // setGeojsonData(editedData);
-      };
+    };
     const panelClose = () => {
         setPanelOpen(false);
     }
     const handleDownload = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
             return;
         }
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
@@ -301,6 +336,19 @@ const MapEdit = () => {
         link.click();
         document.body.removeChild(link);
     }
+    const handleDeleteModel = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
+
+        console.log("Delete Model");
+        setDeleteModel((prevDeleteModel) => !prevDeleteModel);
+    };
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -333,6 +381,10 @@ const MapEdit = () => {
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"
                     onClick={() => {
+                        if (panelOpen) {
+                            setError("Please close the data edit panel first");
+                            return;
+                        }
                         setDrawPanelOpen(true);
                     }}
                     sx={{
@@ -393,7 +445,8 @@ const MapEdit = () => {
                     <Typography>
                         Features: {displayFeatures}
                     </Typography>
-                    {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton><SmallButton tag="Delete" color="red" onClick={handlePanelOpen}></SmallButton></Box>}
+                    {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton>
+                        <SmallButton tag="Delete" color="red" onClick={handleDeleteModel}></SmallButton></Box>}
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />
@@ -531,18 +584,17 @@ const MapEdit = () => {
                 </Box>
 
                 <Box>
+                    {/* <Button variant="contained" sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginTop: '10px',
+                    }}> Rank It</Button> */}
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
                         color: 'white', // Text color
                         marginTop: '10px',
-                    }}> Rank It</Button>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                        marginLeft: '10px'
                     }} onClick={handleConfirm}>
                         Save
                     </Button>
@@ -555,9 +607,9 @@ const MapEdit = () => {
                     }} onClick={handleDownload}>
                         download
                     </Button></Box>
-                    {successMessage && (
-        <div style={{ color: 'green' }}>{successMessage}</div>
-      )}
+                {successMessage && (
+                    <div style={{ color: 'green' }}>{successMessage}</div>
+                )}
                 {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
