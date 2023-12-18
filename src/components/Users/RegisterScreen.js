@@ -51,15 +51,15 @@ export default function RegisterScreen() {
             justifyContent="center"
             alignItems="center"
             sx={{
-                height: 'calc(94.7vh)',
+                minHeight: '100vh',
                 background: `url(${backgroundImage}) center/cover no-repeat fixed`,
                 padding: '20px', // Adjust padding as needed
                 boxSizing: 'border-box',
             }}
-        ><Grid item xs={12} sm={8} md={8} lg={4} style={{ minWidth: '500px' }}>
+        ><Grid item xs={12} sm={8} md={6} lg={4} style={{ minWidth: '500px' }}>
                 <Card variant="outlined" sx={{ minWidth: '100%', boxShadow: 3, borderRadius: 3 }}>
 
-                    <CardContent sx={{ paddingY: 5, alignItems: "center" }}>
+                    <CardContent sx={{ paddingY: 5,paddingX: 4, alignItems: "center" }}>
 
                         <Box onSubmit={handleRegister}>
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2 }}>
