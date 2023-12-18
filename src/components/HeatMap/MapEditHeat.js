@@ -13,20 +13,109 @@ import UndoIcon from '@mui/icons-material/Undo';
 import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
 import {useMap, MapContainer, TileLayer, useMapEvents,Marker, Popup} from 'react-leaflet';
+import { Link, useNavigate, useParams } from "react-router-dom";
+import L, { point } from 'leaflet'
+import mapApi from '../../api/mapApi';
 
 const MapEditHeat = () => {
     const [points, setPoints] = useState([]);
     const [render, setRender] = useState(false);
     const [undoPoints, setUndoPoints] = useState([]);
+    const [mapName, setMapName] =useState("");
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [intensity, setIntensity] = useState(0);
     const [pointLocation, setPointLocation] = useState([0,0]);
     const [geojsonData, setGeojsonData] = useState(null);
+    const [features, setFeatures] = useState([])
     const mapRef = React.useRef();
+    const { id } = useParams();
+
     useEffect(() => {
-        setPoints([
-        ]);
-    }, []);
+        const fetchData = async () => {
+            try {
+                const data = await mapApi.fetchMap(id);
+                console.log("map edit content", data.mappage);
+                setMapName(data.mappage.title);
+
+                // Modify the code to read the fetched GeoJSON string directly
+                if (data.mappage.map.baseData) {
+                    try {
+                        const geojsonData = JSON.parse(data.mappage.map.baseData);
+                        // console.log("geojsonData", geojsonData);
+                        if (geojsonData.features && geojsonData.features.length > 0) {
+                            const commonProperties = Object.keys(geojsonData.features[0].properties);
+                            const addedFeatures = [];
+
+                            for (const feature of geojsonData.features) {
+                                const featureProperties = Object.keys(feature.properties);
+
+                                const newCommonProperties = commonProperties.filter((property) =>
+                                    featureProperties.includes(property)
+                                );
+
+                                commonProperties.length = 0;
+                                commonProperties.push(...newCommonProperties);
+
+                                for (const property of commonProperties) {
+                                    const propertyType = typeof feature.properties[property];
+
+                                    const existingFeature = addedFeatures.find((f) => f.name === property);
+                                    if (!existingFeature) {
+                                        addedFeatures.push({ type: propertyType, name: property });
+                                    } else {
+                                        if (existingFeature.type !== propertyType) {
+                                            existingFeature.type = "Mixed";
+                                        }
+                                    }
+                                }
+                            }
+
+                            setFeatures(addedFeatures);
+                        }   
+                        setGeojsonData(geojsonData);
+                        loadFeatures(geojsonData)
+                        
+                        // Other operations with the GeoJSON data as needed
+                        // mapRef.current.fitBounds(data.getBounds());
+                    } catch (error) {
+                        console.error("Error parsing GeoJSON:", error);
+                    }
+                } else {
+                    setGeojsonData({ type: 'FeatureCollection', features: [] });
+                }
+            } catch (error) {
+                console.error('Error fetching map:', error);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+    let displayFeatures;
+    if (features.length > 0) {
+        // displayFeatures = features.map((feature, index) => (
+        //     <IconButton
+        //         key={index}
+        //         sx={{
+        //             fontSize: '10px',
+        //             backgroundColor: '#0844A4',
+        //             color: 'white',
+        //             padding: '5px',
+        //             borderRadius: '10px',
+        //             margin: '0 4px',
+        //             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+        //             transition: 'background-color 0.3s',
+        //             ':hover': {
+        //                 backgroundColor: '#0A5CE8',
+        //             },
+        //         }}
+        //     >
+        //         {feature.name}
+        //     </IconButton>
+        // ));
+    } else {
+        // Render nothing if features is empty
+        displayFeatures = null;
+    }
 
     const handleAddPoint = () => {
         if (intensity && pointLocation) {
@@ -48,9 +137,29 @@ const MapEditHeat = () => {
         });
         return null;
     };
-    const handleDeletePoint = (i) =>{
-        points.splice(i,1)
+
+    const loadFeatures = (data=null) => {
+        if(!data){
+            data = geojsonData
+        }
+        var points = []
+        data["features"].forEach(function(feature){
+            var point = feature["geometry"]["coordinates"]
+            var temp = point[1]
+            point[1] = point[0]
+            point[0] = temp
+            points.push(point)
+        })
+        console.log(points)
         setPoints(points)
+        setRender(!render)
+    };
+
+    const handleDeletePoint = (i) =>{
+        const temp = points
+        temp.splice(i,1)
+        setPoints(temp)
+        setRender(!render)
     }
 
     const handleUndo = () =>{
@@ -74,8 +183,20 @@ const MapEditHeat = () => {
         setRender(!render)
     }
 
-    const handleSaveMap = () =>{
-        
+    const HandleSaveMap = async() =>{
+        setRender(!render)
+        setGeojsonData({
+            type: "FeatureCollection",
+            features: features
+        })
+        try {
+            const stringGeo = JSON.stringify(geojsonData);
+            console.log("stringGeo", stringGeo);
+            const updatedMap = await mapApi.updateMap(id, stringGeo);
+            console.log('Map updated successfully:', updatedMap);
+        } catch (error) {
+            console.error('Error updating map:', error);
+        }
     }
     return (
         <Grid container>
@@ -98,13 +219,8 @@ const MapEditHeat = () => {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    {/* <Marker position={[51.505, -0.09]}>
-                        <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
-                        </Popup>
-                    </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    {render && <HeatMap addressPoints={points}/>}
+                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures}/>
                     <LocationFinder/>
                     {points.map((position, idx) => 
                     <Marker key={`marker-${idx}`} position={position}>
@@ -166,16 +282,16 @@ const MapEditHeat = () => {
                     <SquareIcon sx={{ color: "green", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "purple", paddingX: 1 }} />
                 </Box> */}
-                <Box sx={{ paddingY: 1 }} onClick={handleRender} >
+                <Box sx={{ paddingY: 1 }} onClick={loadFeatures} >
 
                     <Button variant="contained" >
-                        Render
+                        Import
                     </Button>
                 </Box>
 
-                <Box sx={{ paddingY: 1 }} onClick={handleSaveMap} >
+                <Box sx={{ paddingY: 1 }} onClick={HandleSaveMap} >
 
-                    <Button variant="contained" href="/create">
+                    <Button variant="contained">
                         Save
                     </Button>
                 </Box>

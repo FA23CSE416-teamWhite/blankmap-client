@@ -20,6 +20,7 @@ import {
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import defaultMap from '../assets/defaultMap.json'
 
 
 const MapCreationPage = () => {
@@ -55,17 +56,40 @@ const MapCreationPage = () => {
             setError("Please fill all fields");
             return;
         }
+        console.log("file:", fileContent)
         const stringifiedFileContent = JSON.stringify(fileContent);
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
         globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
     }
     const handleStartWithBlank = () => {
-        console.log("Load from Map");
-        console.log("Map Name: ", mapName);
-        console.log("Is Public: ", isPublic);
-        console.log("Description: ", description);
-        navigate("/" + routerAdd)
+        if (mapName === "" || description === "" || tags === "") {
+            // alert("Please fill all fields");
+            setError("Please fill all fields");
+            return;
+        }
+        
+        const reader = new FileReader();
+    
+        reader.onload = function (event) {
+            const fileContent = event.target.result;
+            setFileContent(fileContent);
+    
+            try {
+                setGeojson(fileContent);
+                console.log(JSON.stringify(fileContent));
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        };
+    
+        const blob = new Blob([defaultMap], {type:"application/json"});
+        reader.readAsText(blob);
+
+        auth.getLoggedIn()
+        const stringifiedFileContent = JSON.stringify(fileContent);
+        console.log(stringifiedFileContent)
+        // globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, "")
         // mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
         // Logic to handle starting with a blank map
         // console.log("Start with Blank Map");

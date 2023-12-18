@@ -22,6 +22,7 @@ export default function RegisterScreen() {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [recoveryQuestion, setRecoveryQuestion] = useState("");
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
+    const [error, setError] = useState(null)
     const { auth } = useContext(AuthContext);
 
     function handleRegister(event) {
@@ -31,18 +32,20 @@ export default function RegisterScreen() {
             passwordConfirm === "" ||
             recoveryAnswer === "" ||
             recoveryQuestion === "") {
-            alert("Please fill all fields");
+            setError("Please fill all fields");
             return;
         }
         if (passwordConfirm != password) {
-            alert("Passwords do not match");
+            setError("Passwords do not match");
             return;
         }
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
         auth.registerUser(firstName, lastName, email, username, password, passwordConfirm, recoveryQuestion, recoveryAnswer)
             .then(function (res) {
                 console.log(auth)
-
+            }).catch(function(res){
+                console.log(res)
+                setError(res.data.errorMessage)
             })
     }
     return (
@@ -119,7 +122,7 @@ export default function RegisterScreen() {
                                 <TextField fullWidth onChange={(e) => setRecoveryAnswer(e.target.value)} sx={{ '& input': { padding: '10px 12px' } }} />
                             </Box>
 
-
+                            {error && <p style={{ color: 'red', textAlign: 'center'}}>{error}</p>}
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: '60px', paddingY: 2, alignItems: 'center', justifyContent: 'center' }}>
 
                                 <Button variant="contained" onClick={handleRegister}

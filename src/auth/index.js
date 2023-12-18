@@ -164,6 +164,7 @@ function AuthContextProvider(props) {
                 console.log("NOW WE LOGIN");
                 auth.loginUser(email, password);
                 console.log("LOGGED IN");
+                return response
             }
         } catch(error){
             authReducer({
@@ -174,6 +175,7 @@ function AuthContextProvider(props) {
                     errorMessage: error.response.data.errorMessage
                 }
             })
+            throw error.response
         }
     }
 
@@ -201,7 +203,7 @@ function AuthContextProvider(props) {
                     errorMessage: error.response.data.errorMessage
                 }
             })
-            throw error.response
+            throw error.response.data
         }
     }
 
