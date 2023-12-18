@@ -8,7 +8,7 @@ const api = axios.create({
 })
 
 // export const createMap = () => api.post(`/map/`);
-export const createMap = (title,description,publicStatus,selectedCategory,tags,file) => {
+export const createMap = (title,description,publicStatus,selectedCategory,tags,file,imageURL) => {
     console.log(file)
     return api.post(`/map/createMap`, {
         title: title,
@@ -16,7 +16,8 @@ export const createMap = (title,description,publicStatus,selectedCategory,tags,f
         publicStatus:publicStatus,
         selectedCategory:selectedCategory,
         tags: tags,
-        file: file
+        file: file,
+        imageURL:imageURL
     })
 }
 const updateMapPage = (id, mappage) => {

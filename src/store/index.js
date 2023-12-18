@@ -59,12 +59,12 @@ function GlobalStoreContextProvider(props) {
         auth.logoutUser();
     };
 
-    globalStore.createMap = function (title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile) {
+    globalStore.createMap = function (title, description, publicStatus, selectedCategory, tags, file, routerAdd, selectedFile,imageURL) {
         console.log(file);
 
-        async function asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file) {
+        async function asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file,imageURL) {
             try {
-                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file);
+                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file,imageURL);
 
                 if (response.status === 201) {
                     console.log("success");
@@ -86,7 +86,7 @@ function GlobalStoreContextProvider(props) {
             }
         }
 
-        asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file);
+        asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file,imageURL);
     };
     globalStore.copyMap = function (title, description, publicStatus, selectedCategory, tags, file, features, routerAdd, selectedFile) {
         console.log(file);
