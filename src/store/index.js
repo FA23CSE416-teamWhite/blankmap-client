@@ -95,23 +95,18 @@ function GlobalStoreContextProvider(props) {
                 let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file);
                 let map = response.data.map
                 if (response.status === 201) {
-                    console.log("map features: "+ map.map.addedFeatures);
-                    map.map.addedFeatures = features
-                    console.log("map features after: "+ map.map.addedFeatures);
+                    console.log(file)
+                    console.log(features[0])
+                    let response = await mapApi.updateMap(map._id, map.map.baseData, features[0])
+                    console.log("map features after: "+ response.map);
                     console.log("success");
-                    async function updateMapPage(mappage) {
-                        response = await api.updateMapPage(mappage._id, mappage);
-                        if (response.data.success) {
-                            storeReducer({
-                                type: GlobalStoreActionType.CREATE_MAP,
-                                payload: {
-                                    file: selectedFile,
-                                    map: map,
-                                },
-                            });
-                        }
-                    }
-                    updateMapPage(map);
+                    storeReducer({
+                        type: GlobalStoreActionType.CREATE_MAP,
+                        payload: {
+                            file: selectedFile,
+                            map: map,
+                        },
+                    });
                 }
                 // console.log("map_id created: "+ response.data.map.map._id);
                 navigate("/" + routerAdd + "/" + response.data.map._id);
