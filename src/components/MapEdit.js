@@ -1,6 +1,5 @@
-import React, { useState, useEffect, Component, useContext, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { GlobalStoreContext } from '../store/index';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 import DataEditPanel from './DataEditPanel';
@@ -8,30 +7,23 @@ import {
     Box,
     Typography,
     TextField,
-    TextareaAutosize,
     FormControl,
-    FormControlLabel,
     InputLabel,
     Select,
     MenuItem,
-    Switch,
     Button,
     CardContent,
     Autocomplete,
     Card,
     Paper,
+    Alert
 } from "@mui/material";
-import tempMap from '../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
-import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
 import DrawLayer from './DrawLayer';
 import cloneDeep from 'lodash/cloneDeep';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
-// import 'leaflet/dist/leaflet.css';
-// import omnivore from 'leaflet-omnivore';
-import * as turf from '@turf/turf';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -59,13 +51,9 @@ const SmallButton = ({ tag, color, onClick }) => {
     );
 };
 const MapEdit = () => {
-    const { globalStore } = useContext(GlobalStoreContext);
-    const [file_created, setFile_created] = useState(null);
-    // const [features, setFeatures] = useState([]);
     const {
         state: features,
         setState: setFeatures,
-        resetState: resetFeatures,
         index: featuresStateIndex,
         lastIndex: featuresStateLastIndex,
         goBack: undoFeatures,
@@ -76,18 +64,14 @@ const MapEdit = () => {
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
     const [featureForChoropleth, setFeatureForChoropleth] = useState("None");
     const [pickColor, setPickColor] = useState("red");
-    const [index, setIndex] = useState(0);
-    // const [geojsonData, setGeojsonData] = useState(null);
     const {
         state: geojsonData,
         setState: setGeojsonData,
-        resetState: resetgeojsonData,
         index: geojsonStateIndex,
         lastIndex: geojsonStateLastIndex,
         goBack: undoGeo,
         goForward: redoGeo,
     } = useUndoRedoState(null);
-    const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
@@ -97,6 +81,8 @@ const MapEdit = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [deleteModel, setDeleteModel] = useState(false);
+    const canUndo = geojsonStateIndex > 1 || featuresStateIndex > 1;
+    const canRedo = geojsonStateIndex < geojsonStateLastIndex || featuresStateIndex < featuresStateLastIndex;
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -161,6 +147,7 @@ const MapEdit = () => {
             }
         };
         fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, successMessage]);
     let displayFeatures;
     if (features.length > 0) {
@@ -301,14 +288,28 @@ const MapEdit = () => {
     //     console.log("Ranking features...");
     // };
     const handleUndo = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
         undoGeo();
         undoFeatures();
-        setIndex(index - 1);
     }
     const handleRedo = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
         redoGeo();
         redoFeatures();
-        setIndex(index + 1);
     }
     const handleChoroplethSelect = (value) => {
         setFeatureForChoropleth(value);
@@ -341,12 +342,12 @@ const MapEdit = () => {
         // Avoid triggering re-render if the state doesn't change
         if (
             JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)
-          ) {
+        ) {
             const editedGeo = cloneDeep({ ...editedData, features: updatedGeojsonData });
             setGeojsonData(editedGeo);
             setFeatures(features);
             console.log("setGeojsonData", editedGeo);
-          }
+        }
     };
     const panelClose = () => {
         setPanelOpen(false);
@@ -399,7 +400,7 @@ const MapEdit = () => {
                 >
                     {mapName}
                 </Typography>
-                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                <MapContainer ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -471,21 +472,23 @@ const MapEdit = () => {
                             <UndoIcon
                                 sx={{
                                     mr: 1,
+                                    cursor: canUndo ? 'pointer' : 'not-allowed',
+                                    color: canUndo ? '#0844A' : 'gray',
                                     '&:hover': {
-                                        cursor: 'pointer',
-                                        color: 'primary.main', // Change to your desired hover color
+                                        color: canUndo ? 'primary.dark' : 'gray',
                                     },
                                 }}
-                                onClick={handleUndo}
+                                onClick={canUndo ? handleUndo : undefined}
                             />
                             <RedoIcon
                                 sx={{
+                                    cursor: canRedo ? 'pointer' : 'not-allowed',
+                                    color: canRedo ? '#0844A' : 'gray',
                                     '&:hover': {
-                                        cursor: 'pointer',
-                                        color: 'primary.main', // Change to your desired hover color
+                                        color: canRedo ? 'primary.dark' : 'gray',
                                     },
                                 }}
-                                onClick={handleRedo}
+                                onClick={canRedo ? handleRedo : undefined}
                             />
                         </Box>
                     </Grid>
@@ -658,8 +661,11 @@ const MapEdit = () => {
                     }} onClick={handleDownload}>
                         download
                     </Button></Box>
+
                 {successMessage && (
-                    <div style={{ color: 'green' }}>{successMessage}</div>
+                    <Alert severity="success" style={{ marginTop: '5px' }}>
+                        {successMessage}
+                    </Alert>
                 )}
                 {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
                 <Box sx={{ paddingY: 2 }} />

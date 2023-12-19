@@ -114,20 +114,24 @@ const DataEditPanel = ({ geojsonData, onSave, features, panelClose }) => {
     }
     return (
         <div>
-            <Autocomplete
-                value={selectedLabel}
-                onChange={(e, value) => handleReferenceLabSelect(value)}
-                options={['None', ...features.map((feature) => feature.name)]}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Reference Label"
-                        size="small"
-                        fullWidth
-                    />
-                )}
-                style={{ minWidth: '200px', flex: 1 }}
-            />
+            {features && features.length > 0 ? (
+                <Autocomplete
+                    value={selectedLabel}
+                    onChange={(e, value) => handleReferenceLabSelect(value)}
+                    options={['None', ...features.map((feature) => feature.name)]}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Reference Label"
+                            size="small"
+                            fullWidth
+                        />
+                    )}
+                    style={{ minWidth: '200px', flex: 1 }}
+                />
+            ) : (
+                <p>No features to display</p>
+            )}
 
             <TextField
                 label="Search"
