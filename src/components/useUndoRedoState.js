@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 // If you're only working with primitives, this is not required
-import isEqual from "lodash/isEqual";
+// import isEqual from "lodash/isEqual";
 export default function useUndoRedoState(init) {
   const [states, setStates] = useState([init]); // Used to store history of all states
   const [index, setIndex] = useState(0); // Index of current state within `states`

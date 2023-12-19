@@ -452,7 +452,7 @@ const MapEdit = () => {
                             <Typography
                                 variant="body1"
                                 sx={{
-                                    color: "blue",
+                                    color: "#0844A4",
                                     display: "flex",
                                     justifyContent: "left",
                                     alignItems: "center",
@@ -464,8 +464,25 @@ const MapEdit = () => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                         <Box>
-                            <UndoIcon sx={{ mr: 1 }} onClick={handleUndo} />
-                            <Redo onClick={handleRedo} />
+                            <UndoIcon
+                                sx={{
+                                    mr: 1,
+                                    '&:hover': {
+                                        cursor: 'pointer',
+                                        color: 'primary.main', // Change to your desired hover color
+                                    },
+                                }}
+                                onClick={handleUndo}
+                            />
+                            <RedoIcon
+                                sx={{
+                                    '&:hover': {
+                                        cursor: 'pointer',
+                                        color: 'primary.main', // Change to your desired hover color
+                                    },
+                                }}
+                                onClick={handleRedo}
+                            />
                         </Box>
                     </Grid>
                 </Grid>
