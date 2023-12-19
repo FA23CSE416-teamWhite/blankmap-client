@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Autocomplete, TextField, IconButton, Button, Paper } from '@mui/material';
+import { cloneDeep } from 'lodash';
 const SmallButton = ({ tag, color, onClick }) => {
     return (
         <IconButton
@@ -96,7 +97,7 @@ const DataEditPanel = ({ geojsonData, onSave, features, panelClose }) => {
         console.log("editedData: ", editedData);
         console.log("editedData.id: ", editedData.id);
 
-        const updatedGeojsonData = { ...geojsonData };
+        const updatedGeojsonData = cloneDeep({ ...geojsonData });
         updatedGeojsonData.features[featureIndex].properties = {
             ...updatedGeojsonData.features[featureIndex].properties,
             ...editedData.properties,

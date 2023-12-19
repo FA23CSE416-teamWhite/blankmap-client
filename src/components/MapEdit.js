@@ -27,6 +27,7 @@ import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
 import DrawLayer from './DrawLayer';
+import cloneDeep from 'lodash/cloneDeep';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import omnivore from 'leaflet-omnivore';
@@ -338,11 +339,14 @@ const MapEdit = () => {
         });
 
         // Avoid triggering re-render if the state doesn't change
-        if (JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)) {
-            setGeojsonData({ ...editedData, features: updatedGeojsonData });
+        if (
+            JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)
+          ) {
+            const editedGeo = cloneDeep({ ...editedData, features: updatedGeojsonData });
+            setGeojsonData(editedGeo);
             setFeatures(features);
-            console.log("setGeojsonData", { ...editedData, features: updatedGeojsonData });
-        }
+            console.log("setGeojsonData", editedGeo);
+          }
     };
     const panelClose = () => {
         setPanelOpen(false);
