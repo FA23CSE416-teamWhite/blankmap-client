@@ -31,7 +31,8 @@ export default function LoginScreen() {
         await auth.loginUser(username, password).then(function (res) {
             setError(null)
         }).catch(function (res) {
-            setError(res.data.errorMessage)
+            console.log(res)
+            setError(res.errorMessage)
         })
 
 
