@@ -51,8 +51,10 @@ const MyMapScreen = () => {
     return true;
   });
   }
-  
-
+  const handleDeleteMap = async (map) => {
+    console.log("handleDeleteMap for map:", map)
+    globalStore.deleteMapPage(map.id)
+  }
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>
     <Grid container>
@@ -123,7 +125,7 @@ const MyMapScreen = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                       <Button
-                        // onClick={() => {...}} for future purposes
+                        onClick={() => {handleDeleteMap(filteredMaps[index])}}
                         sx={{
                           fontSize: '10px',
                           backgroundColor: 'red',
