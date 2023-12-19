@@ -60,8 +60,8 @@ const HomeScreen = () => {
   const handleCreateMap = () => {
     auth.getLoggedIn()
     console.log("auth is:", auth.user)
-    if (!auth.user){
-      console.log("auth is not logged in")
+    if (auth.user.id === "658207d16c2fdba1fd5475a7"){
+      console.log("auth is guest!")
       alert("You must be logged in to create a map!")
       navigate("/login")
     }

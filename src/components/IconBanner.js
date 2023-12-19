@@ -21,7 +21,7 @@ export default function IconBanner() {
     let main = <Link to="/" style={{ textDecoration: "none" }}>
         <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
     </Link>
-    if (auth.loggedIn) {
+    if (auth.loggedIn && auth.user.id !== "658207d16c2fdba1fd5475a7") {
         menu = <Link id="accountCircle" to="/profile" style={{ textDecoration: "none", color: '#0844A4' }}>
             <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
         </Link>
