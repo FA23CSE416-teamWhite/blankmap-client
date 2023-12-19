@@ -417,6 +417,7 @@ const MapDetailScreen = () => {
             let routerAdd = 'map-info-edit'
             console.log("selectedFile", globalStore.selectedFile)
             const geojson = JSON.parse(currentMapPage.map.baseData);
+            const imageURL = currentMapPage.imageURL
             const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
             globalStore.copyMap(currentMapPage.title,
                 currentMapPage.description,
@@ -426,7 +427,8 @@ const MapDetailScreen = () => {
                 stringifiedFileContent,
                 currentMapPage.map.addedFeatures,
                 routerAdd,
-                null)
+                null,
+                imageURL)
         }
     }
     const mapRef = React.useRef();

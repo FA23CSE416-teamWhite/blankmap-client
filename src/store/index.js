@@ -88,11 +88,11 @@ function GlobalStoreContextProvider(props) {
 
         asyncCreateMap(title, description, publicStatus, selectedCategory, tags, file,imageURL);
     };
-    globalStore.copyMap = function (title, description, publicStatus, selectedCategory, tags, file, features, routerAdd, selectedFile) {
+    globalStore.copyMap = function (title, description, publicStatus, selectedCategory, tags, file, features, routerAdd, selectedFile, imageURL) {
         console.log(file);
-        async function asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file) {
+        async function asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file, imageURL) {
             try {
-                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file);
+                let response = await api.createMap(title, description, publicStatus, selectedCategory, tags, file, imageURL);
                 let map = response.data.map
                 if (response.status === 201) {
                     console.log(file)
@@ -122,7 +122,7 @@ function GlobalStoreContextProvider(props) {
             }
         }
 
-        asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file);
+        asyncCopyMap(title, description, publicStatus, selectedCategory, tags, file, imageURL);
     };
     globalStore.deleteMapPage = function(id) {
         async function processDelete(id) {
