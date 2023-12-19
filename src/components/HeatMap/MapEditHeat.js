@@ -162,22 +162,24 @@ const MapEditHeat = () => {
         setRender(!render)
     }
 
-    const handleUndo = () =>{
-        if(points.length > 0){
-            undoPoints.push(points.splice(points.length-1,1))
-            setUndoPoints(undoPoints)
-            setPoints(points)
-        }
+    const handleDownload = () =>{
+        const geoJsonString = JSON.stringify(geojsonData, null, 2);
+        const blob = new Blob([geoJsonString], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.download = mapName + '.geojson';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    const handleRedo = () =>{
-        if(undoPoints.length > 0){
-            points.push(undoPoints.pop())
-            setPoints(points)
-            setUndoPoints(undoPoints)
-        }
+    const handleUndo =() =>{
+
     }
 
+    const handleRedo =() =>{
+        
+    }
 
     const handleRender = () =>{
         setRender(!render)
@@ -192,7 +194,7 @@ const MapEditHeat = () => {
         try {
             const stringGeo = JSON.stringify(geojsonData);
             console.log("stringGeo", stringGeo);
-            const updatedMap = await mapApi.updateMap(id, stringGeo);
+            const updatedMap = await mapApi.updateMap(id, stringGeo,[]);
             console.log('Map updated successfully:', updatedMap);
         } catch (error) {
             console.error('Error updating map:', error);
@@ -212,7 +214,7 @@ const MapEditHeat = () => {
                         paddingY:2
                     }}
                 >
-                Title: <TextField placeholder="Enter Title"></TextField>
+                {mapName}
                 </Typography>
                 <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
@@ -282,10 +284,10 @@ const MapEditHeat = () => {
                     <SquareIcon sx={{ color: "green", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "purple", paddingX: 1 }} />
                 </Box> */}
-                <Box sx={{ paddingY: 1 }} onClick={loadFeatures} >
+                <Box sx={{ paddingY: 1 }} onClick={handleDownload} >
 
                     <Button variant="contained" >
-                        Import
+                        Download
                     </Button>
                 </Box>
 

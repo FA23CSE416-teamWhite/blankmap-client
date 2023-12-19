@@ -20,7 +20,7 @@ import {
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import {useParams} from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 
 const MapInfoEditPage = () => {
@@ -46,23 +46,23 @@ const MapInfoEditPage = () => {
     const { id } = useParams();
     useEffect(() => {
         const fetchData = async () => {
-          try {
-            const data = await mapApi.fetchMap(id);
-            const geojson = JSON.parse(data.mappage.map.baseData);
-            console.log(data.mappage);
-            setMapName(data.mappage.title);
-            setIsPublic(data.mappage.publicStatus);
-            setDescription(data.mappage.description); 
-            setSelectedCategory(data.mappage.map.mapType); 
-            setTags(data.mappage.tags);
-            setGeojson(geojson);
-          } catch (error) {
-            console.error('Error fetching map:', error);
+            try {
+                const data = await mapApi.fetchMap(id);
+                const geojson = JSON.parse(data.mappage.map.baseData);
+                console.log(data.mappage);
+                setMapName(data.mappage.title);
+                setIsPublic(data.mappage.publicStatus);
+                setDescription(data.mappage.description);
+                setSelectedCategory(data.mappage.map.mapType);
+                setTags(data.mappage.tags);
+                setGeojson(geojson);
+            } catch (error) {
+                console.error('Error fetching map:', error);
             }
         };
-    
+
         fetchData();
-      }, [id]);
+    }, [id]);
     // const [center, setCenter] = useState([0,0]);
 
     function handleSubmit() {
@@ -77,10 +77,19 @@ const MapInfoEditPage = () => {
             return;
         }
         const stringifiedFileContent = JSON.stringify(JSON.stringify(geojson));
-
+        let modifiedTags = [...tags];
+        if (!tags.includes(selectedCategory)) {
+            modifiedTags = [...tags, selectedCategory]; // default add the category like "Choropleth" as a tag
+        }
         // console.log("stringifided", stringifiedFileContent);
         auth.getLoggedIn()
-        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
+        try {
+            globalStore.updateMapInfo(id, mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+            // globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile)
+        } catch (error) {
+            console.log(error);
+            setError("Error creating map: ", error);
+        }
     }
     const handleStartWithBlank = () => {
         console.log("Load from Map");
@@ -109,17 +118,17 @@ const MapInfoEditPage = () => {
             console.error('Please select a valid JSON file.');
             return;
         }
-    
+
         console.log(file);
         setSelectedFile(file);
         setSelectedFileName(file.name);
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = function (event) {
             const fileContent = event.target.result;
             setFileContent(fileContent);
-    
+
             try {
                 const parsedContent = JSON.parse(fileContent);
                 setGeojson(parsedContent);
@@ -128,7 +137,7 @@ const MapInfoEditPage = () => {
                 console.error('Error parsing JSON:', error);
             }
         };
-    
+
         reader.readAsText(file);
     };
     const handleCategoryChange = (event) => {
@@ -153,7 +162,10 @@ const MapInfoEditPage = () => {
 
     const addTag = () => {
         if (newTag.trim() === "") return;
-        setTags([...tags, newTag]);
+        // Check if the new tag already exists in the tags array
+        if (!tags.includes(newTag)) {
+            setTags([...tags, newTag]);
+        }
         setNewTag("");
     };
 
@@ -258,6 +270,15 @@ const MapInfoEditPage = () => {
                         </Button>
                     </Box>
 
+                </FormControl>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                        justifyContent: 'flex-start', // Align chips to the start of the container
+                    }}
+                >
                     {tags.map((tag, index) => (
                         <Chip
                             key={index}
@@ -266,7 +287,7 @@ const MapInfoEditPage = () => {
                             sx={{ margin: '0.5rem' }}
                         />
                     ))}
-                </FormControl>
+                </Box>
 
                 {/* <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
@@ -329,18 +350,18 @@ const MapInfoEditPage = () => {
                             {geojson && <GeoJSON data={geojson} />}
                         </MapContainer>
                     )}
-                    {!geojson&& 
-                    <Button
-                        variant="contained"
-                        onClick={handleStartWithBlank}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                        }}
-                    >
-                        Start With Blank
-                    </Button>}
+                    {!geojson &&
+                        <Button
+                            variant="contained"
+                            onClick={handleStartWithBlank}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                            }}
+                        >
+                            Start With Blank
+                        </Button>}
                     <Box sx={{ width: '10px' }}></Box>
                     {!geojson && <Button
                         variant="contained"
@@ -375,17 +396,17 @@ const MapInfoEditPage = () => {
                     Edit Map
                 </Button>}
                 {geojson && <Button
-                        variant="contained"
-                        onClick={handleLoadFromMap}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginLeft: '10px',
-                        }}
-                    >
-                        Load From Another
-                    </Button>}
+                    variant="contained"
+                    onClick={handleLoadFromMap}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginLeft: '10px',
+                    }}
+                >
+                    Load From Another
+                </Button>}
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Grid>
         </Grid>

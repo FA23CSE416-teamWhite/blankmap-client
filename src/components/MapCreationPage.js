@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import { GlobalStoreContext } from '../store/index';
 import AuthContext from "../auth";
+import leafletImage from 'leaflet-image';
 import {
     Box,
     Typography,
@@ -20,6 +21,7 @@ import {
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import L from 'leaflet';
 
 
 const MapCreationPage = () => {
@@ -42,24 +44,46 @@ const MapCreationPage = () => {
     const [error, setError] = useState(null);
     const [geojson, setGeojson] = useState(null);
     const [map, setMap] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
+    const mapRef = useRef(null);
+    const [imageURL, setImageURL] = useState('');
+    const [loadingImage, setLoadingImage] = useState(false);
     // const [center, setCenter] = useState([0,0]);
-
     function handleSubmit() {
         if (!fileContent) {
             // console.error('Please select a file.');
             setError("Please select a file.");
             return;
         }
-        if (mapName === "" || description === "" || tags === "" || selectedFile === "") {
+        if (mapName === "" || description === "" || tags.length===0 || selectedFile === "") {
             // alert("Please fill all fields");
             setError("Please fill all fields");
             return;
         }
         console.log("file:", fileContent)
         const stringifiedFileContent = JSON.stringify(fileContent);
-        console.log("stringifided", JSON.parse(stringifiedFileContent));
+        let modifiedTags = [...tags];
+        if (!tags.includes(selectedCategory)) {
+            modifiedTags = [...tags, selectedCategory]; // default add the category like "Choropleth" as a tag
+        }
+        // console.log("stringifided", stringifiedFileContent);
+
+        //prevent non points from being in heat maps
+        if(selectedCategory == "HeatMap" && fileContent["features"]){
+            fileContent["features"].forEach(function(feature){
+                if(feature["geometery"]["type"] != "Point"){
+                    setError("Invalid File Type!")
+                    return;
+                }
+            })
+        }
         auth.getLoggedIn()
-        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, selectedFile)
+        try {
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
+        } catch (error) {
+            console.log(error);
+            setError("Error creating map: ", error);
+        }
     }
     const handleStartWithBlank = () => {
         if (mapName === "" || description === "" || tags === "") {
@@ -90,29 +114,97 @@ const MapCreationPage = () => {
         fileInputRef.current.click();
     };
 
-    // const fitBounds = () => {
-    //     if (map && geojson) {
-    //       map.fitBounds(geojson.getBounds());
-    //     }
-    //   };
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (!file || !(file.name.endsWith('.json') || file.name.endsWith('.geojson'))) {
-            // Display an error message or handle it as needed
-            console.error('Please select a valid JSON file.');
+    const convertGeoJSONToPNG = async (file) => {
+        if (!file) {
+            console.error('No file selected');
             return;
         }
     
+        const reader = new FileReader();
+    
+        reader.onload = async function (event) {
+            const fileContent = event.target.result;
+            try {
+                console.log('File content before parsing:', fileContent);
+                const parsedContent = JSON.parse(fileContent);
+                console.log('Parsed content:', parsedContent);
+    
+                const mapWidth = 600; // Replace with your map width
+                const mapHeight = 400; // Replace with your map height
+                const canvas = document.createElement('canvas');
+                canvas.width = mapWidth;
+                canvas.height = mapHeight;
+    
+                // let mapContainer = document.getElementById('mapContainer');
+                // if (mapContainer && mapContainer.parentNode) {
+                //     mapContainer.remove();
+                // }
+    
+                let mapContainer = document.createElement('div');
+                mapContainer.id = 'mapContainer';
+                mapContainer.style.width = '600px';
+                mapContainer.style.height = '400px';
+                mapContainer.style.position = 'absolute';
+                mapContainer.style.left = '-9999px';
+                document.body.appendChild(mapContainer);
+    
+                const map = L.map(mapContainer, { preferCanvas: true });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                }).addTo(map);
+
+                const geojsonLayer = L.geoJSON(parsedContent).addTo(map);
+    
+                const bounds = geojsonLayer.getBounds();
+                console.log('Bounds:', bounds);
+    
+                map.fitBounds(bounds);
+    
+                setTimeout(() => {
+                    leafletImage(map, async function (err, canvas) {
+                        if (err) {
+                            console.error('Error converting JSON to image:', err);
+                            return;
+                        }
+                        console.log('Canvas:', canvas);
+                        const imageUrl = canvas.toDataURL('image/png');
+                        setImageURL(imageUrl);
+                        
+                        // Remove the mapContainer from the body
+                        if (mapContainer && mapContainer.parentNode) {
+                            mapContainer.parentNode.removeChild(mapContainer);
+                        }
+                        console.log(imageURL)
+                        setLoadingImage(false);
+                    });
+                }, 1000);
+            } catch (error) {
+                console.error('Error converting JSON to image:', error);
+            }
+        };
+    
+        reader.readAsText(file);
+    };
+    
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setLoadingImage(true);
+        if (!file || !(file.name.endsWith('.json') || file.name.endsWith('.geojson'))) {
+            // Display an error message or handle it as needed
+            setLoadingImage(false); // Reset loading state
+            return;
+        }
+
         console.log(file);
         setSelectedFile(file);
         setSelectedFileName(file.name);
-    
+        convertGeoJSONToPNG (file); 
         const reader = new FileReader();
-    
+        
         reader.onload = function (event) {
             const fileContent = event.target.result;
             setFileContent(fileContent);
-    
+
             try {
                 const parsedContent = JSON.parse(fileContent);
                 setGeojson(parsedContent);
@@ -121,7 +213,7 @@ const MapCreationPage = () => {
                 console.error('Error parsing JSON:', error);
             }
         };
-    
+
         reader.readAsText(file);
     };
     const handleCategoryChange = (event) => {
@@ -146,7 +238,10 @@ const MapCreationPage = () => {
 
     const addTag = () => {
         if (newTag.trim() === "") return;
-        setTags([...tags, newTag]);
+        // Check if the new tag already exists in the tags array
+        if (!tags.includes(newTag)) {
+            setTags([...tags, newTag]);
+        }
         setNewTag("");
     };
 
@@ -251,6 +346,15 @@ const MapCreationPage = () => {
                         </Button>
                     </Box>
 
+                </FormControl>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                        justifyContent: 'flex-start', // Align chips to the start of the container
+                    }}
+                >
                     {tags.map((tag, index) => (
                         <Chip
                             key={index}
@@ -259,7 +363,7 @@ const MapCreationPage = () => {
                             sx={{ margin: '0.5rem' }}
                         />
                     ))}
-                </FormControl>
+                </Box>
 
                 {/* <FormControl fullWidth margin="normal" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <TextField
@@ -314,26 +418,27 @@ const MapCreationPage = () => {
                 {selectedFileName}
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "10%", borderRadius: '10px' }}>
                     {selectedFile && (
-                        <MapContainer ref={setMap} center={[0, 0]} zoom={2} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }} >
+                        <MapContainer id="mapContainer" ref={setMap} center={[0, 0]} zoom={2} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }} >
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            {geojson && <GeoJSON data={geojson} />}
+                            {geojson && <GeoJSON key={JSON.stringify(geojson)} // Add a key that changes when geojson changes
+            data={geojson} />}
                         </MapContainer>
                     )}
-                    {!selectedFile&& 
-                    <Button
-                        variant="contained"
-                        onClick={handleStartWithBlank}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                        }}
-                    >
-                        Start With Blank
-                    </Button>}
+                    {!selectedFile &&
+                        <Button
+                            variant="contained"
+                            onClick={handleStartWithBlank}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4', // Replace with your desired color
+                                color: 'white', // Text color
+                            }}
+                        >
+                            Start With Blank
+                        </Button>}
                     <Box sx={{ width: '10px' }}></Box>
                     {!selectedFile && <Button
                         variant="contained"
@@ -358,6 +463,7 @@ const MapCreationPage = () => {
                 {selectedFile && <Button
                     variant="contained"
                     onClick={handleSubmit}
+                    disabled={!imageURL || loadingImage}
                     sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
@@ -365,21 +471,34 @@ const MapCreationPage = () => {
                         marginY: 2
                     }}
                 >
-                    Edit Map
+                    Create and Edit Map
                 </Button>}
                 {selectedFile && <Button
-                        variant="contained"
-                        onClick={handleLoadFromMap}
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginLeft: '10px',
-                        }}
-                    >
-                        Load From Another
-                    </Button>}
+                    variant="contained"
+                    onClick={handleLoadFromMap}
+                    sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginLeft: '10px',
+                    }}
+                >
+                    Load From Another
+                </Button>}
+               
+                {imageURL && (
+    <div>
+        <p>Image Preview:</p>
+        <img src={imageURL} alt="Map Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
+    </div>
+)}
                 {error && <FormHelperText error>{error}</FormHelperText>}
+                {imagePreview && (
+                    <div>
+                        <p>Image Preview:</p>
+                        <img src={imagePreview} alt="File Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
+                    </div>
+                )}
             </Grid>
         </Grid>
     );

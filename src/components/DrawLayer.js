@@ -4,7 +4,9 @@ import {
     TileLayer,
     FeatureGroup,
     GeoJSON,
-    useMapEvent
+    useMapEvent,
+    Polygon,
+    CircleMarker,
 } from "react-leaflet";
 import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
@@ -26,19 +28,66 @@ L.Icon.Default.mergeOptions({
 const DrawLayer = ({initialGeoJSON, onSave}) => {
     const [editableFG, setEditableFG] = useState(null);
     // const [geoJSON, setGeoJSON] = useState({ type: 'FeatureCollection', features: [] });
-    const [geoJSON, setGeoJSON] = useState(initialGeoJSON);
+    const [geoJSON, setGeoJSON] = useState(initialGeoJSON || { type: 'FeatureCollection', features: [] });
+    const featureGroupRef = useRef();
     useEffect(() => {
-        // Log GeoJSON to console whenever it changes (for testing)
-        console.log(initialGeoJSON)
-        console.log('GeoJSON:', geoJSON);
-        onSave(geoJSON);
+        console.log("initialGeoJSON: ", initialGeoJSON);
+        console.log("geoJSON: ", geoJSON);  
+        // const convertMultiPolygonsToPolygons = (geoJSON) => {
+        //     const convertedFeatures = geoJSON.features.map((feature) => {
+        //       if (feature.geometry.type === 'MultiPolygon') {
+        //         // Convert the MultiPolygon to a Polygon by taking the first polygon
+        //         return {
+        //           ...feature,
+        //           geometry: {
+        //             type: 'Polygon',
+        //             coordinates: feature.geometry.coordinates[0], // Assuming the first polygon
+        //           },
+        //         };
+        //       }
+        //       return feature;
+        //     });
+          
+        //     return {
+        //       type: 'FeatureCollection',
+        //       features: convertedFeatures,
+        //     };
+        //   };
+
+        if (featureGroupRef.current) {
+            const leafletGeoJSON = new L.GeoJSON(geoJSON);
+            const leafletFG = featureGroupRef.current;
+            // console.log("onReady: ",featureGroupRef.current);
+            // console.log("onReady: ",leafletGeoJSON);
+      
+            leafletGeoJSON.eachLayer((layer) => {
+              leafletFG.addLayer(layer);
+            });
+      
+            // Store the ref for future access to content
+            setEditableFG(featureGroupRef);
+          }
+        //   if (featureGroupRef.current) {
+        //     const leafletFG = featureGroupRef.current;
+        //     const convertedGeoJSON = convertMultiPolygonsToPolygons(geoJSON);
+        //     console.log("geoJson: ", geoJSON)
+        //     console.log("converted geoJson: ", convertedGeoJSON);  
+        //     const leafletGeoJSON = new L.GeoJSON(convertedGeoJSON);
+        //     console.log("onReady: ",leafletGeoJSON);
+        
+        //     leafletGeoJSON.eachLayer((layer) => {
+        //       leafletFG.addLayer(layer);
+        //     });
+        
+        //     // Store the ref for future access to content
+        //     setEditableFG(featureGroupRef);
+        //   }
+        // console.log(initialGeoJSON)
+        // console.log('GeoJSON:', geoJSON);
+        // onSave(geoJSON);
       }, [geoJSON, initialGeoJSON, onSave]);
 
-    const onFeatureGroupReady = (reactFGref) => {
 
-        // store the ref for future access to content
-        setEditableFG(reactFGref);
-    };
     const onChange = () => {
         // editableFG contains the edited geometry, which can be manipulated through the leaflet API
         if (!editableFG) {
@@ -48,39 +97,70 @@ const DrawLayer = ({initialGeoJSON, onSave}) => {
     };
 
     const onCreated = (e) => {
-        console.log("_onCreated:", e);
-        console.log("editableFG",editableFG);
+        // console.log("_onCreated:", e);
+        // console.log("editableFG", editableFG);
         console.log(e.layer.toGeoJSON());
         const layer = e.layer.toGeoJSON();
-        setGeoJSON((prevGeoJSON) => ({
+        // setGeoJSON({
+        //     type: 'FeatureCollection',
+        //     features: [...geoJSON.features, layer],
+        //   });
+        // onSave is called directly with the updated GeoJSON data
+        onSave({
           type: 'FeatureCollection',
-          features: [...prevGeoJSON.features, layer],
-        }));
-        // onSave(geoJSON);
-    };
+          features: [...initialGeoJSON.features, layer],
+        });
 
-    const onEdited = (e) => {
-        console.log("_onEdited:", e);
-        console.log("data", geoJSON);
-        onChange();
-    };
+      };
+
+    //   const onEdited = (e) => {
+    //     console.log("_onEdit:", e);
+      
+    //     // Assuming e.layers is an array of edited layers
+    //     const editedLayers = e.layers.toGeoJSON();
+      
+    //     // Update the GeoJSON data by adding the edited layers
+    //     const updatedGeoJSON = {
+    //       type: 'FeatureCollection',
+    //       features: [...geoJSON.features, ...editedLayers.features],
+    //     };
+      
+    //     // Save the updated GeoJSON data
+    //     onSave(updatedGeoJSON);
+    //   };
 
     const onDeleted = (e) => {
-        console.log("_onDeleted:", e);
-        onChange();
-    };
+        const deletedLayers = e.layers.toGeoJSON();
+        
+
+        const updatedGeoJSON = {
+          type: 'FeatureCollection',
+          features: geoJSON.features.filter((feature) => {
+            // Filter out the deleted layers
+            return !deletedLayers.features.some((deletedFeature) => {
+              return (
+                JSON.stringify(feature.geometry) === JSON.stringify(deletedFeature.geometry)
+              );
+            });
+          }),
+        };
+    
+
+        setGeoJSON(updatedGeoJSON);
+        onSave(updatedGeoJSON);
+      };
 
     const onMounted = (drawControl) => {
         console.log("_onMounted", drawControl);
     };
 
-    const onEditStart = (e) => {
-        console.log("_onEditStart", e);
-    };
+    // const onEditStart = (e) => {
+    //     console.log("_onEditStart", e);
+    // };
 
-    const onEditStop = (e) => {
-        console.log("_onEditStop", e);
-    };
+    // const onEditStop = (e) => {
+    //     console.log("_onEditStop", e);
+    // };
 
     const onDeleteStart = (e) => {
         console.log("_onDeleteStart", e);
@@ -92,23 +172,25 @@ const DrawLayer = ({initialGeoJSON, onSave}) => {
 
     return (
             <FeatureGroup
-                ref={(reactFGref) => {
-                    onFeatureGroupReady(reactFGref);
-                }}
+                ref={featureGroupRef}
             >
                 <EditControl
                     position="topright"
-                    onEdited={onEdited}
+                    // onEdited={onEdited}
                     onCreated={onCreated}
                     onDeleted={onDeleted}
                     onMounted={onMounted}
-                    onEditStart={onEditStart}
-                    onEditStop={onEditStop}
+                    // onEditStart={onEditStart}
+                    // onEditStop={onEditStop}
                     onDeleteStart={onDeleteStart}
                     onDeleteStop={onDeleteStop}
                     onChange={onChange}
                     draw={{
-                        rectangle: false
+                        circlemarker: false,
+                        circle: false,
+                    }}
+                    edit = {{
+                        edit:false
                     }}
                 />
             </FeatureGroup>
