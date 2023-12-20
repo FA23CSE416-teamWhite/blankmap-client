@@ -27,6 +27,7 @@ function GlobalStoreContextProvider(props) {
         const { type, payload } = action;
         switch (type) {
             case GlobalStoreActionType.CREATE_MAP: {
+                console.log("REDUCER: creating map");
                 return setGlobalStore({
                     currentMap: payload.map,
                     selectedFile: payload.file,
@@ -35,13 +36,15 @@ function GlobalStoreContextProvider(props) {
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_MAP_PAGE: {
+                console.log("REDUCER: setting current map");
                 return setGlobalStore({
                     currentMap: payload.map,
                     selectedFile: payload.selectedFile,
-                    idNamePairs: globalStore.idNamePairs
+                    idNamePairs: null
                 });
             }
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                console.log("REDUCER: loading id name pairs");
                 return setGlobalStore({
                     currentMap: globalStore.currentMap,
                     selectedFile: globalStore.selectedFile,
@@ -103,7 +106,7 @@ function GlobalStoreContextProvider(props) {
                         copiedFeatures = features[0]
                     }
                     
-                    let response = await mapApi.updateMap(map._id, map.map.baseData, copiedFeatures)
+                    let response = await mapApi.updateMap(map._id, map.map.baseData, copiedFeatures, imageURL)
                     console.log("map features after: "+ response.map);
                     console.log("success");
                     storeReducer({
@@ -130,7 +133,7 @@ function GlobalStoreContextProvider(props) {
             let response = await api.deleteMap(id);
             if (response.data == 200) {
                 console.log("deleted success")
-                globalStore.loadUserIdNamePairs()
+                
             }
         }
         processDelete(id);
@@ -172,6 +175,7 @@ function GlobalStoreContextProvider(props) {
         navigate("/" + routerAdd + "/" + id);
     }
     globalStore.getMapWithId = function (id) {
+        console.log("getMapWithId");
         async function asyncGetMapWithId(id) {
             let response = await api.getMapPageById(id)
             if (response.status === 201) {
@@ -191,7 +195,7 @@ function GlobalStoreContextProvider(props) {
             const response = await api.getMapPagePairs();
             if (response.data.success) {
                 let pairsArray = response.data.idNamePairs;
-                console.log(pairsArray);
+                console.log("loadUserIdNamePairs",pairsArray);
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
@@ -199,7 +203,7 @@ function GlobalStoreContextProvider(props) {
             }
             else if (response.data.success === false && response.status === 200) {
                 let pairsArray = response.data.mappages;
-                console.log(pairsArray);
+                console.log("loadUserIdNamePairs",pairsArray);
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray

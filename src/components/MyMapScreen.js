@@ -22,9 +22,10 @@ const MyMapScreen = () => {
   const [mapList, setMapList] = useState([]);
   useEffect(() => {
     if (!globalStore.idNamePairs) {
+      console.log("loadinguseridname pairs in mymapscreen")
       globalStore.loadUserIdNamePairs();
     } else {
-      console.log(globalStore.idNamePairs)
+      console.log("idNamePairs already present", globalStore.idNamePairs)
       setMapList(globalStore.idNamePairs);
     }
   }, [globalStore]);

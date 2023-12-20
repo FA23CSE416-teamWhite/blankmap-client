@@ -13,16 +13,24 @@ import blankmap_font from './images/blankMap.png'
 import AuthContext from '../auth';
 import { Menu } from '@mui/material';
 import { useContext } from 'react';
+import { GlobalStoreContext } from '../store/index';
 
 
 export default function IconBanner() {
     const { auth } = useContext(AuthContext);
+    const { globalStore } = useContext(GlobalStoreContext);
+    const navigate = useNavigate();
     let menu = <Link to="/Login" style={{ textDecoration: 'none', color: '#0844A4' }}>Login</Link>
     let main = <Link to="/" style={{ textDecoration: "none" }}>
         <img src={blankMapicon} alt="fireSpot" width="60" height="60" />
     </Link>
+    const handleProfile = async () => {
+        console.log("loading useridnamepairs in handleProfile....");
+        await globalStore.loadUserIdNamePairs()
+        navigate("/profile")
+    }
     if (auth.loggedIn && auth.user.id !== "658207d16c2fdba1fd5475a7") {
-        menu = <Link id="accountCircle" to="/profile" style={{ textDecoration: "none", color: '#0844A4' }}>
+        menu = <Link id="accountCircle" to="/profile" onClick={handleProfile} style={{ textDecoration: "none", color: '#0844A4' }}>
             <AccountCircle color="gray" sx={{ ml: 1, cursor: 'pointer' }} />
         </Link>
         main = <Link to="/home" style={{ textDecoration: "none" }}>
