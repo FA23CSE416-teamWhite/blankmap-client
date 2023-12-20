@@ -68,18 +68,20 @@ const MapCreationPage = () => {
         }
         // console.log("stringifided", stringifiedFileContent);
 
+        const parsedContent = JSON.parse(fileContent)
         //prevent non points from being in heat maps
-        if(selectedCategory == "HeatMap" && fileContent["features"]){
-            fileContent["features"].forEach(function(feature){
-                if(feature["geometery"]["type"] != "Point"){
+        if(selectedCategory == "HeatMap" && parsedContent["features"]){
+            parsedContent["features"].forEach(function(feature){
+                if(feature["geometry"]["type"] != "Point"){
                     setError("Invalid File Type!")
                     return;
                 }
             })
         }
+
         auth.getLoggedIn()
         try {
-            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
+            // globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
         } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
@@ -96,9 +98,16 @@ const MapCreationPage = () => {
         console.log("Is Public: ", isPublic);
         console.log("Description: ", description);
 
-        const defaultMap ={
+        var defaultMap ={
             "type": "FeatureCollection",
             "features": []
+        }
+
+        if(selectedCategory == "Regional"){
+            defaultMap = {
+                "type": "FeatureCollection",
+                "features": [{ type: "String", name: "color" }]
+            }
         }
         
         const stringifiedFileContent = JSON.stringify(JSON.stringify(defaultMap));

@@ -11,7 +11,7 @@ import MyInfoScreen from './MyInfoScreen'
 import MessageCenter from './MessageCenter'
 import MapEdit from './MapEdit'
 import MapEditHeat from './HeatMap/MapEditHeat'
-import RegionalEdit from './RegionalEdit'
+import RegionalEdit from './RegionalMap/RegionalEdit'
 import MainPage from './MainPage'
 import MapInfoEditPage from './MapInfoEditPage'
 /*

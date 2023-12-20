@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Component, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { GlobalStoreContext } from '../store/index';
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { GlobalStoreContext } from '../../store/index';
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
-import DataEditPanel from './DataEditPanel';
+import DataEditPanel from '../DataEditPanel';
 import {
     Box,
     Typography,
@@ -21,7 +21,7 @@ import {
     Card,
     Paper,
 } from "@mui/material";
-import tempMap from '../assets/tempMap.png'
+import tempMap from '../../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
@@ -30,9 +30,11 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import omnivore from 'leaflet-omnivore';
 import * as turf from '@turf/turf';
-import Choropleth from "./Choropleth"
-import ColorLayer from "./ColorLayer";
-import DrawLayer from "./DrawLayer";
+import Choropleth from "../Choropleth"
+import ColorLayer from "../ColorLayer";
+import DrawLayer from "../DrawLayer";
+import mapApi from '../../api/mapApi';
+import { geojson } from "leaflet-omnivore";
 
 const RegionalEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -55,30 +57,36 @@ const RegionalEdit = () => {
     const [pickColor, setPickColor] = useState("red");
     const [geojsonData, setGeojsonData] = useState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
+    const [mapName, setMapName] = useState("Map Title");
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [error, setError] = useState(null);
     const [drawPanelOpen, setDrawPanelOpen] = useState(false);
+    const { id } = useParams();
     const navigate = useNavigate();
     useEffect(() => {
-        const readFile = () => {
+        const fetchData = async () => {
             try {
-                if (globalStore.selectedFile) {
-                    setFile_created(globalStore.selectedFile);
+                const data = await mapApi.fetchMap(id);
+                console.log("Map Fetched", data.mappage);
+                setMapName(data.mappage.title);
+                if (data.mappage.map.addedFeatures.length > 0) {
+                    setPickColor(data.mappage.map.addedFeatures[0].color);
+                    setChoroStep(data.mappage.map.addedFeatures[0].step);
+                    setFeatureForChoropleth(data.mappage.map.addedFeatures[0].featureChoropleth);
+                }
 
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const data = JSON.parse(e.target.result);
-
-                        if (data.features && data.features.length > 0) {
-                            const commonProperties = Object.keys(data.features[0].properties);
+                // Modify the code to read the fetched GeoJSON string directly
+                if (data.mappage.map.baseData) {
+                    try {
+                        const geojsonData = JSON.parse(data.mappage.map.baseData);
+                        console.log("geojsonData", geojsonData);
+                        if (geojsonData.features && geojsonData.features.length > 0) {
+                            const commonProperties = Object.keys(geojsonData.features[0].properties);
                             const addedFeatures = [];
 
-                            for (const feature of data.features) {
-                                // Check if the "color" property exists in the feature
-                                if (!feature.properties.hasOwnProperty("color")) {
-                                    // If not, add "color" with the value "gray"
-                                    feature.properties.color = "gray";
-                                }
+                            for (const feature of geojsonData.features) {
                                 const featureProperties = Object.keys(feature.properties);
 
                                 const newCommonProperties = commonProperties.filter((property) =>
@@ -101,25 +109,32 @@ const RegionalEdit = () => {
                                     }
                                 }
                             }
+                        
 
                             setFeatures(addedFeatures);
                         }
+                        console.log("geojson:",geojsonData);
 
-                        setGeojsonData(data);
+                        setGeojsonData(geojsonData);
                         // Other operations with the GeoJSON data as needed
                         // mapRef.current.fitBounds(data.getBounds());
-                    };
-                    reader.readAsText(globalStore.selectedFile);
+                    } catch (error) {
+                        console.error("Error parsing GeoJSON:", error);
+                        setError("Error parsing GeoJSON", error);
+                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }]});
+                    }
                 } else {
-                    setGeojsonData({ type: 'FeatureCollection', features: [] });
+                    console.log("default")
+                    setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
                 }
             } catch (error) {
-                console.error("Error reading file:", error);
+                console.error('Error fetching map:', error);
+                setError("Error fetching map: " + error.response.data.errorMessage);
             }
         };
-
-        readFile();
-    }, [globalStore.selectedFile]);
+        fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, successMessage]);
     let displayFeatures;
 
     if (features.length > 0) {
@@ -245,7 +260,7 @@ const RegionalEdit = () => {
                         alignItems: "left",
                     }}
                 >
-                    Map Title
+                    {mapName}
                 </Typography>
                 <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
@@ -386,6 +401,59 @@ const RegionalEdit = () => {
                     )}
                     style={{ minWidth: '200px', flex: 1 }}
                 /> */}
+                <Typography> Choose a Color: {pickColor}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <SquareIcon
+                        sx={{
+                            color: 'red',
+                            padding: 1,
+                            border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('red')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'blue',
+                            padding: 1,
+                            border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('blue')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'yellow',
+                            padding: 1,
+                            border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('yellow')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'green',
+                            padding: 1,
+                            border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('green')}
+                    />
+                    <SquareIcon
+                        sx={{
+                            color: 'purple',
+                            padding: 1,
+                            border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setPickColor('purple')}
+                    />
+                </Box>
                 <Box>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
