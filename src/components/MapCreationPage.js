@@ -123,7 +123,7 @@ const MapCreationPage = () => {
                     {
                         "type": "Feature",
                         "properties": {
-                            "bounds": [
+                            "Bounds": [
                                 [-90, -180], // Southwest coordinates
                                 [90, 180]  // Northeast coordinates
                             ],

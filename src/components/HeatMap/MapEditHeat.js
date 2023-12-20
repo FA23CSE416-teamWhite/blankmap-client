@@ -103,7 +103,20 @@ const MapEditHeat = () => {
                         console.error("Error parsing GeoJSON:", error);
                     }
                 } else {
-                    setGeojsonData({ type: 'FeatureCollection', features: [] });
+                    setGeojsonData({
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "Bounds": [
+                                        [-90, -180], // Southwest coordinates
+                                        [90, 180]  // Northeast coordinates
+                                    ],
+                                }
+                            }
+                        ]
+                    });
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
@@ -218,9 +231,12 @@ const MapEditHeat = () => {
             mapContainer.style.position = 'absolute';
             mapContainer.style.left = '-9999px';
             document.body.appendChild(mapContainer);
+
     
             // Create a map instance
             const map = L.map(mapContainer, { preferCanvas: true });
+            map.setZoom(1)
+            map.setView([0, 0], 0);
             
     
             // Add TileLayer to the map
@@ -228,7 +244,7 @@ const MapEditHeat = () => {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
             console.log(geojsonData)
-            const bounds = geojsonData.features[0].properties.bounds;
+            const bounds = map.getBounds();
             console.log('Bounds:', bounds);
 
             map.fitBounds(bounds);
@@ -238,8 +254,7 @@ const MapEditHeat = () => {
                 })
                 : [];
             L.heatLayer(point).addTo(map);
-           
-    
+
             setTimeout(() => {
                 leafletImage(map, async function (err, canvas) {
                     if (err) {
@@ -258,6 +273,7 @@ const MapEditHeat = () => {
                         }, 'image/jpeg', 1);
                     }else if(format ==="save") {
                         const imageUrl = canvas.toDataURL('image/png');
+                        console.log("to save")
                         setSavedImage(imageUrl);
                         HandleSaveMap(imageUrl);
                     }
@@ -326,13 +342,13 @@ const MapEditHeat = () => {
                 >
                 {mapName}
                 </Typography>
-                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                <MapContainer ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures} setGeo={setGeojsonData}/>
+                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures} setGeo={setGeojsonData} prevFeatures={features}/>
                     <LocationFinder/>
                     {points.map((position, idx) => 
                     <Marker key={`marker-${idx}`} position={position}>
