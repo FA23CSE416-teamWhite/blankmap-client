@@ -177,7 +177,7 @@ const MapEditHeat = () => {
         })
         console.log(points)
         setPoints(points)
-        setRender(!render)
+        // setRender(!render)
     };
 
     const handleDeletePoint = (i) =>{
@@ -257,7 +257,7 @@ const MapEditHeat = () => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures} setGeo={setGeojsonData}/>
+                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures} setGeo={setGeojsonData} prevFeatures={features}/>
                     <LocationFinder/>
                     {points.map((position, idx) => 
                     <Marker key={`marker-${idx}`} position={position}>

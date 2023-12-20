@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { isEqual } from "lodash";
 // If you're only working with primitives, this is not required
 // import isEqual from "lodash/isEqual";
 export default function useUndoRedoState(init) {

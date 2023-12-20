@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useMap, Marker } from 'react-leaflet'
 import L, { point } from 'leaflet'
+import { isEqual } from "lodash";
 import "leaflet.heat"
 
-export default  function HeatMap({addressPoints, render, setFeatures, setGeo}){
+export default  function HeatMap({addressPoints, render, setFeatures, setGeo, prevFeatures}){
     //An extract of address points from the LINZ bulk extract: http://www.linz.govt.nz/survey-titles/landonline-data/landonline-bde
 //Should be this data set: http://data.linz.govt.nz/#/layer/779-nz-street-address-electoral/
 
@@ -29,12 +30,15 @@ export default  function HeatMap({addressPoints, render, setFeatures, setGeo}){
         
       } 
     });
-    console.log(features)
+      console.log(features)
+      if(isEqual(features,prevFeatures)){
+        return;
+      }
       setFeatures(features);
       setGeo({
         type: "FeatureCollection",
         features: features
     })
 
-   }, [addressPoints, render, setFeatures, setGeo]);
+   }, [addressPoints, render, setFeatures, setGeo, prevFeatures]);
 }
