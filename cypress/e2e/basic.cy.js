@@ -123,9 +123,12 @@ describe('Profile Pages test', () => {
 // }
 // );
 
-describe('Simple Region Empty Map Creation Test', () => {
-    it('should successfully log in with valid credentials', () => {
+// describe('Simple Region Empty Map Creation Test', function() {
+//     this.timeout(10000);
+describe('Simple Region Map Upload Creation Test', () => {
+    it('should successfully log in with valid credentials', function() {
         // Visit the login page
+        this.timeout(100000);
         cy.visit(url + '/login');
 
         // Enter username and password
@@ -145,66 +148,74 @@ describe('Simple Region Empty Map Creation Test', () => {
         cy.get('button').contains('Add Tag').click();
         cy.get('#selectedCategory').click();
         cy.contains('Regional Map').click();
-        cy.get('button').contains('Start With Blank').click();
+        cy.get('button').contains('Load From Map').click();
+        cy.get('input[type=file]').selectFile('./cypress/e2e/us-states.geojson',{
+            action: "select",
+            force: true,
+          })
+        cy.get('button').contains('Create and Edit Map').click();
+        cy.wait(2000);
         cy.url().should('include', '/regional-edit');
-        cy.get('button').contains('Render as Simple Region').click();
-        cy.url().should('include', '/home');
+        cy.get('button').contains('Save').click();
+        cy.url().should('include', '/detail');
     });
 }
-);
+); 
 
-// describe('Simple Region Map Upload Creation Test', () => {
-//     it('should successfully log in with valid credentials', () => {
-//         // Visit the login page
-//         cy.visit(url + '/login');
+describe('Choropleth Map Upload Creation Test', () => {
+    it('should successfully log in with valid credentials', function() {
+        // Visit the login page
+        this.timeout(100000);
+        cy.visit(url + '/login');
 
-//         // Enter username and password
-//         cy.get('#username').type('test3');
-//         cy.get('#password').type('12345678');
+        // Enter username and password
+        cy.get('#username').type('test3');
+        cy.get('#password').type('12345678');
 
-//         // Click the login button
-//         cy.get('button').contains('Log in').click();
+        // Click the login button
+        cy.get('button').contains('Log in').click();
 
-//         // Verify that the login was successful
-//         cy.url().should('include', '/home');
-//         cy.get('button').contains('Create Map').click();
-//         cy.url().should('include', '/create');
-//         cy.get('#mapName').type('Cypress Test Map');
-//         cy.get('#mapDescription').type('This is a test map created by Cypress');
-//         cy.get('#mapTags').type('Cypress');
-//         cy.get('button').contains('Add Tag').click();
-//         cy.get('#selectedCategory').click();
-//         cy.contains('Regional Map').click();
-//         cy.get('button').contains('Load From Map').click();
-//         cy.get('input[type=file]').selectFile('./cypress/e2e/us-states.geojson',{
-//             action: "select",
-//             force: true,
-//           })
-//         cy.get('button').contains('Submit').click();
-//         cy.url().should('include', '/regional-edit');
-//         cy.get('button').contains('Render as Simple Region').click();
-//         cy.url().should('include', '/home');
-//     });
-// }
-// ); 
+        // Verify that the login was successful
+        cy.url().should('include', '/home');
+        cy.get('button').contains('Create Map').click();
+        cy.url().should('include', '/create');
+        cy.get('#mapName').type('Cypress Test Map');
+        cy.get('#mapDescription').type('This is a test map created by Cypress');
+        cy.get('#mapTags').type('Cypress');
+        cy.get('button').contains('Add Tag').click();
+        // cy.get('#selectedCategory').click();
+        // cy.contains('Regional Map').click();
+        cy.get('button').contains('Load From Map').click();
+        cy.get('input[type=file]').selectFile('./cypress/e2e/us-states.geojson',{
+            action: "select",
+            force: true,
+          })
+        cy.get('button').contains('Create and Edit Map').click();
+        cy.wait(2000);
+        cy.url().should('include', '/edit');
+        cy.get('button').contains('Save').click();
+        cy.url().should('include', '/detail');
+    });
+}
+); 
 
-// describe('Home page search Test', () => {
-//     it('should successfully log in with valid credentials', () => {
-//         // Visit the login page
-//         cy.visit(url + '/login');
+describe('Home page search Test', () => {
+    it('should successfully log in with valid credentials', () => {
+        // Visit the login page
+        cy.visit(url + '/login');
 
-//         // Enter username and password
-//         cy.get('#username').type('test3');
-//         cy.get('#password').type('12345678');
+        // Enter username and password
+        cy.get('#username').type('test3');
+        cy.get('#password').type('12345678');
 
-//         // Click the login button
-//         cy.get('button').contains('Log in').click();
+        // Click the login button
+        cy.get('button').contains('Log in').click();
 
-//         // Verify that the login was successful
-//         cy.url().should('include', '/home');
-//         cy.get('input[placeholder="Search Maps"]').type('Cypress Test Map');
-//         cy.get('#searchButton').click();
-//         cy.get('div').contains('Cypress Test Map').click();
-//         cy.url().should('include', '/detail');
-//     });
-// })
+        // Verify that the login was successful
+        cy.url().should('include', '/home');
+        cy.get('input[placeholder="Search Maps"]').type('Cypress Test Map');
+        cy.get('#searchButton').click();
+        cy.get('div').contains('Cypress Test Map').click();
+        cy.url().should('include', '/detail');
+    });
+})
