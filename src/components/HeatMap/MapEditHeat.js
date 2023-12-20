@@ -321,6 +321,7 @@ const MapEditHeat = () => {
             const stringGeo = JSON.stringify(geojsonData);
             console.log("stringGeo", stringGeo);
             const updatedMap = await mapApi.updateMap(id, stringGeo,[],saveImage);
+            alert("save complete")
             console.log('Map updated successfully:', updatedMap);
         } catch (error) {
             console.error('Error updating map:', error);
