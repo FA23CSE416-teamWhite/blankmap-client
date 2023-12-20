@@ -62,7 +62,7 @@ const MapCreationPage = () => {
             setError("Please fill all fields");
             return;
         }
-        console.log("file:", fileContent)
+        
         const stringifiedFileContent = JSON.stringify(fileContent);
         let modifiedTags = [...tags];
         if (!tags.includes(selectedCategory)) {
@@ -127,10 +127,7 @@ const MapCreationPage = () => {
         reader.onload = async function (event) {
             const fileContent = event.target.result;
             try {
-                console.log('File content before parsing:', fileContent);
                 const parsedContent = JSON.parse(fileContent);
-                console.log('Parsed content:', parsedContent);
-    
                 const mapWidth = 600; // Replace with your map width
                 const mapHeight = 400; // Replace with your map height
                 const canvas = document.createElement('canvas');
@@ -154,6 +151,7 @@ const MapCreationPage = () => {
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors',
                 }).addTo(map);
+
 
                 const geojsonLayer = L.geoJSON(parsedContent).addTo(map);
     

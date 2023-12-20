@@ -20,10 +20,17 @@ import {
 } from "@mui/material";
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
+import html2canvas from 'html2canvas';
 import SquareIcon from '@mui/icons-material/Square';
 import DrawLayer from './DrawLayer';
 import cloneDeep from 'lodash/cloneDeep';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import leafletImage from 'leaflet-image'; // Make sure to import leaflet-image
+import 'leaflet-easyprint';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import omnivore from 'leaflet-omnivore';
+import * as turf from '@turf/turf';
 import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -81,6 +88,7 @@ const MapEdit = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [deleteModel, setDeleteModel] = useState(false);
+    const [savedImage, setSavedImage] = useState(null);
     const canUndo = geojsonStateIndex > 1 || featuresStateIndex > 1;
     const canRedo = geojsonStateIndex < geojsonStateLastIndex || featuresStateIndex < featuresStateLastIndex;
     useEffect(() => {
@@ -149,6 +157,12 @@ const MapEdit = () => {
         fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, successMessage]);
+    useEffect(() => {
+        if (savedImage !== null) {
+            // Call handleConfirm or any other action here after savedImage state is updated
+            handleConfirm();
+        }
+    }, [savedImage]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
@@ -267,7 +281,8 @@ const MapEdit = () => {
                 step: choroStep,
                 featureChoropleth: featureForChoropleth
             }
-            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures);
+            console.log(savedImage)
+            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures,savedImage);
             console.log("Map Updated:", updatedMap);
             setSuccessMessage("Map updated successfully! Saving...");
 
@@ -362,15 +377,109 @@ const MapEdit = () => {
             setError("Please close the data edit panel first");
             return;
         }
+       
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
         const blob = new Blob([geoJsonString], { type: 'application/json' });
         const link = document.createElement('a');
-        link.download = 'title.geojson';
+        link.download = `${mapName}.geojson`;
         link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
+   
+    const handleDownloadGeoJSONAsImage = async (format) => {
+        try {
+            const mapWidth = 600; // Replace with your map width
+            const mapHeight = 400; // Replace with your map height
+    
+            // Creating map container and setting styles
+            let mapContainer = document.createElement('div');
+            mapContainer.id = 'mapContainer';
+            mapContainer.style.width = '600px';
+            mapContainer.style.height = '400px';
+            mapContainer.style.position = 'absolute';
+            mapContainer.style.left = '-9999px';
+            document.body.appendChild(mapContainer);
+    
+            // Create a map instance
+            const map = L.map(mapContainer, { preferCanvas: true });
+    
+            // Add TileLayer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+            }).addTo(map);
+    
+            const choroplethLayer = L.choropleth(geojsonData, {
+                valueProperty: featureForChoropleth,
+                scale: ["white", pickColor],
+                steps: choroStep,
+                mode: "q",
+                // style,
+                onEachFeature: function (feature, layer) {
+                  // Convert feature.properties to a custom formatted string
+                  const formattedProperties = Object.entries(feature.properties)
+                    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+                    .join('<br>');
+        
+                  // Display the formatted string in the popup
+                  layer.bindPopup(`
+                      <div>
+                        ${formattedProperties}
+                        <br>        
+                      </div>
+                    `);
+                }
+              }
+              ).addTo(map);
+    
+              const bounds = choroplethLayer.getBounds();
+              map.fitBounds(bounds);
+    
+            setTimeout(() => {
+                leafletImage(map, async function (err, canvas) {
+                    if (err) {
+                        console.error('Error converting JSON to image:', err);
+                        return;
+                    }
+    
+                    // Convert canvas to the specified format (PNG or JPEG)
+                    if (format === 'png') {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        downloadImage(imageUrl, 'png');
+                    } else if (format === 'jpeg') {
+                        canvas.toBlob(blob => {
+                            const imageUrl = URL.createObjectURL(blob);
+                            downloadImage(imageUrl, 'jpeg');
+                        }, 'image/jpeg', 1);
+                    }else if(format ==="save") {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        setSavedImage(imageUrl);
+                    }
+    
+                    // Remove the mapContainer from the body
+                    if (mapContainer && mapContainer.parentNode) {
+                        mapContainer.parentNode.removeChild(mapContainer);
+                    }
+                });
+            }, 1000); // Adjust the delay as needed
+        } catch (error) {
+            console.error('Error converting JSON to image:', error);
+        }
+    };
+    
+    
+    const downloadImage = (imageUrl, format) => {
+        const link = document.createElement('a');
+        link.download = `${mapName}.${format}`;
+        link.href = imageUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
+    
+    
     const handleDeleteModel = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
@@ -400,7 +509,8 @@ const MapEdit = () => {
                 >
                     {mapName}
                 </Typography>
-                <MapContainer ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                <MapContainer id="mapContainer" ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -412,7 +522,8 @@ const MapEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && geojsonData.features.length > 0 && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                    {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />}
+                    {/* {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />} */}
+                    
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"
                     onClick={() => {
@@ -649,8 +760,34 @@ const MapEdit = () => {
                         backgroundColor: '#0844A4', // Replace with your desired color
                         color: 'white', // Text color
                         marginTop: '10px',
-                    }} onClick={handleConfirm}>
+                    }} onClick={() => handleDownloadGeoJSONAsImage('save')}>
                         Save
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                            marginLeft: '10px'
+                        }}
+                        onClick={() => handleDownloadGeoJSONAsImage('png')} 
+                    >
+                        Download as PNG
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                            marginLeft: '10px'
+                        }}
+                        onClick={() => handleDownloadGeoJSONAsImage('jpeg')} 
+                    >
+                        Download as Jpeg
                     </Button>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
@@ -659,8 +796,9 @@ const MapEdit = () => {
                         marginTop: '10px',
                         marginLeft: '10px'
                     }} onClick={handleDownload}>
-                        download
-                    </Button></Box>
+                        download as geojson
+                    </Button>
+                    </Box>
 
                 {successMessage && (
                     <Alert severity="success" style={{ marginTop: '5px' }}>
