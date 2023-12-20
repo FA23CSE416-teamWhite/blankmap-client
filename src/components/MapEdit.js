@@ -497,6 +497,7 @@ const MapEdit = () => {
             }, 1000);
         } catch (error) {
             console.error('Error converting JSON to image:', error);
+            setError("Please add a region first before downloading as image")
         }
     };
     

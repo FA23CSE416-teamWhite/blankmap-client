@@ -26,11 +26,10 @@ export default  function HeatMap({addressPoints, render, setFeatures, setGeo, pr
     map.eachLayer(function (layer) {
       if (layer instanceof L.Marker) {
         features.push(layer.toGeoJSON());
-
-        
       } 
     });
-      console.log(features)
+      
+      console.log(map.getBounds())
       if(isEqual(features,prevFeatures)){
         return;
       }

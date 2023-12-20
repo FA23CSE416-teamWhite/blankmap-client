@@ -26,6 +26,7 @@ import L from 'leaflet';
 import { kml } from "@tmcw/togeojson";
 const shp = require('shpjs');
 const JSZip = require('jszip');
+const temp_map = 'https://datavizcatalogue.com/methods/images/top_images/choropleth.png';
 
 const MapCreationPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -52,6 +53,11 @@ const MapCreationPage = () => {
     const [imageURL, setImageURL] = useState('');
     const [loadingImage, setLoadingImage] = useState(false);
     const [creatingMessage, setCreatingMessage] = useState(false);
+    const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB in bytes
+
+    const isFileSizeValid = (file) => {
+        return file.size <= MAX_FILE_SIZE;
+    };
     // const [center, setCenter] = useState([0,0]);
     function handleSubmit() {
         if (!fileContent) {
@@ -59,6 +65,8 @@ const MapCreationPage = () => {
             setError("Please select a file.");
             return;
         }
+        console.log("TAGS"+tags)
+        console.log(tags.length)
         if (mapName === "" || description === "" || tags.length === 0 || selectedFile === "") {
             // alert("Please fill all fields");
             setError("Please fill all fields");
@@ -85,7 +93,7 @@ const MapCreationPage = () => {
 
         auth.getLoggedIn()
         try {
-            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile, imageURL)
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
         } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
@@ -104,7 +112,25 @@ const MapCreationPage = () => {
 
         var defaultMap = {
             "type": "FeatureCollection",
-            "features": []
+            "features": [
+               
+            ]
+        };
+        if(selectedCategory==="HeatMap"){
+            defaultMap = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "Bounds": [
+                                [-90, -180], // Southwest coordinates
+                                [90, 180]  // Northeast coordinates
+                            ],
+                        }
+                    }
+                ]
+            };
         }
 
         // if(selectedCategory == "Regional"){
@@ -117,7 +143,7 @@ const MapCreationPage = () => {
         const stringifiedFileContent = JSON.stringify(JSON.stringify(defaultMap));
         console.log("stringifided", JSON.parse(stringifiedFileContent));
         auth.getLoggedIn()
-        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, null)
+        globalStore.createMap(mapName, description, isPublic, selectedCategory, tags, stringifiedFileContent, routerAdd, null,temp_map)
         // mapApi.createMap(mapName, isPublic, description, tags, selectedCategory, selectedFile)
         // Logic to handle starting with a blank map
         // console.log("Start with Blank Map");
@@ -159,6 +185,7 @@ const MapCreationPage = () => {
                 mapContainer.style.left = '-9999px';
                 document.body.appendChild(mapContainer);
 
+                
                 const map = L.map(mapContainer, { preferCanvas: true });
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors',
@@ -201,7 +228,7 @@ const MapCreationPage = () => {
 
     const handleFileChange = (event) => {
         const rawFile = event.target.files[0];
-
+        setError()
         if (!rawFile || !(rawFile.name.endsWith('.json') || rawFile.name.endsWith('.geojson') || rawFile.name.endsWith('.zip') || rawFile.name.endsWith('.kml'))) {
             // Display an error message or handle it as needed
             setError('Please choose a file of type: .json, .geojson, .kml, .zip');
@@ -209,6 +236,12 @@ const MapCreationPage = () => {
             return;
         }
 
+        if (!isFileSizeValid(rawFile)) {
+            setError('File size exceeds 16MB. Please choose a smaller file.');
+            setLoadingImage(false); // Reset loading state
+            return;
+        }
+    
         const reader = new FileReader();
 
         reader.onload = async function (event) {

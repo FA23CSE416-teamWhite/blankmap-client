@@ -7,7 +7,7 @@ import {
     Button,
 } from "@mui/material";
 import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
-
+import 'leaflet.heat';
 import HeatMap from "./HeatMap";
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from "@mui/icons-material/Redo";
@@ -16,6 +16,7 @@ import {useMap, MapContainer, TileLayer, useMapEvents,Marker, Popup} from 'react
 import { Link, useNavigate, useParams } from "react-router-dom";
 import L, { point } from 'leaflet'
 import mapApi from '../../api/mapApi';
+import leafletImage from 'leaflet-image';
 import useUndoRedoState from "../useUndoRedoState";
 
 const MapEditHeat = () => {
@@ -28,6 +29,7 @@ const MapEditHeat = () => {
     // const [geojsonData, setGeojsonData] = useState(null);
     const [features, setFeatures] = useState([])
     const mapRef = React.useRef();
+    const [savedImage, setSavedImage] = useState(null);
     const { id } = useParams();
 
     const {
@@ -101,7 +103,20 @@ const MapEditHeat = () => {
                         console.error("Error parsing GeoJSON:", error);
                     }
                 } else {
-                    setGeojsonData({ type: 'FeatureCollection', features: [] });
+                    setGeojsonData({
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "Bounds": [
+                                        [-90, -180], // Southwest coordinates
+                                        [90, 180]  // Northeast coordinates
+                                    ],
+                                }
+                            }
+                        ]
+                    });
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
@@ -159,25 +174,23 @@ const MapEditHeat = () => {
         return null;
     };
 
-    const loadFeatures = (data=null) => {
-        if(!data){
-            data = geojsonData
+    const loadFeatures = (data = null) => {
+        if (!data) {
+            data = geojsonData;
         }
-        var points = []
-        data["features"].forEach(function(feature){
-            var point = feature["geometry"]["coordinates"]
-            var temp = point[1]
-            point[1] = point[0]
-            point[0] = temp
-
-            if(point.length < 3){
-                point[2] = 0
+        var points = [];
+        data.features.forEach(function (feature) {
+            if (feature.geometry && feature.geometry.coordinates) {
+                var coordinates = feature.geometry.coordinates;
+                if (coordinates.length >= 2) {
+                    var point = [coordinates[1], coordinates[0]]; // Swap lat and long
+                    points.push(point);
+                }
             }
-            points.push(point)
-        })
-        console.log(points)
-        setPoints(points)
-        // setRender(!render)
+        });
+        console.log(points);
+        setPoints(points);
+        setRender(!render);
     };
 
     const handleDeletePoint = (i) =>{
@@ -205,6 +218,88 @@ const MapEditHeat = () => {
         document.body.removeChild(link);
     }
 
+    const handleDownloadGeoJSONAsImage = async (format) => {
+        try {
+            const mapWidth = 600; // Replace with your map width
+            const mapHeight = 400; // Replace with your map height
+    
+            // Creating map container and setting styles
+            let mapContainer = document.createElement('div');
+            mapContainer.id = 'mapContainer';
+            mapContainer.style.width = '600px';
+            mapContainer.style.height = '400px';
+            mapContainer.style.position = 'absolute';
+            mapContainer.style.left = '-9999px';
+            document.body.appendChild(mapContainer);
+
+    
+            // Create a map instance
+            const map = L.map(mapContainer, { preferCanvas: true });
+            map.setZoom(1)
+            map.setView([0, 0], 0);
+            
+    
+            // Add TileLayer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            console.log(geojsonData)
+            const bounds = map.getBounds();
+            console.log('Bounds:', bounds);
+
+            map.fitBounds(bounds);
+            const point = points
+                ? points.map((p) => {
+                return [p[0], p[1], p[2]]; // lat lng intensity
+                })
+                : [];
+            L.heatLayer(point).addTo(map);
+
+            setTimeout(() => {
+                leafletImage(map, async function (err, canvas) {
+                    if (err) {
+                        console.error('Error converting JSON to image:', err);
+                        return;
+                    }
+    
+                    // Convert canvas to the specified format (PNG or JPEG)
+                    if (format === 'png') {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        downloadImage(imageUrl, 'png');
+                    } else if (format === 'jpeg') {
+                        canvas.toBlob(blob => {
+                            const imageUrl = URL.createObjectURL(blob);
+                            downloadImage(imageUrl, 'jpeg');
+                        }, 'image/jpeg', 1);
+                    }else if(format ==="save") {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        console.log("to save")
+                        setSavedImage(imageUrl);
+                        HandleSaveMap(imageUrl);
+                    }
+    
+                    // Remove the mapContainer from the body
+                    if (mapContainer && mapContainer.parentNode) {
+                        mapContainer.parentNode.removeChild(mapContainer);
+                    }
+                });
+            }, 1000); // Adjust the delay as needed
+        } catch (error) {
+            console.error('Error converting JSON to image:', error);
+        }
+    };
+    
+    
+    const downloadImage = (imageUrl, format) => {
+        const link = document.createElement('a');
+        link.download = `${mapName}.${format}`;
+        link.href = imageUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+
     const handleUndo =() =>{
         undoGeo();
         undoPoints();
@@ -219,17 +314,13 @@ const MapEditHeat = () => {
         setRender(!render)
     }
 
-    const handleUpdateGeo = (newGeo) =>{
-        setGeojsonData(newGeo)
-    }
-
-    const HandleSaveMap = async() =>{
+    const HandleSaveMap = async(saveImage) =>{
         setRender(!render)
         console.log("features:",features)
         try {
             const stringGeo = JSON.stringify(geojsonData);
             console.log("stringGeo", stringGeo);
-            const updatedMap = await mapApi.updateMap(id, stringGeo,[]);
+            const updatedMap = await mapApi.updateMap(id, stringGeo,[],saveImage);
             console.log('Map updated successfully:', updatedMap);
         } catch (error) {
             console.error('Error updating map:', error);
@@ -251,7 +342,7 @@ const MapEditHeat = () => {
                 >
                 {mapName}
                 </Typography>
-                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+                <MapContainer ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -269,13 +360,6 @@ const MapEditHeat = () => {
                     </Popup>
                     </Marker>)}
                 </MapContainer>
-                <Box display='flex' sx={{paddingY:2}}>
-                <Typography sx={{paddingX:2, fontSize:'24px'}}> Lat: {pointLocation[0]} </Typography>
-                <Typography sx={{paddingX:2, fontSize:'24px'}}> Long: {pointLocation[1]} </Typography>
-                    <Button variant="contained" onClick={handleAddPoint}>
-                        Add a point
-                    </Button>
-                </Box>
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
 
@@ -325,6 +409,7 @@ const MapEditHeat = () => {
                         </Box>
                     </Grid>
                 </Grid>
+                
                 <Typography> Intensity:</Typography>
                 <TextField
                     placeholder="Type a number…"
@@ -339,14 +424,27 @@ const MapEditHeat = () => {
                     <SquareIcon sx={{ color: "green", paddingX: 1 }} />
                     <SquareIcon sx={{ color: "purple", paddingX: 1 }} />
                 </Box> */}
-                <Box sx={{ paddingY: 1 }} onClick={handleDownload} >
+                <Box display='flex' sx={{paddingY:2}}>
+                <Typography sx={{paddingX:2, fontSize:'24px'}}> Lat: {pointLocation[0]} </Typography>
+                <Typography sx={{paddingX:2, fontSize:'24px'}}> Long: {pointLocation[1]} </Typography>
+                    <Button variant="contained" onClick={handleAddPoint}>
+                        Add a point
+                    </Button>
+                </Box>
+                <Box sx={{ paddingY: 1 }} >
 
-                    <Button variant="contained" >
-                        Download
+                    <Button variant="contained" onClick={handleDownload}>
+                        Download as GeoJSON
+                    </Button>
+                    <Button variant="contained" onClick={() => handleDownloadGeoJSONAsImage('png')}>
+                        Download Map as PNG
+                    </Button>
+                    <Button variant="contained" onClick={() => handleDownloadGeoJSONAsImage('jpeg')}>
+                        Download Map as Jpeg
                     </Button>
                 </Box>
 
-                <Box sx={{ paddingY: 1 }} onClick={HandleSaveMap} >
+                <Box sx={{ paddingY: 1 }} onClick={() => handleDownloadGeoJSONAsImage('save')} >
 
                     <Button variant="contained">
                         Save

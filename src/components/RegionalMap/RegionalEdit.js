@@ -65,7 +65,6 @@ const SmallButton = ({ tag, color, onClick }) => {
     );
 };
 
-
 const RegionalEdit = () => {
     const {
         state: features,
@@ -515,6 +514,8 @@ const RegionalEdit = () => {
             }, 1000);
         } catch (error) {
             console.error('Error converting JSON to image:', error);
+            setError("Please add a region first before downloading as image")
+        
         }
     };
     

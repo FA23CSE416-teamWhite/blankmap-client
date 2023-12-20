@@ -38,7 +38,7 @@ const MyMapScreen = () => {
   
   let filteredMaps =[]
   if(mapList){
-   filteredMaps = mapList.filter((map) => {
+    filteredMaps = mapList.filter((map) => {
     // Apply filtering logic based on mapFilter and searchTerm
     if (mapFilter === "public" && !(map.publicStatus===true)) {
       return false;
@@ -52,9 +52,28 @@ const MyMapScreen = () => {
     return true;
   });
   }
-  const handleDeleteMap = async (map) => {
+  const handleDeleteMap = (map) => {
     console.log("handleDeleteMap for map:", map)
     globalStore.deleteMapPage(map.id)
+    handleUpdateDisplayedMap()
+  }
+  const handleUpdateDisplayedMap = () => {
+    globalStore.loadUserIdNamePairs();
+    console.log("updating to new list: ",globalStore.idNamePairs)
+    filteredMaps = globalStore.idNamePairs.filter((map) => {
+      // Apply filtering logic based on mapFilter and searchTerm
+      if (mapFilter === "public" && !(map.publicStatus===true)) {
+        return false;
+      }
+      if (mapFilter === "private" && !(map.publicStatus===false)) {
+        return false;
+      }
+      if (searchTerm && !map.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      return true;
+    });
+    setMapList(globalStore.idNamePairs)
   }
   return (
     <Box sx={{ display: 'flex', padding: '20px' }}>

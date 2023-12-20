@@ -133,7 +133,7 @@ function GlobalStoreContextProvider(props) {
             let response = await api.deleteMap(id);
             if (response.data == 200) {
                 console.log("deleted success")
-                
+                globalStore.loadUserIdNamePairs()
             }
         }
         processDelete(id);
