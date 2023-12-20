@@ -412,19 +412,38 @@ const RegionalEdit = () => {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
             }).addTo(map);
-    
-            const choroplethLayer = L.choropleth(geojsonData, {
-                valueProperty: featureForChoropleth,
-                scale: ["white", pickColor],
-                steps: choroStep,
-                mode: "q",
-                // style,
+            const defaultStyle = {
+                fillColor: "green",
+                weight: 2,
+                opacity: 1,
+                color: "white",
+                dashArray: "3",
+                fillOpacity: 0.5
+              };
+            const getColor = (value) => {
+                switch (value) {
+                  case 'green':
+                    return 'green';
+                  case 'blue':
+                    return 'blue';
+                  default:
+                    return value;
+                }
+              };
+            const colorLayer = L.geoJson(geojsonData, {
+                style: (feature) => {
+                  const colorValue = feature.properties["color"];
+                  return {
+                    ...defaultStyle,
+                    fillColor: getColor(colorValue), 
+                  };
+                },
                 onEachFeature: function (feature, layer) {
-                  // Convert feature.properties to a custom formatted string
+          
                   const formattedProperties = Object.entries(feature.properties)
                     .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
                     .join('<br>');
-        
+          
                   // Display the formatted string in the popup
                   layer.bindPopup(`
                       <div>
@@ -433,10 +452,12 @@ const RegionalEdit = () => {
                       </div>
                     `);
                 }
-              }
-              ).addTo(map);
+              });
+          
+              colorLayer.addTo(map);
+              map.fitBounds(colorLayer.getBounds());
     
-              const bounds = choroplethLayer.getBounds();
+              const bounds = colorLayer.getBounds();
               map.fitBounds(bounds);
     
             setTimeout(() => {
