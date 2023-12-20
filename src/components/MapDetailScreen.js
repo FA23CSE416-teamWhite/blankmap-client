@@ -207,6 +207,7 @@ const MapDetailScreen = () => {
     });
     const [choroplethAdded, setChoroplethAdded] = useState(null);
     const [points, setPoints] = useState([]);
+    const [render, setRender] = useState(false);
     const [geojsonData, setGeojsonData] = useState(null);
     const [type, setType] = useState(null);
     const [newComment, setNewComment] = useState('');
@@ -238,8 +239,8 @@ const MapDetailScreen = () => {
                 setLikes(data.mappage.upvotes)
                 setDislikes(data.mappage.downvotes)
                 setCommentList(data.mappage.comments)
-                if(type == "HeatMap"){
-                    loadHeat()
+                if(data.mappage.map.mapType == "HeatMap"){
+                    loadHeat(JSON.parse(data.mappage.map.baseData))
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
@@ -442,7 +443,14 @@ const MapDetailScreen = () => {
         }
     }
     const handleDownload = () => { 
-
+        const geoJsonString = JSON.stringify(geojsonData, null, 2);
+        const blob = new Blob([geoJsonString], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.download = currentMapPage.title + '.geojson';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     const loadHeat = (data=null) => {
@@ -463,6 +471,7 @@ const MapDetailScreen = () => {
         })
         console.log("loading heat:", points)
         setPoints(points)
+        setRender(!render)
     };
 
 
@@ -503,7 +512,13 @@ const MapDetailScreen = () => {
                                 ) : null
 
                             )}
-                            {geojsonData && type === "HeatMap" ? (<HeatMap addressPoints={points} setFeatures={()=>null} setGeo={()=>null}/>) : null}
+                            {geojsonData && type === "HeatMap" ? (<HeatMap addressPoints={points} setFeatures={()=>null} setGeo={()=>null} render={render}/>) : null}
+                            {geojsonData && type === "HeatMap" ? (points.map((position, idx) => 
+                                    <Marker key={`marker-${idx}`} position={position}>
+                                        <Popup>
+                                            <Typography>Intensity: {points[idx][2]}</Typography>
+                                        </Popup>
+                                    </Marker>)) : null}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
                         </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
@@ -595,7 +610,7 @@ const MapDetailScreen = () => {
                         </Button>
                         <Button
                             variant="contained"
-                            onClick={() => console.log('Button 2 clicked')}
+                            onClick={() => handleDownload()}
                             sx={{
                                 borderRadius: '10px',
                                 backgroundColor: '#0844A4', // Replace with your desired color
