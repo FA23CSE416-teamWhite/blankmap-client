@@ -411,6 +411,11 @@ const MapDetailScreen = () => {
             console.log("Is owner already - going to map-info-edit")
             navigate('/map-info-edit/' + currentMapPage._id)
         }
+        else if(auth.user.id === "658207d16c2fdba1fd5475a7"){
+            console.log("auth is guest!")
+            alert("You must be logged in to create a map!")
+            navigate("/login")
+        }
         else {
             console.log("Is only viewer!")
             console.log(currentMapPage)
@@ -430,6 +435,9 @@ const MapDetailScreen = () => {
                 null,
                 imageURL)
         }
+    }
+    const handleDownload = () => { 
+
     }
     const mapRef = React.useRef();
     return (

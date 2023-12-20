@@ -22,7 +22,9 @@ import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-
+import { kml } from "@tmcw/togeojson";
+const shp = require('shpjs');
+const JSZip = require('jszip');
 
 const MapCreationPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -60,7 +62,7 @@ const MapCreationPage = () => {
             setError("Please fill all fields");
             return;
         }
-        console.log("file:", fileContent)
+        
         const stringifiedFileContent = JSON.stringify(fileContent);
         let modifiedTags = [...tags];
         if (!tags.includes(selectedCategory)) {
@@ -134,10 +136,7 @@ const MapCreationPage = () => {
         reader.onload = async function (event) {
             const fileContent = event.target.result;
             try {
-                console.log('File content before parsing:', fileContent);
                 const parsedContent = JSON.parse(fileContent);
-                console.log('Parsed content:', parsedContent);
-    
                 const mapWidth = 600; // Replace with your map width
                 const mapHeight = 400; // Replace with your map height
                 const canvas = document.createElement('canvas');
@@ -161,6 +160,7 @@ const MapCreationPage = () => {
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors',
                 }).addTo(map);
+
 
                 const geojsonLayer = L.geoJSON(parsedContent).addTo(map);
     
@@ -194,26 +194,38 @@ const MapCreationPage = () => {
     
         reader.readAsText(file);
     };
-    
+
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
+        const rawFile = event.target.files[0];
+        let file = rawFile
+        console.log('File changed:', file)
         setLoadingImage(true);
-        if (!file || !(file.name.endsWith('.json') || file.name.endsWith('.geojson'))) {
+        if (!file || 
+            !(file.name.endsWith('.json') || 
+            file.name.endsWith('.geojson') ||
+            file.name.endsWith('.zip') ||
+            file.name.endsWith('.kml'))) {
             // Display an error message or handle it as needed
             setLoadingImage(false); // Reset loading state
             return;
         }
-
-        console.log(file);
-        setSelectedFile(file);
-        setSelectedFileName(file.name);
-        convertGeoJSONToPNG (file); 
+        
+        console.log("handleFileChange: ",file);
+        
         const reader = new FileReader();
         
-        reader.onload = function (event) {
-            const fileContent = event.target.result;
+        reader.onload = async function (event) {
+            const data = event.target.result;
+            let fileContent = data
+            if (file.name.endsWith('.zip')){
+                console.log("if statement shp")
+                fileContent = await convertSHPtoJSON(file)
+            }
+            else if (file.name.endsWith('.kml')) {
+                console.log("if statement kml")
+                fileContent = convertKMLtoJSON(data)
+            }
             setFileContent(fileContent);
-
             try {
                 const parsedContent = JSON.parse(fileContent);
                 setGeojson(parsedContent);
@@ -222,9 +234,59 @@ const MapCreationPage = () => {
                 console.error('Error parsing JSON:', error);
             }
         };
+        setSelectedFile(file);
+        setSelectedFileName(file.name);
+        convertGeoJSONToPNG (file); 
 
-        reader.readAsText(file);
+        if (file.name.endsWith('.zip')){
+            reader.readAsArrayBuffer(file);
+        }
+        else {
+            reader.readAsText(file);
+        }
     };
+    const convertSHPtoJSON = async (file) => {
+        console.log("convert shp to geojson")
+        const zip = await JSZip.loadAsync(file);
+        const shpFile = Object.keys(zip.files).find(
+            (filename) => filename.toLowerCase().endsWith('.shp')
+        );
+        const shpBuffer = await zip.files[shpFile].async('blob').then((blob) =>
+            blob.arrayBuffer()
+        );
+
+
+        const dbfFile = Object.keys(zip.files).find(
+            (filename) => filename.toLowerCase().endsWith('.dbf')
+        );
+        const dbfBuffer = await zip.files[dbfFile].async('blob').then((blob) =>
+            blob.arrayBuffer()
+        );
+        const geometryData = shp.parseShp(shpBuffer);
+        const attributeData = shp.parseDbf(dbfBuffer);
+        console.log(attributeData)
+        const features = geometryData.map((geometry, index) => {
+            const attributes = attributeData[index];
+            return {
+            type: 'Feature',
+            geometry,
+            properties: attributes,
+            };
+        });
+        const geoJSON = {
+            type: 'FeatureCollection',
+            features,
+        };
+        // const geoJSON = shp.combine([shp.parseShp(shpBuffer)]);
+        return JSON.stringify(geoJSON)
+    }
+    const convertKMLtoJSON = (file) => {
+        console.log("convert kml to geojson")
+        const DOMParser = require("xmldom").DOMParser;
+        const kmlFile = new DOMParser().parseFromString(file);
+        const geoJSON = kml(kmlFile)
+        return JSON.stringify(geoJSON)
+    }
     const handleCategoryChange = (event) => {
         // Update the selected category when the user chooses from the dropdown
         const selectedValue = event.target.value;
@@ -463,7 +525,7 @@ const MapCreationPage = () => {
                     <input
                         id="fileInput"
                         type="file"
-                        accept=".json, .geojson"
+                        accept=".json, .geojson, .kml, .zip"
                         ref={fileInputRef}
                         style={{ display: 'none' }}
                         onChange={handleFileChange}

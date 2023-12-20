@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
@@ -15,12 +15,14 @@ import {
 import MapOverview from "./MapOverview";
 // import temp_map from './images/temp_map.png';
 import mapApi from "../api/mapApi";
+import AuthContext from "../auth";
 const HomeScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [mapList, setMaplist] = useState([])
   const [error, setError] = useState(null)
+  const { auth } = useContext(AuthContext)
   useEffect(() => {
     const extractSearchString = () => {
       const search = new URLSearchParams(window.location.search);
@@ -55,10 +57,18 @@ const HomeScreen = () => {
   const [mapsPerPage] = useState(6); // Adjust the number of maps per page as needed
   const [sortOption, setSortOption] = useState('Newest');
   const [categoryFilter, setCategoryFilter] = useState('None');
-
   const handleCreateMap = () => {
-    console.log("create map");
-    navigate("/create");
+    auth.getLoggedIn()
+    console.log("auth is:", auth.user)
+    if (auth.user.id === "658207d16c2fdba1fd5475a7"){
+      console.log("auth is guest!")
+      alert("You must be logged in to create a map!")
+      navigate("/login")
+    }
+    else{
+      console.log("create map");
+      navigate("/create");
+    }
   }
   const handleSortChange = (option) => {
     setSortOption(option);

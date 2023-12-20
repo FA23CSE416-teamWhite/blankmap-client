@@ -78,7 +78,8 @@ function AuthContextProvider(props) {
     }
     auth.guestLogin = async function() {
         try{
-            const response = await api.loginUser("guest@gmail.com", "GuestPassword");
+            console.log("trying guest login...");
+            const response = await api.loginUser("Guest", "GuestPassword");
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.LOGIN_USER,
@@ -88,10 +89,11 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history("/");
+                history("/home");
             }
         } catch(error){
             try{
+                console.log("trying guest register...");
                 const response = await api.registerUser("Guest", "User", "guest@gmail.com", "Guest", "GuestPassword", "GuestPassword", "GuestRecovery", "GuestRecovery");
                 if (response.status === 200) {
                     console.log("Registered Sucessfully");
@@ -103,7 +105,7 @@ function AuthContextProvider(props) {
                             errorMessage: null
                         }
                     })
-                    auth.loginUser("guest@gmail.com", "GuestPassword");
+                    auth.loginUser("Guest", "GuestPassword");
                     console.log("GUEST LOGGED IN");
                 }
             } catch(error){

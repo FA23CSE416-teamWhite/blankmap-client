@@ -44,12 +44,13 @@ const fetchMap = async (mapId) => {
     }
 }
 
-const updateMap = async (mapId, stringGeo, addedFeatures) => {
+const updateMap = async (mapId, stringGeo, addedFeatures,savedImage) => {
     try {
-        // console.log('Map String:', stringGeo);
+        console.log('savedImage:', savedImage);
         const response = await api.put(`/mapData/${mapId}`, {
             stringGeo: stringGeo,
-            addedFeatures: addedFeatures
+            addedFeatures: addedFeatures,
+            savedImage:savedImage
         });
         return response.data;
     } catch (error) {

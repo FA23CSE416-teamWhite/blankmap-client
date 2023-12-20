@@ -39,7 +39,9 @@ export default function LoginScreen() {
         // https://blankmap-server-6de6d45e4291.herokuapp.com:5000/api/users // http://localhost:8000/api/users
 
     }
-
+    async function handleGuest(event){
+        await auth.guestLogin();
+    }
     return (
         <Grid
             container
@@ -99,7 +101,7 @@ export default function LoginScreen() {
 
 
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", marginBottom: "20px" }}>
-                                <Link to="/home">Guest Login</Link>
+                                <Link onClick={handleGuest}>Guest Login</Link>
                             </Box>
                             {error && <p style={{ color: 'red', textAlign: 'center'}}>{error}</p>}
                             <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", paddingY: 1, alignItems: 'center', justifyContent: 'center' }}>
