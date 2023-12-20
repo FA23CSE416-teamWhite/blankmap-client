@@ -19,15 +19,14 @@ export default function ColorLayer({ geojsonData, colorProperty }) {
 
     const colorLayer = L.geoJson(geojsonData, {
       style: (feature) => {
-        // Customize the style based on the color property of each feature
         const colorValue = feature.properties[colorProperty];
         return {
           ...defaultStyle,
-          fillColor: getColor(colorValue), // Customize the color based on your logic
+          fillColor: getColor(colorValue), 
         };
       },
       onEachFeature: function (feature, layer) {
-        // Convert feature.properties to a custom formatted string
+
         const formattedProperties = Object.entries(feature.properties)
           .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
           .join('<br>');
@@ -45,22 +44,18 @@ export default function ColorLayer({ geojsonData, colorProperty }) {
     colorLayer.addTo(map);
     map.fitBounds(colorLayer.getBounds());
 
-    // If you need to fit the map bounds to the color layer
-    // map.fitBounds(colorLayer.getBounds());
 
     return () => {
       map.removeLayer(colorLayer);
     };
   }, [map, geojsonData, colorProperty]);
 
-  // You can define your color logic based on the color property value
   const getColor = (value) => {
     switch (value) {
       case 'green':
         return 'green';
       case 'blue':
         return 'blue';
-      // Add more cases as needed
       default:
         return value;
     }

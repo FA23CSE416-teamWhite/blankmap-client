@@ -20,12 +20,17 @@ import {
     Autocomplete,
     Card,
     Paper,
+    Alert,
 } from "@mui/material";
 import tempMap from '../../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import Redo from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
+import html2canvas from 'html2canvas';
+import cloneDeep from 'lodash/cloneDeep';
+import leafletImage from 'leaflet-image';
+import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import omnivore from 'leaflet-omnivore';
@@ -35,36 +40,65 @@ import ColorLayer from "../ColorLayer";
 import DrawLayer from "../DrawLayer";
 import mapApi from '../../api/mapApi';
 import { geojson } from "leaflet-omnivore";
-
+import useUndoRedoState from "../useUndoRedoState";
+import DeleteIcon from '@mui/icons-material/Delete';
+const SmallButton = ({ tag, color, onClick }) => {
+    return (
+        <IconButton
+            onClick={onClick}
+            sx={{
+                fontSize: '10px',
+                backgroundColor: color,
+                color: 'white',
+                padding: '5px',
+                borderRadius: '10px',
+                margin: '0 4px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                transition: 'background-color 0.3s',
+                ':hover': {
+                    backgroundColor: '#0A5CE8',
+                },
+            }}
+        >
+            {tag}
+        </IconButton>
+    );
+};
 const RegionalEdit = () => {
-    const { globalStore } = useContext(GlobalStoreContext);
-    const [file_created, setFile_created] = useState(null);
-    // const tempMapData = {
-    //     addedFeatures: [
-    //         { type: "String", name: "Name" },
-    //         { type: "Number", name: "Population" },
-    //         { type: "Number", name: "Area" },
-    //         { type: "Number", name: "GDP" },
-    //         { type: "Number", name: "HDI" },],
-    //     baseData: [],
-    //     mapType: "Choropleth"
-    // }
-    // console.log(globalStore.currentMap)
-    const [features, setFeatures] = useState([]);
+    const {
+        state: features,
+        setState: setFeatures,
+        index: featuresStateIndex,
+        lastIndex: featuresStateLastIndex,
+        goBack: undoFeatures,
+        goForward: redoFeatures,
+    } = useUndoRedoState([]);
+
     const [newFeature, setNewFeature] = useState("");
     const [selectedFeatureType, setSelectedFeatureType] = useState("string");
-    const [featureForChoropleth, setFeatureForChoropleth] = useState("");
+    const [featureForChoropleth, setFeatureForChoropleth] = useState("None");
     const [pickColor, setPickColor] = useState("red");
-    const [geojsonData, setGeojsonData] = useState(null);
+    const {
+        state: geojsonData,
+        setState: setGeojsonData,
+        index: geojsonStateIndex,
+        lastIndex: geojsonStateLastIndex,
+        goBack: undoGeo,
+        goForward: redoGeo,
+    } = useUndoRedoState(null);
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
-    const [mapName, setMapName] = useState("Map Title");
     const [choroStep, setChoroStep] = useState(5);
     const [panelOpen, setPanelOpen] = useState(false);
+    const [drawPanelOpen, setDrawPanelOpen] = useState(false);
+    const [mapName, setMapName] = useState("Map Title");
     const [successMessage, setSuccessMessage] = useState(null);
     const [error, setError] = useState(null);
-    const [drawPanelOpen, setDrawPanelOpen] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
+    const [deleteModel, setDeleteModel] = useState(false);
+    const [savedImage, setSavedImage] = useState(null);
+    const canUndo = geojsonStateIndex > 1 || featuresStateIndex > 1;
+    const canRedo = geojsonStateIndex < geojsonStateLastIndex || featuresStateIndex < featuresStateLastIndex;
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -81,7 +115,7 @@ const RegionalEdit = () => {
                 if (data.mappage.map.baseData) {
                     try {
                         const geojsonData = JSON.parse(data.mappage.map.baseData);
-                        console.log("geojsonData", geojsonData);
+                        // console.log("geojsonData", geojsonData);
                         if (geojsonData.features && geojsonData.features.length > 0) {
                             const commonProperties = Object.keys(geojsonData.features[0].properties);
                             const addedFeatures = [];
@@ -108,12 +142,10 @@ const RegionalEdit = () => {
                                         }
                                     }
                                 }
-                            }
-                        
+                            }                        
 
                             setFeatures(addedFeatures);
                         }
-                        console.log("geojson:",geojsonData);
 
                         setGeojsonData(geojsonData);
                         // Other operations with the GeoJSON data as needed
@@ -141,6 +173,7 @@ const RegionalEdit = () => {
         displayFeatures = features.map((feature, index) => (
             <IconButton
                 key={index}
+                onClick={() => (deleteProperties(feature.name))}
                 sx={{
                     fontSize: '10px',
                     backgroundColor: '#0844A4',
@@ -154,18 +187,50 @@ const RegionalEdit = () => {
                         backgroundColor: '#0A5CE8',
                     },
                 }}
+                style={{ marginBottom: '4px' }}
             >
                 {feature.name}
+                {deleteModel && <DeleteIcon fontSize="small" style={{ marginLeft: '4px', fontSize: '16px' }} />}
             </IconButton>
+
         ));
     } else {
         // Render nothing if features is empty
         displayFeatures = null;
     }
+    const deleteProperties = (propertyName) => {
+        if (deleteModel) {
+            if (geojsonData && geojsonData.features.length > 0) {
+                const updatedGeojsonData = {
+                    ...geojsonData,
+                    features: geojsonData.features.map((feature) => {
+                        // Create a copy of the feature to avoid mutating it directly
+                        const updatedProperties = { ...feature.properties };
+
+                        // Check if the property exists and delete it
+                        if (updatedProperties.hasOwnProperty(propertyName)) {
+                            delete updatedProperties[propertyName];
+                        }
+
+                        // Update the feature with the modified properties
+                        return { ...feature, properties: updatedProperties };
+                    }),
+                };
+                setGeojsonData(updatedGeojsonData);
+                const updatedProperties = features.filter((prop) => prop.name !== propertyName);
+                console.log("updatedProperties", updatedProperties);
+                setFeatures(updatedProperties);
+            }
+        }
+    }
     const handlePanelOpen = () => {
         setPanelOpen(true);
     }
     const handleAddFeature = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
         if (geojsonData && selectedFeatureType && newFeature) {
             const isFeatureAlreadyExists = features.some(
                 (feature) => feature.name === newFeature
@@ -200,22 +265,69 @@ const RegionalEdit = () => {
             setNewFeature('');
         }
     };
-    const handleEditFeature = (index) => {
-        const updatedFeatures = [...features];
-        updatedFeatures.splice(index, 1);
-        setFeatures(updatedFeatures);
-    };
+    // const handleEditFeature = (index) => {
+    //     const updatedFeatures = [...features];
+    //     updatedFeatures.splice(index, 1);
+    //     setFeatures(updatedFeatures);
+    // };
 
-    const handleRenderChoropleth = () => {
-        console.log("Rendering as choropleth map...");
-    };
+    const handleConfirm = async (imageToSave) => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        console.log("Confirming...");
+        try {
+            const stringGeo = JSON.stringify(geojsonData);
+            // console.log("stringGeo", stringGeo);
+            const addedFeatures = {
+                color: pickColor,
+                step: choroStep,
+                featureChoropleth: featureForChoropleth
+            }
+            console.log(savedImage)
+            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures, imageToSave);
+            console.log("Map Updated:", updatedMap);
+            setSuccessMessage("Map updated successfully!");
 
-    const handleRankFeatures = () => {
-        console.log("Ranking features...");
+            // Optionally, clear any previous error message
+            setError(null);
+            console.log("/detail/" + id)
+            setTimeout(() => {
+                navigate("/detail/" + id);
+            }, 2000);
+        } catch (error) {
+            console.error('Error updating map:', error);
+            // console.log(error.response.data.errorMessage);
+            setError("Error updating map: " + error.response.data.errorMessage);
+        }
     };
+    // const handleRankFeatures = () => {
+    //     console.log("Ranking features...");
+    // };
     const handleUndo = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
+        undoGeo();
+        undoFeatures();
     }
     const handleRedo = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
+        redoGeo();
+        redoFeatures();
     }
     const handleChoroplethSelect = (value) => {
         setFeatureForChoropleth(value);
@@ -227,25 +339,164 @@ const RegionalEdit = () => {
         setGeojsonData(newData);
     };
     const handleSave = (editedData) => {
-        // Implement your logic to save the edited data, e.g., updating state or sending it to a server
-        console.log('Saving edited data:', editedData);
-        setGeojsonData(editedData);
-        // setPanelOpen(false);
-        // You can update your geojsonData state or perform other actions here
+        // Assuming properties is an array of property names along with their types
+        // console.log("Common properties:", features);
+
+        // Update the GeoJSON data to ensure each feature has the required properties
+        const updatedGeojsonData = editedData.features.map((feature) => {
+            const updatedProperties = { ...feature.properties };
+
+            features.forEach(({ name, type }) => {
+                if (!(name in updatedProperties)) {
+                    // Property is missing, initialize based on type
+                    updatedProperties[name] = type === 'string' ? 'New Created' : 0;
+                }
+            });
+
+            return { ...feature, properties: updatedProperties };
+        });
+
+        // Avoid triggering re-render if the state doesn't change
+        if (
+            JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)
+        ) {
+            const editedGeo = cloneDeep({ ...editedData, features: updatedGeojsonData });
+            setGeojsonData(editedGeo);
+            setFeatures(features);
+            console.log("setGeojsonData", editedGeo);
+        }
     };
     const panelClose = () => {
         setPanelOpen(false);
+        setError(null);
     }
     const handleDownload = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
+       
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
         const blob = new Blob([geoJsonString], { type: 'application/json' });
         const link = document.createElement('a');
-        link.download = 'title.geojson';
+        link.download = `${mapName}.geojson`;
         link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
+       
+    const handleDownloadGeoJSONAsImage = async (format) => {
+        try {
+            setSuccessMessage("Saving...");
+            const mapWidth = 600; // Replace with your map width
+            const mapHeight = 400; // Replace with your map height
+    
+            // Creating map container and setting styles
+            let mapContainer = document.createElement('div');
+            mapContainer.id = 'mapContainer';
+            mapContainer.style.width = '600px';
+            mapContainer.style.height = '400px';
+            mapContainer.style.position = 'absolute';
+            mapContainer.style.left = '-9999px';
+            document.body.appendChild(mapContainer);
+    
+            // Create a map instance
+            const map = L.map(mapContainer, { preferCanvas: true });
+    
+            // Add TileLayer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+            }).addTo(map);
+    
+            const choroplethLayer = L.choropleth(geojsonData, {
+                valueProperty: featureForChoropleth,
+                scale: ["white", pickColor],
+                steps: choroStep,
+                mode: "q",
+                // style,
+                onEachFeature: function (feature, layer) {
+                  // Convert feature.properties to a custom formatted string
+                  const formattedProperties = Object.entries(feature.properties)
+                    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+                    .join('<br>');
+        
+                  // Display the formatted string in the popup
+                  layer.bindPopup(`
+                      <div>
+                        ${formattedProperties}
+                        <br>        
+                      </div>
+                    `);
+                }
+              }
+              ).addTo(map);
+    
+              const bounds = choroplethLayer.getBounds();
+              map.fitBounds(bounds);
+    
+            setTimeout(() => {
+                leafletImage(map, async function (err, canvas) {
+                    if (err) {
+                        console.error('Error converting JSON to image:', err);
+                        return;
+                    }
+    
+                    // Convert canvas to the specified format (PNG or JPEG)
+                    if (format === 'png') {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        downloadImage(imageUrl, 'png');
+                    } else if (format === 'jpeg') {
+                        canvas.toBlob(blob => {
+                            const imageUrl = URL.createObjectURL(blob);
+                            downloadImage(imageUrl, 'jpeg');
+                        }, 'image/jpeg', 1);
+                    }else if(format ==="save") {
+                        const imageUrl = canvas.toDataURL('image/png');
+                        handleConfirm(imageUrl);
+                    }
+    
+                    // Remove the mapContainer from the body
+                    if (mapContainer && mapContainer.parentNode) {
+                        mapContainer.parentNode.removeChild(mapContainer);
+                    }
+                });
+            }, 1000);
+        } catch (error) {
+            console.error('Error converting JSON to image:', error);
+        }
+    };
+    
+    
+    const downloadImage = (imageUrl, format) => {
+        const link = document.createElement('a');
+        link.download = `${mapName}.${format}`;
+        link.href = imageUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setSuccessMessage(null);
+    };
+    
+    
+    
+    const handleDeleteModel = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            return;
+        }
+
+        console.log("Delete Model");
+        setDeleteModel((prevDeleteModel) => !prevDeleteModel);
+    };
     const mapRef = React.useRef();
     return (
         <Grid container>
@@ -262,8 +513,9 @@ const RegionalEdit = () => {
                 >
                     {mapName}
                 </Typography>
-                <MapContainer ref={mapRef} center={mapCenter} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
-                    <TileLayer
+                <MapContainer id="mapContainer" ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>   
+                
+                <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
@@ -278,6 +530,10 @@ const RegionalEdit = () => {
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"
                     onClick={() => {
+                        if (panelOpen) {
+                            setError("Please close the data edit panel first");
+                            return;
+                        }
                         setDrawPanelOpen(true);
                     }}
                     sx={{
@@ -291,6 +547,7 @@ const RegionalEdit = () => {
                 {drawPanelOpen && <Button variant="contained"
                     onClick={() => {
                         setDrawPanelOpen(false);
+                        setError(null);
                     }}
                     sx={{
                         borderRadius: '10px',
@@ -298,7 +555,7 @@ const RegionalEdit = () => {
                         color: 'white', // Text color
                         marginTop: '10px',
                     }}>
-                    Close the drawn panel
+                    Save the draw
                 </Button>}
                 {/* {inputButton} */}
                 {/* <input type="file" accept=".geojson" onChange={handleFileUpload} /> */}
@@ -310,13 +567,13 @@ const RegionalEdit = () => {
             <Grid item xs={12} sm={4}>
                 <Box sx={{ height: "40px" }}></Box>
                 {/* Title */}
-                <Grid container>
+                <Grid container >
                     <Grid item xs={12} sm={9}>
                         <Box>
                             <Typography
                                 variant="body1"
                                 sx={{
-                                    color: "blue",
+                                    color: "#0844A4",
                                     display: "flex",
                                     justifyContent: "left",
                                     alignItems: "center",
@@ -328,9 +585,27 @@ const RegionalEdit = () => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                         <Box>
-                            <UndoIcon sx={{ mr: 1 }} onClick={handleUndo} />
-                            <Redo onClick={handleRedo} />
-                        </Box>
+                        <UndoIcon
+                                sx={{
+                                    mr: 1,
+                                    cursor: canUndo ? 'pointer' : 'not-allowed',
+                                    color: canUndo ? '#0844A' : 'gray',
+                                    '&:hover': {
+                                        color: canUndo ? 'primary.dark' : 'gray',
+                                    },
+                                }}
+                                onClick={canUndo ? handleUndo : undefined}
+                            />
+                            <RedoIcon
+                                sx={{
+                                    cursor: canRedo ? 'pointer' : 'not-allowed',
+                                    color: canRedo ? '#0844A' : 'gray',
+                                    '&:hover': {
+                                        color: canRedo ? 'primary.dark' : 'gray',
+                                    },
+                                }}
+                                onClick={canRedo ? handleRedo : undefined}
+                            />                        </Box>
                     </Grid>
                 </Grid>
 
@@ -338,8 +613,9 @@ const RegionalEdit = () => {
                 <Box>
                     <Typography>
                         Features: {displayFeatures}
-                    </Typography>
-                    {features && features.length > 0 && <Button onClick={handlePanelOpen}>Data Edit</Button>}
+                        </Typography>
+                    {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton>
+                        {!deleteModel && <SmallButton tag="Delete" color="red" onClick={handleDeleteModel}></SmallButton>}{deleteModel && <SmallButton tag="Save" color="green" onClick={handleDeleteModel}></SmallButton>}</Box>}
                 </Box>
 
                 <Box sx={{ paddingY: 2 }} />
@@ -455,20 +731,45 @@ const RegionalEdit = () => {
                     />
                 </Box>
                 <Box>
+                    {/* <Button variant="contained" sx={{
+                        borderRadius: '10px',
+                        backgroundColor: '#0844A4', // Replace with your desired color
+                        color: 'white', // Text color
+                        marginTop: '10px',
+                    }}> Rank It</Button> */}
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
                         backgroundColor: '#0844A4', // Replace with your desired color
                         color: 'white', // Text color
                         marginTop: '10px',
-                    }}> Rank It</Button>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                        marginLeft: '10px'
-                    }} onClick={()=>{navigate('/home')}}>
-                        Render as Simple Region
+                    }} onClick={() => handleDownloadGeoJSONAsImage('save')}>
+                        Save
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                            marginLeft: '10px'
+                        }}
+                        onClick={() => handleDownloadGeoJSONAsImage('png')} 
+                    >
+                        Download as PNG
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                            marginLeft: '10px'
+                        }}
+                        onClick={() => handleDownloadGeoJSONAsImage('jpeg')} 
+                    >
+                        Download as Jpeg
                     </Button>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
@@ -477,8 +778,17 @@ const RegionalEdit = () => {
                         marginTop: '10px',
                         marginLeft: '10px'
                     }} onClick={handleDownload}>
-                        download
-                    </Button></Box>
+                        download as geojson
+                    </Button>
+                    </Box>
+
+                {successMessage && (
+                    <Alert severity="success" style={{ marginTop: '5px' }}>
+                        {successMessage}
+                    </Alert>
+                )}
+                {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
+                <Box sx={{ paddingY: 2 }} />
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
             {panelOpen && (

@@ -157,12 +157,12 @@ const MapEdit = () => {
         fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, successMessage]);
-    useEffect(() => {
-        if (savedImage !== null) {
-            // Call handleConfirm or any other action here after savedImage state is updated
-            handleConfirm();
-        }
-    }, [savedImage]);
+    // useEffect(() => {
+    //     if (savedImage !== null) {
+    //         // Call handleConfirm or any other action here after savedImage state is updated
+    //         handleConfirm();
+    //     }
+    // }, [savedImage]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
@@ -267,7 +267,7 @@ const MapEdit = () => {
     //     setFeatures(updatedFeatures);
     // };
 
-    const handleConfirm = async () => {
+    const handleConfirm = async (imageToSave) => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
             return;
@@ -282,9 +282,9 @@ const MapEdit = () => {
                 featureChoropleth: featureForChoropleth
             }
             console.log(savedImage)
-            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures,savedImage);
+            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures, imageToSave);
             console.log("Map Updated:", updatedMap);
-            setSuccessMessage("Map updated successfully! Saving...");
+            setSuccessMessage("Map updated successfully!");
 
             // Optionally, clear any previous error message
             setError(null);
@@ -390,6 +390,7 @@ const MapEdit = () => {
    
     const handleDownloadGeoJSONAsImage = async (format) => {
         try {
+            setSuccessMessage("Saving...");
             const mapWidth = 600; // Replace with your map width
             const mapHeight = 400; // Replace with your map height
     
@@ -454,7 +455,7 @@ const MapEdit = () => {
                         }, 'image/jpeg', 1);
                     }else if(format ==="save") {
                         const imageUrl = canvas.toDataURL('image/png');
-                        setSavedImage(imageUrl);
+                        handleConfirm(imageUrl);
                     }
     
                     // Remove the mapContainer from the body
@@ -462,7 +463,7 @@ const MapEdit = () => {
                         mapContainer.parentNode.removeChild(mapContainer);
                     }
                 });
-            }, 1000); // Adjust the delay as needed
+            }, 1000);
         } catch (error) {
             console.error('Error converting JSON to image:', error);
         }
@@ -476,6 +477,7 @@ const MapEdit = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setSuccessMessage(null);
     };
     
     
