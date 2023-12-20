@@ -35,6 +35,7 @@ import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useUndoRedoState from "./useUndoRedoState";
+import "leaflet-choropleth";
 const SmallButton = ({ tag, color, onClick }) => {
     return (
         <IconButton
@@ -390,6 +391,14 @@ const MapEdit = () => {
    
     const handleDownloadGeoJSONAsImage = async (format) => {
         try {
+            const style = {
+                fillColor: "#F28F3B",
+                weight: 2,
+                opacity: 1,
+                color: "white",
+                dashArray: "3",
+                fillOpacity: 0.5
+              };
             setSuccessMessage("Saving...");
             const mapWidth = 600; // Replace with your map width
             const mapHeight = 400; // Replace with your map height
@@ -416,7 +425,7 @@ const MapEdit = () => {
                 scale: ["white", pickColor],
                 steps: choroStep,
                 mode: "q",
-                // style,
+                style,
                 onEachFeature: function (feature, layer) {
                   // Convert feature.properties to a custom formatted string
                   const formattedProperties = Object.entries(feature.properties)
@@ -433,6 +442,28 @@ const MapEdit = () => {
                 }
               }
               ).addTo(map);
+              const legend = L.control({ position: 'bottomright' });
+              legend.onAdd = function () {
+                var div = L.DomUtil.create('div', 'info legend')
+                var limits = choroplethLayer.options.limits
+                var colors = choroplethLayer.options.colors
+                var labels = []
+        
+                // Add min & max
+                div.innerHTML = '<div>' + featureForChoropleth + '</div><div class="labels"><div class="min">' + limits[0] + '</div><div class="max">' + limits[limits.length - 1] + '</div></div>'
+        
+                limits.forEach(function (limit, index) {
+                  labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+                })
+        
+                div.innerHTML += '<ul>' + labels.join('') + '</ul>'
+                return div
+              };
+              if (featureForChoropleth !== "" && featureForChoropleth !== null && featureForChoropleth !== undefined && featureForChoropleth !== "None") {
+                // console.log("feature for choropleth", featureForChoropleth);
+                legend.addTo(map);
+                console.log("legend added");
+              }
     
               const bounds = choroplethLayer.getBounds();
               map.fitBounds(bounds);
