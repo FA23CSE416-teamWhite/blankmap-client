@@ -105,12 +105,12 @@ const MapCreationPage = () => {
             "features": []
         }
 
-        if(selectedCategory == "Regional"){
-            defaultMap = {
-                "type": "FeatureCollection",
-                "features": [{ type: "String", name: "color" }]
-            }
-        }
+        // if(selectedCategory == "Regional"){
+        //     defaultMap = {
+        //         "type": "FeatureCollection",
+        //         "features": [{ type: "String", name: "color" }]
+        //     }
+        // }
         
         const stringifiedFileContent = JSON.stringify(JSON.stringify(defaultMap));
         console.log("stringifided", JSON.parse(stringifiedFileContent));

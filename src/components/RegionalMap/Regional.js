@@ -12,7 +12,7 @@ const style = {
   fillOpacity: 0.5
 };
 
-export default function Choropleth({ color, geojsonData, featureForChoropleth, step, updateGeojsonData, setError }) {
+export default function Regional({ color, geojsonData, featureForChoropleth, step, updateGeojsonData, setError }) {
   const map = useMap();
   // console.log(step)
   const [editedFeature, setEditedFeature] = useState(null);

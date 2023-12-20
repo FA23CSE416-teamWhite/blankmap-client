@@ -35,6 +35,7 @@ import ColorLayer from "../ColorLayer";
 import DrawLayer from "../DrawLayer";
 import mapApi from '../../api/mapApi';
 import { geojson } from "leaflet-omnivore";
+import cloneDeep from 'lodash/cloneDeep';
 
 const RegionalEdit = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -109,13 +110,36 @@ const RegionalEdit = () => {
                                     }
                                 }
                             }
-                        
+        
 
                             setFeatures(addedFeatures);
+    
                         }
                         console.log("geojson:",geojsonData);
-
                         setGeojsonData(geojsonData);
+                        if(!features.find((f) => f.name === 'color')){
+                            setFeatures([
+                                ...features,
+                                { type: 'String', name: 'color' },
+                            ]);
+                
+                            const updatedGeojsonData = {
+                                ...geojsonData,
+                                features: geojsonData.features.map((feature) => {
+                                    const newProperties = {
+                                        ...feature.properties,
+                                        color: selectedFeatureType === 'red',
+                                    };
+                
+                                    return {
+                                        ...feature,
+                                        properties: newProperties,
+                                    };
+                                }),
+                            };
+                
+                            setGeojsonData(updatedGeojsonData);
+                        }
                         // Other operations with the GeoJSON data as needed
                         // mapRef.current.fitBounds(data.getBounds());
                     } catch (error) {
@@ -166,6 +190,10 @@ const RegionalEdit = () => {
         setPanelOpen(true);
     }
     const handleAddFeature = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            return;
+        }
         if (geojsonData && selectedFeatureType && newFeature) {
             const isFeatureAlreadyExists = features.some(
                 (feature) => feature.name === newFeature
@@ -228,8 +256,28 @@ const RegionalEdit = () => {
     };
     const handleSave = (editedData) => {
         // Implement your logic to save the edited data, e.g., updating state or sending it to a server
-        console.log('Saving edited data:', editedData);
-        setGeojsonData(editedData);
+        const updatedGeojsonData = editedData.features.map((feature) => {
+            const updatedProperties = { ...feature.properties };
+
+            features.forEach(({ name, type }) => {
+                if (!(name in updatedProperties)) {
+                    // Property is missing, initialize based on type
+                    updatedProperties[name] = type === 'string' ? 'New Created' : 0;
+                }
+            });
+
+            return { ...feature, properties: updatedProperties };
+        });
+
+        // Avoid triggering re-render if the state doesn't change
+        if (
+            JSON.stringify(updatedGeojsonData) !== JSON.stringify(geojsonData)
+        ) {
+            const editedGeo = cloneDeep({ ...editedData, features: updatedGeojsonData });
+            setGeojsonData(editedGeo);
+            setFeatures(features);
+            console.log("setGeojsonData", editedGeo);
+        }
         // setPanelOpen(false);
         // You can update your geojsonData state or perform other actions here
     };
@@ -381,7 +429,7 @@ const RegionalEdit = () => {
                     marginTop: '10px',
                 }} onClick={handleAddFeature}> Add More Features</Button>
                 <Box sx={{ paddingY: 2 }} />
-
+                {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
                 {/* <Autocomplete
                     value={featureForChoropleth}
                     onChange={(e, value) => handleChoroplethSelect(value)}
@@ -401,84 +449,7 @@ const RegionalEdit = () => {
                     )}
                     style={{ minWidth: '200px', flex: 1 }}
                 /> */}
-                <Typography> Choose a Color: {pickColor}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SquareIcon
-                        sx={{
-                            color: 'red',
-                            padding: 1,
-                            border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('red')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'blue',
-                            padding: 1,
-                            border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('blue')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'yellow',
-                            padding: 1,
-                            border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('yellow')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'green',
-                            padding: 1,
-                            border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('green')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'purple',
-                            padding: 1,
-                            border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('purple')}
-                    />
-                </Box>
-                <Box>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                    }}> Rank It</Button>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                        marginLeft: '10px'
-                    }} onClick={()=>{navigate('/home')}}>
-                        Render as Simple Region
-                    </Button>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                        marginLeft: '10px'
-                    }} onClick={handleDownload}>
-                        download
-                    </Button></Box>
+            
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>
             {panelOpen && (

@@ -10,25 +10,45 @@ import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberIn
 
 import HeatMap from "./HeatMap";
 import UndoIcon from '@mui/icons-material/Undo';
-import Redo from "@mui/icons-material/Redo";
+import RedoIcon from "@mui/icons-material/Redo";
 import SquareIcon from '@mui/icons-material/Square';
 import {useMap, MapContainer, TileLayer, useMapEvents,Marker, Popup} from 'react-leaflet';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import L, { point } from 'leaflet'
 import mapApi from '../../api/mapApi';
+import useUndoRedoState from "../useUndoRedoState";
 
 const MapEditHeat = () => {
-    const [points, setPoints] = useState([]);
+    // const [points, setPoints] = useState([]);
     const [render, setRender] = useState(false);
-    const [undoPoints, setUndoPoints] = useState([]);
     const [mapName, setMapName] =useState("");
     const [mapCenter, setMapCenter] = useState([39.9897471840457, -75.13893127441406]);
     const [intensity, setIntensity] = useState(0);
     const [pointLocation, setPointLocation] = useState([0,0]);
-    const [geojsonData, setGeojsonData] = useState(null);
+    // const [geojsonData, setGeojsonData] = useState(null);
     const [features, setFeatures] = useState([])
     const mapRef = React.useRef();
     const { id } = useParams();
+
+    const {
+        state: points,
+        setState: setPoints,
+        index: pointsStateIndex,
+        lastIndex: pointsStateLastIndex,
+        goBack: undoPoints,
+        goForward: redoPoints,
+    } = useUndoRedoState([]);
+    const {
+        state: geojsonData,
+        setState: setGeojsonData,
+        index: geojsonStateIndex,
+        lastIndex: geojsonStateLastIndex,
+        goBack: undoGeo,
+        goForward: redoGeo,
+    } = useUndoRedoState(null);
+    const canUndo = geojsonStateIndex > 1 || pointsStateIndex > 1;
+    const canRedo = geojsonStateIndex < geojsonStateLastIndex || pointsStateIndex < pointsStateLastIndex;
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -119,11 +139,12 @@ const MapEditHeat = () => {
 
     const handleAddPoint = () => {
         if (intensity && pointLocation) {
-            setPoints([
+            const temp = [
                 ...points,
                 [...pointLocation, intensity],
-            ]);
-            setUndoPoints([])
+            ]
+            setPoints(temp);
+            setRender(!render)
         }else{
             alert("Pick a Point and Intensity!")
         }
@@ -148,6 +169,10 @@ const MapEditHeat = () => {
             var temp = point[1]
             point[1] = point[0]
             point[0] = temp
+
+            if(point.length < 3){
+                point[2] = 0
+            }
             points.push(point)
         })
         console.log(points)
@@ -158,6 +183,13 @@ const MapEditHeat = () => {
     const handleDeletePoint = (i) =>{
         const temp = points
         temp.splice(i,1)
+        setPoints(temp)
+        setRender(!render)
+    }
+
+    const handleEditPoint = (e,i) =>{
+        const temp = points
+        temp[i][2] = e.target.value
         setPoints(temp)
         setRender(!render)
     }
@@ -174,23 +206,26 @@ const MapEditHeat = () => {
     }
 
     const handleUndo =() =>{
-
+        undoGeo();
+        undoPoints();
     }
 
     const handleRedo =() =>{
-        
+        redoGeo();
+        redoPoints();
     }
 
     const handleRender = () =>{
         setRender(!render)
     }
 
+    const handleUpdateGeo = (newGeo) =>{
+        setGeojsonData(newGeo)
+    }
+
     const HandleSaveMap = async() =>{
         setRender(!render)
-        setGeojsonData({
-            type: "FeatureCollection",
-            features: features
-        })
+        console.log("features:",features)
         try {
             const stringGeo = JSON.stringify(geojsonData);
             console.log("stringGeo", stringGeo);
@@ -222,13 +257,14 @@ const MapEditHeat = () => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
-                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures}/>
+                    <HeatMap addressPoints={points} render={render} setFeatures={setFeatures} setGeo={setGeojsonData}/>
                     <LocationFinder/>
                     {points.map((position, idx) => 
                     <Marker key={`marker-${idx}`} position={position}>
 
                     <Popup>
-                        <Typography>Intensity: {points[idx][2]}</Typography>
+                        <Typography>Intensity: </Typography>
+                        <TextField placeholder={points[idx][2]} inputProps={{ type: 'number'}} onChange={(e)=> handleEditPoint(e,idx)}/>
                         <Button onClick={()=> handleDeletePoint(idx)}> delete point </Button>
                     </Popup>
                     </Marker>)}
@@ -265,8 +301,27 @@ const MapEditHeat = () => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                         <Box>
-                            <UndoIcon sx={{ mr: 1 }} onClick={handleUndo} />
-                            <Redo />
+                        <UndoIcon
+                                sx={{
+                                    mr: 1,
+                                    cursor: canUndo ? 'pointer' : 'not-allowed',
+                                    color: canUndo ? '#0844A' : 'gray',
+                                    '&:hover': {
+                                        color: canUndo ? 'primary.dark' : 'gray',
+                                    },
+                                }}
+                                onClick={canUndo ? handleUndo : undefined}
+                            />
+                            <RedoIcon
+                                sx={{
+                                    cursor: canRedo ? 'pointer' : 'not-allowed',
+                                    color: canRedo ? '#0844A' : 'gray',
+                                    '&:hover': {
+                                        color: canRedo ? 'primary.dark' : 'gray',
+                                    },
+                                }}
+                                onClick={canRedo ? handleRedo : undefined}
+                            />
                         </Box>
                     </Grid>
                 </Grid>

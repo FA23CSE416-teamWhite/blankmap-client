@@ -24,6 +24,7 @@ import { GlobalStoreContext } from '../store/index';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import AuthContext from '../auth';
 import Choropleth from './Choropleth';
+import HeatMap from './HeatMap/HeatMap.js';
 import SendIcon from '@mui/icons-material/Send';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import mapApi from '../api/mapApi';
@@ -205,6 +206,7 @@ const MapDetailScreen = () => {
 
     });
     const [choroplethAdded, setChoroplethAdded] = useState(null);
+    const [points, setPoints] = useState([]);
     const [geojsonData, setGeojsonData] = useState(null);
     const [type, setType] = useState(null);
     const [newComment, setNewComment] = useState('');
@@ -236,6 +238,9 @@ const MapDetailScreen = () => {
                 setLikes(data.mappage.upvotes)
                 setDislikes(data.mappage.downvotes)
                 setCommentList(data.mappage.comments)
+                if(type == "HeatMap"){
+                    loadHeat()
+                }
             } catch (error) {
                 console.error('Error fetching map:', error);
                 setError(error.message);
@@ -439,6 +444,28 @@ const MapDetailScreen = () => {
     const handleDownload = () => { 
 
     }
+
+    const loadHeat = (data=null) => {
+        if(!data){
+            data = geojsonData
+        }
+        var points = []
+        data["features"].forEach(function(feature){
+            var point = feature["geometry"]["coordinates"]
+            var temp = point[1]
+            point[1] = point[0]
+            point[0] = temp
+
+            if(point.length < 3){
+                point[2] = 0
+            }
+            points.push(point)
+        })
+        console.log("loading heat:", points)
+        setPoints(points)
+    };
+
+
     const mapRef = React.useRef();
     return (
         <Box sx={{ marginTop: 2, marginLeft: 2, marginRight: 2, marginBottom: 2 }}>
@@ -476,6 +503,7 @@ const MapDetailScreen = () => {
                                 ) : null
 
                             )}
+                            {geojsonData && type === "HeatMap" ? (<HeatMap addressPoints={points} setFeatures={()=>null} setGeo={()=>null}/>) : null}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
                         </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
