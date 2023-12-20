@@ -13,6 +13,8 @@ import {
     Grid,
     Card,
     CardContent,
+    Menu,
+    MenuItem,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/CloudDownload';
 import UpvoteIcon from '@mui/icons-material/ThumbUp';
@@ -221,6 +223,7 @@ const MapDetailScreen = () => {
     const [dislikeColor, setDislikeColor] = useState('grey');
     const [newDislikes, setDislikes] = useState(0);
     const [commenting, setCommenting] = useState(false);
+    const [anchorEl, setDownloadDrop] = useState(null);
     let editText = 'Open Edit As My Map'
     if (auth.user.id === currentMapPage.owner) {
         editText = "Edit My Map"
@@ -443,7 +446,26 @@ const MapDetailScreen = () => {
                 imageURL)
         }
     }
+    const handleDownloadClick = (event) =>{
+        setDownloadDrop(event.currentTarget);
+    }
+    const handleDownloadClose = (event) =>{
+        setDownloadDrop(null);
+    }
+    const handleOptionClick = (option) =>{
+        console.log('Selected option:', option);
+        switch (option){
+            case 'json':
+                handleDownload()
+                break;
+            default:
+                break;
+        }
+        handleDownloadClose();
+    }
     const handleDownload = () => { 
+        console.log("handleDownload")
+        const geojsonData = JSON.parse(currentMapPage.map.baseData);
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
         const blob = new Blob([geoJsonString], { type: 'application/json' });
         const link = document.createElement('a');
@@ -486,9 +508,19 @@ const MapDetailScreen = () => {
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 3, marginBottom: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
                             <Typography variant="h4">{currentMapPage.title}</Typography>
-                            <IconButton onClick={() => console.log('download button clicked')}>
+                            <IconButton onClick={handleDownloadClick} aria-controls="dropdown-menu" aria-haspopup="true">
                                 <DownloadIcon />
                             </IconButton>
+                            <Menu
+                                id="dropdown-menu"
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleDownloadClose}
+                            >
+                                <MenuItem onClick={() => handleOptionClick('json')}>GEOJson</MenuItem>
+                                {/* <MenuItem onClick={() => handleOptionClick('png')}>PNG</MenuItem>
+                                <MenuItem onClick={() => handleOptionClick('jpeg')}>JPEG</MenuItem> */}
+                            </Menu>
                             <IconButton onClick={handleLike}>
                                 <UpvoteIcon style={{ color: likeColor }} />
                             </IconButton>
