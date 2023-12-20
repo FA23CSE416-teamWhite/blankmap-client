@@ -83,7 +83,7 @@ const MapCreationPage = () => {
 
         auth.getLoggedIn()
         try {
-            // globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
         } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
