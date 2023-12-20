@@ -28,6 +28,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import mapApi from '../api/mapApi';
 import ReplyIcon from '@mui/icons-material/Reply';
+import ColorLayer from './ColorLayer.js';
 const Comment = ({ comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
@@ -227,7 +228,7 @@ const MapDetailScreen = () => {
             try {
                 // console.log("fetching map" + id);
                 const data = await mapApi.fetchMap(id);
-                // console.log("fetched map", data.mappage);
+                console.log("fetched map", data.mappage);
                 setCurrentMapPage(data.mappage);
                 setChoroplethAdded(data.mappage.map.addedFeatures[0])
                 setType(data.mappage.map.mapType)
@@ -476,6 +477,7 @@ const MapDetailScreen = () => {
                                 ) : null
 
                             )}
+                            {geojsonData && geojsonData.features.length > 0 && type === "Regional" ? (<ColorLayer geojsonData={geojsonData} colorProperty="color" />) : null}
                             {/*{drawPanelOpen&&<DrawLayer/>} */}
                         </MapContainer>
                         {/* <img src={temp_map} alt="Map" style={{ width: '100%', height: 'auto' }} /> */}
