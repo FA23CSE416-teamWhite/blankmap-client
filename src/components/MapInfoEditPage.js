@@ -56,6 +56,12 @@ const MapInfoEditPage = () => {
                 setSelectedCategory(data.mappage.map.mapType);
                 setTags(data.mappage.tags);
                 setGeojson(geojson);
+                if (data.mappage.map.mapType === 'HeatMap') {
+                    setRouterAdd("edit-heat")
+                }
+                else if (data.mappage.map.mapType === 'Regional') {
+                    setRouterAdd("regional-edit")
+                }
             } catch (error) {
                 console.error('Error fetching map:', error);
             }
