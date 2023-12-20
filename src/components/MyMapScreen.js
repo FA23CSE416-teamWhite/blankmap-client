@@ -5,7 +5,7 @@ import SearchBar from "./SearchBar";
 import { Button, Card, CardContent} from "@mui/material";
 import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
-import { Box, Grid} from "@mui/material";
+import { Box, Grid, Alert} from "@mui/material";
 import temp_map from './images/temp_map.png';
 import NavBar from "./NavBar";
 import Typography from '@mui/material/Typography';
@@ -20,6 +20,7 @@ const MyMapScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const{globalStore} = useContext(GlobalStoreContext)
   const [mapList, setMapList] = useState([]);
+  const [deleting, setDeleting] = useState(null);
   useEffect(() => {
     if (!globalStore.idNamePairs) {
       console.log("loadinguseridname pairs in mymapscreen")
@@ -54,6 +55,7 @@ const MyMapScreen = () => {
   }
   const handleDeleteMap = async (map) => {
     console.log("handleDeleteMap for map:", map)
+    setDeleting("deleting...")
     globalStore.deleteMapPage(map.id)
   }
   return (
@@ -67,6 +69,9 @@ const MyMapScreen = () => {
         <Typography variant="h4" gutterBottom>
               My Maps
             </Typography>
+            {deleting&&                    <Alert severity="success" style={{ marginTop: '5px' }}>
+                        {deleting}
+                    </Alert>}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             {/* Filter Switch */}
             <div className="filter-switch" style={{ display: 'flex', marginBottom: '10px' }}>
