@@ -25,9 +25,11 @@ const MyMapScreen = () => {
     if (!globalStore.idNamePairs) {
       console.log("loadinguseridname pairs in mymapscreen")
       globalStore.loadUserIdNamePairs();
+      setDeleting(null)
     } else {
       console.log("idNamePairs already present", globalStore.idNamePairs)
       setMapList(globalStore.idNamePairs);
+      setDeleting(null)
     }
   }, [globalStore]);
   
