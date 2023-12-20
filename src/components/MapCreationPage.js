@@ -134,7 +134,7 @@ const MapCreationPage = () => {
         const reader = new FileReader();
     
         reader.onload = async function (event) {
-            const fileContent = event.target.result;
+            // const fileContent = event.target.result;
             try {
                 const parsedContent = JSON.parse(fileContent);
                 const mapWidth = 600; // Replace with your map width
@@ -197,54 +197,52 @@ const MapCreationPage = () => {
 
     const handleFileChange = (event) => {
         const rawFile = event.target.files[0];
-        let file = rawFile
-        console.log('File changed:', file)
-        setLoadingImage(true);
-        if (!file || 
-            !(file.name.endsWith('.json') || 
-            file.name.endsWith('.geojson') ||
-            file.name.endsWith('.zip') ||
-            file.name.endsWith('.kml'))) {
+    
+        if (!rawFile || !(rawFile.name.endsWith('.json') || rawFile.name.endsWith('.geojson') || rawFile.name.endsWith('.zip') || rawFile.name.endsWith('.kml'))) {
             // Display an error message or handle it as needed
+            setError('Please choose a file of type: .json, .geojson, .kml, .zip');
             setLoadingImage(false); // Reset loading state
             return;
         }
-        
-        console.log("handleFileChange: ",file);
-        
+    
         const reader = new FileReader();
-        
+    
         reader.onload = async function (event) {
             const data = event.target.result;
-            let fileContent = data
-            if (file.name.endsWith('.zip')){
-                console.log("if statement shp")
-                fileContent = await convertSHPtoJSON(file)
+            let fileContent = data;
+    
+            if (rawFile.name.endsWith('.zip')){
+                console.log("if statement shp");
+                fileContent = await convertSHPtoJSON(rawFile);
+            } else if (rawFile.name.endsWith('.kml')) {
+                console.log("if statement kml");
+                fileContent = convertKMLtoJSON(data);
             }
-            else if (file.name.endsWith('.kml')) {
-                console.log("if statement kml")
-                fileContent = convertKMLtoJSON(data)
-            }
+    
             setFileContent(fileContent);
+            setSelectedFile(rawFile);
+            setSelectedFileName(rawFile.name);
+        };
+    
+        if (rawFile.name.endsWith('.zip')){
+            reader.readAsArrayBuffer(rawFile);
+        } else {
+            reader.readAsText(rawFile);
+        }
+    };
+    useEffect(() => {
+        if (fileContent) {
             try {
                 const parsedContent = JSON.parse(fileContent);
                 setGeojson(parsedContent);
                 console.log(parsedContent);
+                convertGeoJSONToPNG(selectedFile);
             } catch (error) {
                 console.error('Error parsing JSON:', error);
             }
-        };
-        setSelectedFile(file);
-        setSelectedFileName(file.name);
-        convertGeoJSONToPNG (file); 
-
-        if (file.name.endsWith('.zip')){
-            reader.readAsArrayBuffer(file);
         }
-        else {
-            reader.readAsText(file);
-        }
-    };
+    }, [fileContent, selectedFile]);
+    
     const convertSHPtoJSON = async (file) => {
         console.log("convert shp to geojson")
         const zip = await JSZip.loadAsync(file);
@@ -486,6 +484,7 @@ const MapCreationPage = () => {
                         </Box>
                     </Grid>
                 </Grid>
+                {error && <FormHelperText error>{error}</FormHelperText>}
                 {selectedFileName}
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "10%", borderRadius: '10px' }}>
                     {selectedFile && (
@@ -558,18 +557,13 @@ const MapCreationPage = () => {
                 </Button>}
                
                 {imageURL && (
-    <div>
-        <p>Image Preview:</p>
-        <img src={imageURL} alt="Map Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
-    </div>
-)}
-                {error && <FormHelperText error>{error}</FormHelperText>}
-                {imagePreview && (
                     <div>
                         <p>Image Preview:</p>
-                        <img src={imagePreview} alt="File Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
+                        <img src={imageURL} alt="Map Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
                     </div>
                 )}
+               
+                
             </Grid>
         </Grid>
     );
