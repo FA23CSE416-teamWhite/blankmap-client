@@ -522,7 +522,7 @@ const MapEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && geojsonData.features.length > 0 && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                    {/* {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />} */}
+                    {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />}
                     
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"
