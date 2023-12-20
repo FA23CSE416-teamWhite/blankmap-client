@@ -34,10 +34,10 @@ const MainPage = () => {
             <Grid item xs={12} sm={6}>
               {/* Content for the second section */}
               <Typography variant="h4" align="center" gutterBottom>
-                Second Section
+                Draw it Blank!
               </Typography>
               <Typography variant="body1" align="center" paragraph>
-                Additional information or content can go here.
+                Or Load a Map
               </Typography>
             </Grid>
             
