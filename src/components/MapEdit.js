@@ -35,6 +35,7 @@ import Choropleth from "./Choropleth"
 import mapApi from '../api/mapApi';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useUndoRedoState from "./useUndoRedoState";
+import "leaflet-choropleth";
 const SmallButton = ({ tag, color, onClick }) => {
     return (
         <IconButton
@@ -157,12 +158,12 @@ const MapEdit = () => {
         fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, successMessage]);
-    useEffect(() => {
-        if (savedImage !== null) {
-            // Call handleConfirm or any other action here after savedImage state is updated
-            handleConfirm();
-        }
-    }, [savedImage]);
+    // useEffect(() => {
+    //     if (savedImage !== null) {
+    //         // Call handleConfirm or any other action here after savedImage state is updated
+    //         handleConfirm();
+    //     }
+    // }, [savedImage]);
     let displayFeatures;
     if (features.length > 0) {
         displayFeatures = features.map((feature, index) => (
@@ -267,7 +268,7 @@ const MapEdit = () => {
     //     setFeatures(updatedFeatures);
     // };
 
-    const handleConfirm = async () => {
+    const handleConfirm = async (imageToSave) => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
             return;
@@ -282,9 +283,9 @@ const MapEdit = () => {
                 featureChoropleth: featureForChoropleth
             }
             console.log(savedImage)
-            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures,savedImage);
+            const updatedMap = await mapApi.updateMap(id, stringGeo, addedFeatures, imageToSave);
             console.log("Map Updated:", updatedMap);
-            setSuccessMessage("Map updated successfully! Saving...");
+            setSuccessMessage("Map updated successfully!");
 
             // Optionally, clear any previous error message
             setError(null);
@@ -390,6 +391,15 @@ const MapEdit = () => {
    
     const handleDownloadGeoJSONAsImage = async (format) => {
         try {
+            const style = {
+                fillColor: "#F28F3B",
+                weight: 2,
+                opacity: 1,
+                color: "white",
+                dashArray: "3",
+                fillOpacity: 0.5
+              };
+            setSuccessMessage("Saving...");
             const mapWidth = 600; // Replace with your map width
             const mapHeight = 400; // Replace with your map height
     
@@ -415,7 +425,7 @@ const MapEdit = () => {
                 scale: ["white", pickColor],
                 steps: choroStep,
                 mode: "q",
-                // style,
+                style,
                 onEachFeature: function (feature, layer) {
                   // Convert feature.properties to a custom formatted string
                   const formattedProperties = Object.entries(feature.properties)
@@ -432,6 +442,28 @@ const MapEdit = () => {
                 }
               }
               ).addTo(map);
+              const legend = L.control({ position: 'bottomright' });
+              legend.onAdd = function () {
+                var div = L.DomUtil.create('div', 'info legend')
+                var limits = choroplethLayer.options.limits
+                var colors = choroplethLayer.options.colors
+                var labels = []
+        
+                // Add min & max
+                div.innerHTML = '<div>' + featureForChoropleth + '</div><div class="labels"><div class="min">' + limits[0] + '</div><div class="max">' + limits[limits.length - 1] + '</div></div>'
+        
+                limits.forEach(function (limit, index) {
+                  labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+                })
+        
+                div.innerHTML += '<ul>' + labels.join('') + '</ul>'
+                return div
+              };
+              if (featureForChoropleth !== "" && featureForChoropleth !== null && featureForChoropleth !== undefined && featureForChoropleth !== "None") {
+                // console.log("feature for choropleth", featureForChoropleth);
+                legend.addTo(map);
+                console.log("legend added");
+              }
     
               const bounds = choroplethLayer.getBounds();
               map.fitBounds(bounds);
@@ -454,7 +486,7 @@ const MapEdit = () => {
                         }, 'image/jpeg', 1);
                     }else if(format ==="save") {
                         const imageUrl = canvas.toDataURL('image/png');
-                        setSavedImage(imageUrl);
+                        handleConfirm(imageUrl);
                     }
     
                     // Remove the mapContainer from the body
@@ -462,7 +494,7 @@ const MapEdit = () => {
                         mapContainer.parentNode.removeChild(mapContainer);
                     }
                 });
-            }, 1000); // Adjust the delay as needed
+            }, 1000);
         } catch (error) {
             console.error('Error converting JSON to image:', error);
         }
@@ -476,6 +508,7 @@ const MapEdit = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setSuccessMessage(null);
     };
     
     
@@ -522,7 +555,7 @@ const MapEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && geojsonData.features.length > 0 && <Choropleth color={pickColor} geojsonData={geojsonData} featureForChoropleth={featureForChoropleth} step={choroStep} updateGeojsonData={updateGeojsonData} />}
-                    {/* {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />} */}
+                    {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />}
                     
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"

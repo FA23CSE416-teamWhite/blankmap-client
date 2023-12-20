@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext,useRef } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import { GlobalStoreContext } from '../store/index';
@@ -16,7 +16,8 @@ import {
     MenuItem,
     Switch,
     Button,
-    Chip
+    Chip,
+    Alert
 } from '@mui/material';
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
@@ -50,6 +51,7 @@ const MapCreationPage = () => {
     const mapRef = useRef(null);
     const [imageURL, setImageURL] = useState('');
     const [loadingImage, setLoadingImage] = useState(false);
+    const [creatingMessage, setCreatingMessage] = useState(false);
     // const [center, setCenter] = useState([0,0]);
     function handleSubmit() {
         if (!fileContent) {
@@ -57,12 +59,12 @@ const MapCreationPage = () => {
             setError("Please select a file.");
             return;
         }
-        if (mapName === "" || description === "" || tags.length===0 || selectedFile === "") {
+        if (mapName === "" || description === "" || tags.length === 0 || selectedFile === "") {
             // alert("Please fill all fields");
             setError("Please fill all fields");
             return;
         }
-        
+
         const stringifiedFileContent = JSON.stringify(fileContent);
         let modifiedTags = [...tags];
         if (!tags.includes(selectedCategory)) {
@@ -72,9 +74,9 @@ const MapCreationPage = () => {
 
         const parsedContent = JSON.parse(fileContent)
         //prevent non points from being in heat maps
-        if(selectedCategory == "HeatMap" && parsedContent["features"]){
-            parsedContent["features"].forEach(function(feature){
-                if(feature["geometry"]["type"] != "Point"){
+        if (selectedCategory == "HeatMap" && parsedContent["features"]) {
+            parsedContent["features"].forEach(function (feature) {
+                if (feature["geometry"]["type"] != "Point") {
                     setError("Invalid File Type!")
                     return;
                 }
@@ -83,7 +85,7 @@ const MapCreationPage = () => {
 
         auth.getLoggedIn()
         try {
-            // globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile,imageURL)
+            globalStore.createMap(mapName, description, isPublic, selectedCategory, modifiedTags, stringifiedFileContent, routerAdd, selectedFile, imageURL)
         } catch (error) {
             console.log(error);
             setError("Error creating map: ", error);
@@ -100,7 +102,7 @@ const MapCreationPage = () => {
         console.log("Is Public: ", isPublic);
         console.log("Description: ", description);
 
-        var defaultMap ={
+        var defaultMap = {
             "type": "FeatureCollection",
             "features": []
         }
@@ -126,13 +128,14 @@ const MapCreationPage = () => {
     };
 
     const convertGeoJSONToPNG = async (file) => {
+        setCreatingMessage("Creating map...");
         if (!file) {
             console.error('No file selected');
             return;
         }
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = async function (event) {
             // const fileContent = event.target.result;
             try {
@@ -142,12 +145,12 @@ const MapCreationPage = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = mapWidth;
                 canvas.height = mapHeight;
-    
+
                 // let mapContainer = document.getElementById('mapContainer');
                 // if (mapContainer && mapContainer.parentNode) {
                 //     mapContainer.remove();
                 // }
-    
+
                 let mapContainer = document.createElement('div');
                 mapContainer.id = 'mapContainer';
                 mapContainer.style.width = '600px';
@@ -155,7 +158,7 @@ const MapCreationPage = () => {
                 mapContainer.style.position = 'absolute';
                 mapContainer.style.left = '-9999px';
                 document.body.appendChild(mapContainer);
-    
+
                 const map = L.map(mapContainer, { preferCanvas: true });
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors',
@@ -163,12 +166,12 @@ const MapCreationPage = () => {
 
 
                 const geojsonLayer = L.geoJSON(parsedContent).addTo(map);
-    
+
                 const bounds = geojsonLayer.getBounds();
                 console.log('Bounds:', bounds);
-    
+
                 map.fitBounds(bounds);
-    
+
                 setTimeout(() => {
                     leafletImage(map, async function (err, canvas) {
                         if (err) {
@@ -178,7 +181,8 @@ const MapCreationPage = () => {
                         console.log('Canvas:', canvas);
                         const imageUrl = canvas.toDataURL('image/png');
                         setImageURL(imageUrl);
-                        
+                        setCreatingMessage(null);
+
                         // Remove the mapContainer from the body
                         if (mapContainer && mapContainer.parentNode) {
                             mapContainer.parentNode.removeChild(mapContainer);
@@ -191,40 +195,40 @@ const MapCreationPage = () => {
                 console.error('Error converting JSON to image:', error);
             }
         };
-    
+
         reader.readAsText(file);
     };
 
     const handleFileChange = (event) => {
         const rawFile = event.target.files[0];
-    
+
         if (!rawFile || !(rawFile.name.endsWith('.json') || rawFile.name.endsWith('.geojson') || rawFile.name.endsWith('.zip') || rawFile.name.endsWith('.kml'))) {
             // Display an error message or handle it as needed
             setError('Please choose a file of type: .json, .geojson, .kml, .zip');
             setLoadingImage(false); // Reset loading state
             return;
         }
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = async function (event) {
             const data = event.target.result;
             let fileContent = data;
-    
-            if (rawFile.name.endsWith('.zip')){
+
+            if (rawFile.name.endsWith('.zip')) {
                 console.log("if statement shp");
                 fileContent = await convertSHPtoJSON(rawFile);
             } else if (rawFile.name.endsWith('.kml')) {
                 console.log("if statement kml");
                 fileContent = convertKMLtoJSON(data);
             }
-    
+
             setFileContent(fileContent);
             setSelectedFile(rawFile);
             setSelectedFileName(rawFile.name);
         };
-    
-        if (rawFile.name.endsWith('.zip')){
+
+        if (rawFile.name.endsWith('.zip')) {
             reader.readAsArrayBuffer(rawFile);
         } else {
             reader.readAsText(rawFile);
@@ -242,7 +246,7 @@ const MapCreationPage = () => {
             }
         }
     }, [fileContent, selectedFile]);
-    
+
     const convertSHPtoJSON = async (file) => {
         console.log("convert shp to geojson")
         const zip = await JSZip.loadAsync(file);
@@ -266,9 +270,9 @@ const MapCreationPage = () => {
         const features = geometryData.map((geometry, index) => {
             const attributes = attributeData[index];
             return {
-            type: 'Feature',
-            geometry,
-            properties: attributes,
+                type: 'Feature',
+                geometry,
+                properties: attributes,
             };
         });
         const geoJSON = {
@@ -494,7 +498,7 @@ const MapCreationPage = () => {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {geojson && <GeoJSON key={JSON.stringify(geojson)} // Add a key that changes when geojson changes
-            data={geojson} />}
+                                data={geojson} />}
                         </MapContainer>
                     )}
                     {!selectedFile &&
@@ -555,15 +559,18 @@ const MapCreationPage = () => {
                 >
                     Load From Another
                 </Button>}
-               
+                {creatingMessage && <Alert severity="success" style={{ marginTop: '5px' }}>
+                    {creatingMessage}
+                </Alert>}
+
                 {imageURL && (
                     <div>
                         <p>Image Preview:</p>
                         <img src={imageURL} alt="Map Preview" style={{ maxWidth: '100%', maxHeight: '400px' }} />
                     </div>
                 )}
-               
-                
+
+
             </Grid>
         </Grid>
     );
