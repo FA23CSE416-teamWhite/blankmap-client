@@ -21,6 +21,7 @@ import {
     Card,
     Paper,
     Alert,
+    ButtonGroup,
 } from "@mui/material";
 import tempMap from '../../assets/tempMap.png'
 import UndoIcon from '@mui/icons-material/Undo';
@@ -42,6 +43,7 @@ import mapApi from '../../api/mapApi';
 import { geojson } from "leaflet-omnivore";
 import useUndoRedoState from "../useUndoRedoState";
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 const SmallButton = ({ tag, color, onClick }) => {
     return (
         <IconButton
@@ -98,7 +100,9 @@ const RegionalEdit = () => {
     const navigate = useNavigate();
     const [deleteModel, setDeleteModel] = useState(false);
     const [savedImage, setSavedImage] = useState(null);
+    const [selectedLabel, setSelectedLabel] = useState("None");
     const canUndo = geojsonStateIndex > 1 || featuresStateIndex > 1;
+    const [query, setQuery] = useState("");
     const canRedo = geojsonStateIndex < geojsonStateLastIndex || featuresStateIndex < featuresStateLastIndex;
     useEffect(() => {
         const fetchData = async () => {
@@ -116,10 +120,10 @@ const RegionalEdit = () => {
                 if (data.mappage.map.baseData) {
                     try {
                         const geojsonData = JSON.parse(data.mappage.map.baseData);
+                        const addedFeatures = [];
                         // console.log("geojsonData", geojsonData);
                         if (geojsonData.features && geojsonData.features.length > 0) {
                             const commonProperties = Object.keys(geojsonData.features[0].properties);
-                            const addedFeatures = [];
 
                             for (const feature of geojsonData.features) {
                                 const featureProperties = Object.keys(feature.properties);
@@ -143,34 +147,32 @@ const RegionalEdit = () => {
                                         }
                                     }
                                 }
-                            }                        
-
+                            }
                             setFeatures(addedFeatures);
-    
-                        }
 
+                        }
+                        console.log("geojsonData", geojsonData);
                         setGeojsonData(geojsonData);
-                        if(!features.find((f) => f.name === 'color')){
+                        if (!addedFeatures.find((f) => f.name === 'color')) {
                             setFeatures([
-                                ...features,
+                                ...addedFeatures,
                                 { type: 'String', name: 'color' },
                             ]);
-                
+
                             const updatedGeojsonData = {
                                 ...geojsonData,
                                 features: geojsonData.features.map((feature) => {
                                     const newProperties = {
                                         ...feature.properties,
-                                        color: selectedFeatureType === 'red',
+                                        color: 'gray',
                                     };
-                
+
                                     return {
                                         ...feature,
                                         properties: newProperties,
                                     };
                                 }),
                             };
-                
                             setGeojsonData(updatedGeojsonData);
                         }
                         // Other operations with the GeoJSON data as needed
@@ -178,7 +180,7 @@ const RegionalEdit = () => {
                     } catch (error) {
                         console.error("Error parsing GeoJSON:", error);
                         setError("Error parsing GeoJSON", error);
-                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }]});
+                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
                     }
                 } else {
                     console.log("default")
@@ -190,7 +192,7 @@ const RegionalEdit = () => {
             }
         };
         fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, successMessage]);
     let displayFeatures;
 
@@ -251,9 +253,13 @@ const RegionalEdit = () => {
     const handlePanelOpen = () => {
         setPanelOpen(true);
     }
+    const handleInput = (e) => {
+        setQuery(e.target.value);
+    }
     const handleAddFeature = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         if (geojsonData && selectedFeatureType && newFeature) {
@@ -299,6 +305,7 @@ const RegionalEdit = () => {
     const handleConfirm = async (imageToSave) => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         console.log("Confirming...");
@@ -333,6 +340,7 @@ const RegionalEdit = () => {
     const handleUndo = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         if (panelOpen) {
@@ -345,10 +353,12 @@ const RegionalEdit = () => {
     const handleRedo = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         if (panelOpen) {
             setError("Please close the data edit panel first");
+            setSuccessMessage(null);
             return;
         }
         redoGeo();
@@ -398,13 +408,15 @@ const RegionalEdit = () => {
     const handleDownload = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         if (panelOpen) {
             setError("Please close the data edit panel first");
+            setSuccessMessage(null);
             return;
         }
-       
+
         const geoJsonString = JSON.stringify(geojsonData, null, 2);
         const blob = new Blob([geoJsonString], { type: 'application/json' });
         const link = document.createElement('a');
@@ -414,13 +426,13 @@ const RegionalEdit = () => {
         link.click();
         document.body.removeChild(link);
     }
-       
+
     const handleDownloadGeoJSONAsImage = async (format) => {
         try {
-            setSuccessMessage("Saving...");
+            setSuccessMessage("Converting...It may take up to 30s");
             const mapWidth = 600; // Replace with your map width
             const mapHeight = 400; // Replace with your map height
-    
+
             // Creating map container and setting styles
             let mapContainer = document.createElement('div');
             mapContainer.id = 'mapContainer';
@@ -429,10 +441,10 @@ const RegionalEdit = () => {
             mapContainer.style.position = 'absolute';
             mapContainer.style.left = '-9999px';
             document.body.appendChild(mapContainer);
-    
+
             // Create a map instance
             const map = L.map(mapContainer, { preferCanvas: true });
-    
+
             // Add TileLayer to the map
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
@@ -444,54 +456,54 @@ const RegionalEdit = () => {
                 color: "white",
                 dashArray: "3",
                 fillOpacity: 0.5
-              };
+            };
             const getColor = (value) => {
                 switch (value) {
-                  case 'green':
-                    return 'green';
-                  case 'blue':
-                    return 'blue';
-                  default:
-                    return value;
+                    case 'green':
+                        return 'green';
+                    case 'blue':
+                        return 'blue';
+                    default:
+                        return value;
                 }
-              };
+            };
             const colorLayer = L.geoJson(geojsonData, {
                 style: (feature) => {
-                  const colorValue = feature.properties["color"];
-                  return {
-                    ...defaultStyle,
-                    fillColor: getColor(colorValue), 
-                  };
+                    const colorValue = feature.properties["color"];
+                    return {
+                        ...defaultStyle,
+                        fillColor: getColor(colorValue),
+                    };
                 },
                 onEachFeature: function (feature, layer) {
-          
-                  const formattedProperties = Object.entries(feature.properties)
-                    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-                    .join('<br>');
-          
-                  // Display the formatted string in the popup
-                  layer.bindPopup(`
+
+                    const formattedProperties = Object.entries(feature.properties)
+                        .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+                        .join('<br>');
+
+                    // Display the formatted string in the popup
+                    layer.bindPopup(`
                       <div>
                         ${formattedProperties}
                         <br>        
                       </div>
                     `);
                 }
-              });
-          
-              colorLayer.addTo(map);
-              map.fitBounds(colorLayer.getBounds());
-    
-              const bounds = colorLayer.getBounds();
-              map.fitBounds(bounds);
-    
+            });
+
+            colorLayer.addTo(map);
+            map.fitBounds(colorLayer.getBounds());
+
+            const bounds = colorLayer.getBounds();
+            map.fitBounds(bounds);
+
             setTimeout(() => {
                 leafletImage(map, async function (err, canvas) {
                     if (err) {
                         console.error('Error converting JSON to image:', err);
                         return;
                     }
-    
+
                     // Convert canvas to the specified format (PNG or JPEG)
                     if (format === 'png') {
                         const imageUrl = canvas.toDataURL('image/png');
@@ -501,11 +513,11 @@ const RegionalEdit = () => {
                             const imageUrl = URL.createObjectURL(blob);
                             downloadImage(imageUrl, 'jpeg');
                         }, 'image/jpeg', 1);
-                    }else if(format ==="save") {
+                    } else if (format === "save") {
                         const imageUrl = canvas.toDataURL('image/png');
                         handleConfirm(imageUrl);
                     }
-    
+
                     // Remove the mapContainer from the body
                     if (mapContainer && mapContainer.parentNode) {
                         mapContainer.parentNode.removeChild(mapContainer);
@@ -515,11 +527,11 @@ const RegionalEdit = () => {
         } catch (error) {
             console.error('Error converting JSON to image:', error);
             setError("Please add a region first before downloading as image")
-        
+
         }
     };
-    
-    
+
+
     const downloadImage = (imageUrl, format) => {
         const link = document.createElement('a');
         link.download = `${mapName}.${format}`;
@@ -529,21 +541,66 @@ const RegionalEdit = () => {
         document.body.removeChild(link);
         setSuccessMessage(null);
     };
-    
-    
-    
+
+
+
     const handleDeleteModel = () => {
         if (drawPanelOpen) {
             setError("Please save the draw first");
+            setSuccessMessage(null);
             return;
         }
         if (panelOpen) {
             setError("Please close the data edit panel first");
+            setSuccessMessage(null);
             return;
         }
 
         console.log("Delete Model");
         setDeleteModel((prevDeleteModel) => !prevDeleteModel);
+    };
+
+    const editColor = () => {
+        if (drawPanelOpen) {
+            setError("Please save the draw first");
+            setSuccessMessage(null);
+            return;
+        }
+        if (panelOpen) {
+            setError("Please close the data edit panel first");
+            setSuccessMessage(null);
+            return;
+        }
+        
+        console.log("Edit Color");
+        console.log("selectedLabel", selectedLabel);
+        console.log("pickColor", pickColor);
+        console.log("query", query);
+
+        if (geojsonData && geojsonData.features && Array.isArray(geojsonData.features)) {
+            const updatedFeatures = geojsonData.features.map(feature => {
+                console.log("feature",feature.properties);
+                console.log("selectedLabel", selectedLabel);
+                console.log("feature", feature.properties[selectedLabel]);
+                if (feature.properties && feature.properties[selectedLabel] === query) {
+                    return {
+                        ...feature,
+                        properties: {
+                            ...feature.properties,
+                            color: pickColor
+                        }
+                    };
+                }
+                return feature;
+            });
+            const updatedGeoJSON = {
+                ...geojsonData,
+                features: updatedFeatures
+            };
+            console.log("Updated GeoJSON:", updatedGeoJSON);
+            setGeojsonData(updatedGeoJSON);
+            setFeatures(features);
+        }
     };
     const mapRef = React.useRef();
     return (
@@ -561,9 +618,9 @@ const RegionalEdit = () => {
                 >
                     {mapName}
                 </Typography>
-                <MapContainer id="mapContainer" ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>   
-                
-                <TileLayer
+                <MapContainer id="mapContainer" ref={mapRef} center={[39.9897471840457, -75.13893127441406]} zoom={11} scrollWheelZoom={true} style={{ height: '600px', width: '100%' }}>
+
+                    <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
@@ -574,7 +631,7 @@ const RegionalEdit = () => {
                     </Marker> */}
                     {/* {geojsonData && <GeoJSON data={geojsonData} />} */}
                     {geojsonData && geojsonData.features.length > 0 && <ColorLayer geojsonData={geojsonData} colorProperty="color" />}
-                    {drawPanelOpen&&<DrawLayer initialGeoJSON={geojsonData} onSave={handleSave}/>}
+                    {drawPanelOpen && <DrawLayer initialGeoJSON={geojsonData} onSave={handleSave} />}
                 </MapContainer>
                 {(drawPanelOpen === false) && <Button variant="contained"
                     onClick={() => {
@@ -633,7 +690,7 @@ const RegionalEdit = () => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                         <Box>
-                        <UndoIcon
+                            <UndoIcon
                                 sx={{
                                     mr: 1,
                                     cursor: canUndo ? 'pointer' : 'not-allowed',
@@ -661,7 +718,7 @@ const RegionalEdit = () => {
                 <Box>
                     <Typography>
                         Features: {displayFeatures}
-                        </Typography>
+                    </Typography>
                     {features && features.length > 0 && <Box><SmallButton tag="Data Edit" color="green" onClick={handlePanelOpen}></SmallButton>
                         {!deleteModel && <SmallButton tag="Delete" color="red" onClick={handleDeleteModel}></SmallButton>}{deleteModel && <SmallButton tag="Save" color="green" onClick={handleDeleteModel}></SmallButton>}</Box>}
                 </Box>
@@ -696,146 +753,184 @@ const RegionalEdit = () => {
                             size="small"
                             sx={{ height: '40px', marginBottom: '10px', marginTop: '10px' }}
                         />
+                        <Button variant="contained" sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4',
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                        }} onClick={handleAddFeature}> Add More Features</Button>
                     </CardContent>
                 </Card>
-                <Button variant="contained" sx={{
-                    borderRadius: '10px',
-                    backgroundColor: '#0844A4',
-                    color: 'white', // Text color
-                    marginTop: '10px',
-                }} onClick={handleAddFeature}> Add More Features</Button>
                 <Box sx={{ paddingY: 2 }} />
-                {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
+                {/* {error && <Typography style={{ color: 'red' }}>{error}</Typography>} */}
                 {/* <Autocomplete
                     value={featureForChoropleth}
                     onChange={(e, value) => handleChoroplethSelect(value)}
                     options={[
                         'None',
                         ...features
-                            .filter((feature) => feature.type === 'number')
+                            .filter((feature) => feature.type === 'string')
                             .map((feature) => feature.name)
                     ]}
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Feature for Choropleth"
+                            label="Color Reference Label"
                             size="small"
                             fullWidth
                         />
                     )}
                     style={{ minWidth: '200px', flex: 1 }}
                 /> */}
-                <Typography> Choose a Color: {pickColor}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SquareIcon
-                        sx={{
-                            color: 'red',
-                            padding: 1,
-                            border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('red')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'blue',
-                            padding: 1,
-                            border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('blue')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'yellow',
-                            padding: 1,
-                            border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('yellow')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'green',
-                            padding: 1,
-                            border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('green')}
-                    />
-                    <SquareIcon
-                        sx={{
-                            color: 'purple',
-                            padding: 1,
-                            border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setPickColor('purple')}
-                    />
-                </Box>
-                <Box>
-                    {/* <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                    }}> Rank It</Button> */}
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" style={{ marginTop: '8px', marginBottom: '8px' }}>
+                            Batch Color Editing
+                        </Typography>
+                        <Autocomplete
+                            value={selectedLabel}
+                            onChange={(e, value) => (setSelectedLabel(value))}
+                            options={['None', ...features.map((feature) => feature.name)]}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Reference Label"
+                                    size="small"
+                                    fullWidth
+                                />
+                            )}
+                            style={{ minWidth: '200px', flex: 1 }}
+                        />
+                        <TextField
+                            label="Search"
+                            value={query}
+                            onChange={handleInput}
+                            fullWidth
+                            size="small"
+                            margin="normal"
+                            style={{ minWidth: '200px', marginRight: '8px' }}
+                        />
+                        <Typography> Choose a Color: {pickColor}</Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <SquareIcon
+                                sx={{
+                                    color: 'red',
+                                    padding: 1,
+                                    border: pickColor === 'red' ? '2px solid #0844A4' : '2px solid transparent',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setPickColor('red')}
+                            />
+                            <SquareIcon
+                                sx={{
+                                    color: 'blue',
+                                    padding: 1,
+                                    border: pickColor === 'blue' ? '2px solid #0844A4' : '2px solid transparent',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setPickColor('blue')}
+                            />
+                            <SquareIcon
+                                sx={{
+                                    color: 'yellow',
+                                    padding: 1,
+                                    border: pickColor === 'yellow' ? '2px solid #0844A4' : '2px solid transparent',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setPickColor('yellow')}
+                            />
+                            <SquareIcon
+                                sx={{
+                                    color: 'green',
+                                    padding: 1,
+                                    border: pickColor === 'green' ? '2px solid #0844A4' : '2px solid transparent',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setPickColor('green')}
+                            />
+                            <SquareIcon
+                                sx={{
+                                    color: 'purple',
+                                    padding: 1,
+                                    border: pickColor === 'purple' ? '2px solid #0844A4' : '2px solid transparent',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setPickColor('purple')}
+                            />
+                        </Box>
+                        <Button variant="contained" sx={{
+                            borderRadius: '10px',
+                            backgroundColor: '#0844A4', // Replace with your desired color
+                            color: 'white', // Text color
+                            marginTop: '10px',
+                            // marginLeft: '10px',
+                            marginBottom: '10px',
+                        }} onClick={editColor}>
+                            Batch Edit
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                     <Button variant="contained" sx={{
                         borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
+                        backgroundColor: '#0844A4',
+                        color: 'white',
                         marginTop: '10px',
                     }} onClick={() => handleDownloadGeoJSONAsImage('save')}>
                         Save
                     </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginTop: '10px',
-                            marginLeft: '10px'
-                        }}
-                        onClick={() => handleDownloadGeoJSONAsImage('png')} 
-                    >
-                        Download as PNG
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            borderRadius: '10px',
-                            backgroundColor: '#0844A4', // Replace with your desired color
-                            color: 'white', // Text color
-                            marginTop: '10px',
-                            marginLeft: '10px'
-                        }}
-                        onClick={() => handleDownloadGeoJSONAsImage('jpeg')} 
-                    >
-                        Download as Jpeg
-                    </Button>
-                    <Button variant="contained" sx={{
-                        borderRadius: '10px',
-                        backgroundColor: '#0844A4', // Replace with your desired color
-                        color: 'white', // Text color
-                        marginTop: '10px',
-                        marginLeft: '10px'
-                    }} onClick={handleDownload}>
-                        download as geojson
-                    </Button>
-                    </Box>
+                    <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{ borderRadius: '10px', marginTop: '10px', marginLeft: '10px' }}>
+                        <Button
+                            variant="contained"
+                            endIcon={<DownloadIcon />}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4',
+                                color: 'white',
+                            }}
+                            onClick={() => handleDownloadGeoJSONAsImage('png')}
+                        >
+                            PNG
+                        </Button>
+                        <Button
+                            variant="contained"
+                            endIcon={<DownloadIcon />}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4',
+                                color: 'white',
+                            }}
+                            onClick={() => handleDownloadGeoJSONAsImage('jpeg')}
+                        >
+                            Jpeg
+                        </Button>
+                        <Button variant="contained" endIcon={<DownloadIcon />}
+                            sx={{
+                                borderRadius: '10px',
+                                backgroundColor: '#0844A4',
+                                color: 'white',
+                            }} onClick={handleDownload}>
+                            geojson
+                        </Button>
+                    </ButtonGroup>
+                </Box>
 
                 {successMessage && (
                     <Alert severity="success" style={{ marginTop: '5px' }}>
                         {successMessage}
                     </Alert>
                 )}
-                {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
+                {error && (
+                    <Alert severity="error" style={{ marginTop: '5px' }}>
+                        {error}
+                    </Alert>
+                )}
                 <Box sx={{ paddingY: 2 }} />
             </Grid>
             <Grid item xs={12} sm={.5}></Grid>

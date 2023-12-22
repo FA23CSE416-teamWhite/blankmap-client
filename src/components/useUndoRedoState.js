@@ -13,15 +13,15 @@ export default function useUndoRedoState(init) {
     //   return;
     // }
     const valueCopy = JSON.parse(JSON.stringify(value));
-    console.log("state before set: ", states)
-    console.log("index before set: ", index)
+    // console.log("state before set: ", states)
+    // console.log("index before set: ", index)
     const copy = states.slice(0, index + 1); // This removes all future (redo) states after current index
-    console.log("copy: ", copy);
+    // console.log("copy: ", copy);
     copy.push(valueCopy);
     setStates(copy);
     setIndex(copy.length - 1);
-    console.log("states after set: ", copy);
-    console.log("index after set: ", copy.length-1);
+    // console.log("states after set: ", copy);
+    // console.log("index after set: ", copy.length-1);
   };
   // Clear all state history
   const resetState = (init) => {

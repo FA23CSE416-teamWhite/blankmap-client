@@ -15,13 +15,18 @@ import {
     MenuItem,
     Switch,
     Button,
+    Alert,
     Chip
 } from '@mui/material';
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useParams } from 'react-router-dom'
-
+import { useParams } from 'react-router-dom'    
+import L from 'leaflet';
+import { kml } from "@tmcw/togeojson";
+const shp = require('shpjs');
+const JSZip = require('jszip');
+const temp_map = 'https://datavizcatalogue.com/methods/images/top_images/choropleth.png';
 
 const MapInfoEditPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -401,7 +406,7 @@ const MapInfoEditPage = () => {
                 >
                     Edit Map
                 </Button>}
-                {geojson && <Button
+                {/* {geojson && <Button
                     variant="contained"
                     onClick={handleLoadFromMap}
                     sx={{
@@ -412,7 +417,7 @@ const MapInfoEditPage = () => {
                     }}
                 >
                     Load From Another
-                </Button>}
+                </Button>} */}
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Grid>
         </Grid>
