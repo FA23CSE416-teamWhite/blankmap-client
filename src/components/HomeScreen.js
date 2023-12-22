@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Pagination,
   Stack,
+  Alert,
 } from "@mui/material";
 import MapOverview from "./MapOverview";
 // import temp_map from './images/temp_map.png';
@@ -23,12 +24,13 @@ const HomeScreen = () => {
   const [mapList, setMaplist] = useState([])
   const [error, setError] = useState(null)
   const { auth } = useContext(AuthContext)
+  const [success, setSuccess] = useState("Loading...")
   useEffect(() => {
     const extractSearchString = () => {
       const search = new URLSearchParams(window.location.search);
-      if (search.get("q") === null){
+      if (search.get("q") === null) {
         setSearchQuery("\"\"");
-      }else{
+      } else {
         setSearchQuery(search.get("q"));
       }
       // console.log('Search String:', searchQuery);
@@ -40,6 +42,7 @@ const HomeScreen = () => {
           const maps = await mapApi.fetchMaps(searchQuery);
           setError(null);
           setMaplist(maps);
+          setSuccess(null)
         } else {
           setMaplist([]);
           // Alternatively, you can set a default list of maps here
@@ -60,12 +63,12 @@ const HomeScreen = () => {
   const handleCreateMap = () => {
     auth.getLoggedIn()
     console.log("auth is:", auth.user)
-    if (auth.user.id === "658207d16c2fdba1fd5475a7"){
+    if (auth.user.id === "658207d16c2fdba1fd5475a7") {
       console.log("auth is guest!")
       alert("You must be logged in to create a map!")
       navigate("/login")
     }
-    else{
+    else {
       console.log("create map");
       navigate("/create");
     }
@@ -91,7 +94,7 @@ const HomeScreen = () => {
     } else if (sortOption === "Newest") {
       // Assuming 'createdAt' is a timestamp or a Date object
       return new Date(b.creationData) - new Date(b.creationData);
-  }
+    }
     // Add more sorting options as needed
     return 0;
   });
@@ -154,20 +157,20 @@ const HomeScreen = () => {
 
       {/* Typography Button on the right */}
       <Button
-      variant="contained"
-      onClick={handleCreateMap}
-      sx={{
-        borderRadius: '10px',
-        backgroundColor: '#0844A4',
-        color: 'white',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        maxWidth: '150px', // Set your desired fixed width
-      }}
-    >
-      Create Map
-    </Button>
+        variant="contained"
+        onClick={handleCreateMap}
+        sx={{
+          borderRadius: '10px',
+          backgroundColor: '#0844A4',
+          color: 'white',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          maxWidth: '150px', // Set your desired fixed width
+        }}
+      >
+        Create Map
+      </Button>
     </Box>
   );
 
@@ -180,12 +183,18 @@ const HomeScreen = () => {
   return (
     <div>
       <div className="home-screen" style={{ paddingTop: '20px', paddingRight: '50px', paddingBottom: '30px', paddingLeft: '50px' }}>
-        {error && (
-          <div style={{ color: 'red', marginBottom: '10px',textAlign: 'center' }}>
-            Error: {error.message} {/* Display the error message */}
-          </div>
-        )}
         {sorts}
+        {error && (
+          <Alert severity="error" style={{ marginTop: '5px' }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" style={{ marginTop: '5px' }}>
+            {success}
+          </Alert>
+        )}
+
         {renderMapCards()}
         {/* Pagination Controls */}
         <div className="pagination" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>

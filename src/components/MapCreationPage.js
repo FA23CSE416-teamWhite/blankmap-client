@@ -154,7 +154,7 @@ const MapCreationPage = () => {
     };
 
     const convertGeoJSONToPNG = async (file) => {
-        setCreatingMessage("Creating map...");
+        setCreatingMessage("Creating map...It may take a while");
         if (!file) {
             console.error('No file selected');
             return;
@@ -336,7 +336,8 @@ const MapCreationPage = () => {
                         ? 'regional-edit'
                         : selectedValue === 'Point'
                             ? 'point-edit'
-                        : 'edit';
+                        : selectedValue === 'Path'
+                            ? 'path-edit': 'edit';
         setSelectedCategory(selectedValue);
         setRouterAdd(editValue);
     };
@@ -518,6 +519,7 @@ const MapCreationPage = () => {
                                 <MenuItem value="Choropleth">Choropleth</MenuItem>
                                 <MenuItem value="HeatMap">Heat Map</MenuItem>
                                 <MenuItem value="Regional">Regional Map</MenuItem>
+                                <MenuItem value="Path">Path Map</MenuItem>
                                 <MenuItem value="Point">Point Map</MenuItem>
                                 {/* Add more categories as needed */}
                             </Select>

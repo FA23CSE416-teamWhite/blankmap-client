@@ -19,7 +19,8 @@ import{
     MapEditPoint,
     RegionalEdit,
     MainPage,
-    MapInfoEditPage
+    MapInfoEditPage,
+    PathEdit
 } from './components'
 import IconBanner from './components/IconBanner';
   const App = () => {
@@ -67,6 +68,7 @@ import IconBanner from './components/IconBanner';
             <Route path="/regional-edit/:id" element={<RegionalEdit />} />
             <Route path="/search" element={<HomeScreen />} />
             <Route path="/map-info-edit/:id" element={<MapInfoEditPage />} />
+            <Route path="/path-edit/:id" element={<PathEdit/>} />
         </Routes>
       </>
     );

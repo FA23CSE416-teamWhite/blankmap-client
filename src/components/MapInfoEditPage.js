@@ -15,13 +15,18 @@ import {
     MenuItem,
     Switch,
     Button,
+    Alert,
     Chip
 } from '@mui/material';
 import mapApi from "../api/mapApi";
 import { FormHelperText } from "@mui/material";
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useParams } from 'react-router-dom'
-
+import { useParams } from 'react-router-dom'    
+import L from 'leaflet';
+import { kml } from "@tmcw/togeojson";
+const shp = require('shpjs');
+const JSZip = require('jszip');
+const temp_map = 'https://datavizcatalogue.com/methods/images/top_images/choropleth.png';
 
 const MapInfoEditPage = () => {
     const { globalStore } = useContext(GlobalStoreContext);
@@ -50,23 +55,33 @@ const MapInfoEditPage = () => {
                 const data = await mapApi.fetchMap(id);
                 const geojson = JSON.parse(data.mappage.map.baseData);
                 console.log(data.mappage);
+    
+                // Extracting tags and removing unwanted tags
+                const extractedTags = data.mappage.tags.filter(tag =>
+                    tag !== "Choropleth" && tag !== "Regional" && tag !== "Heat" && tag !== "Path"
+                );
+    
                 setMapName(data.mappage.title);
                 setIsPublic(data.mappage.publicStatus);
                 setDescription(data.mappage.description);
                 setSelectedCategory(data.mappage.map.mapType);
-                setTags(data.mappage.tags);
+                setTags(extractedTags);
                 setGeojson(geojson);
+    
                 if (data.mappage.map.mapType === 'HeatMap') {
-                    setRouterAdd("edit-heat")
-                }
-                else if (data.mappage.map.mapType === 'Regional') {
-                    setRouterAdd("regional-edit")
+                    setRouterAdd("edit-heat");
+                } else if (data.mappage.map.mapType === 'Regional') {
+                    setRouterAdd("regional-edit");
+                } else if (data.mappage.map.mapType === 'Path') {
+                    setRouterAdd("path-edit");
+                } else {
+                    setRouterAdd("edit");
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
             }
         };
-
+    
         fetchData();
     }, [id]);
     // const [center, setCenter] = useState([0,0]);
@@ -157,11 +172,13 @@ const MapInfoEditPage = () => {
                 : selectedValue === 'HeatMap'
                     ? 'edit-heat'
                     : selectedValue === 'Regional'
-                        ? 'regional-edit'
+                        ? 'regional-edit'                        
                         : selectedValue === 'Point'
                             ? 'point-edit'
-                        : 'edit';
+                        : selectedValue === 'Path'
+                            ? 'path-edit': 'edit';
         setSelectedCategory(selectedValue);
+        console.log("edite value", editValue)
         setRouterAdd(editValue);
     };
     const handleToggleSwitch = () => {
@@ -343,11 +360,13 @@ const MapInfoEditPage = () => {
                                 <MenuItem value="HeatMap">Heat Map</MenuItem>
                                 <MenuItem value="Point">Point Map</MenuItem>
                                 <MenuItem value="Regional">Regional Map</MenuItem>
+                                <MenuItem value="Path">Path Map</MenuItem>
                                 {/* Add more categories as needed */}
                             </Select>
                         </Box>
                     </Grid>
                 </Grid>
+                {error && <FormHelperText error>{error}</FormHelperText>}
                 {selectedFileName}
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '3px solid #0844A4', padding: '10px', marginTop: '30px', marginRight: "10%", borderRadius: '10px' }}>
                     {geojson && (
@@ -404,7 +423,7 @@ const MapInfoEditPage = () => {
                 >
                     Edit Map
                 </Button>}
-                {geojson && <Button
+                {/* {geojson && <Button
                     variant="contained"
                     onClick={handleLoadFromMap}
                     sx={{
@@ -415,7 +434,7 @@ const MapInfoEditPage = () => {
                     }}
                 >
                     Load From Another
-                </Button>}
+                </Button>} */}
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Grid>
         </Grid>

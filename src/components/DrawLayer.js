@@ -25,7 +25,7 @@ L.Icon.Default.mergeOptions({
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png"
 });
 
-const DrawLayer = ({initialGeoJSON, onSave}) => {
+const DrawLayer = ({initialGeoJSON, onSave, disable}) => {
     const [editableFG, setEditableFG] = useState(null);
     // const [geoJSON, setGeoJSON] = useState({ type: 'FeatureCollection', features: [] });
     const [geoJSON, setGeoJSON] = useState(initialGeoJSON || { type: 'FeatureCollection', features: [] });
@@ -188,6 +188,9 @@ const DrawLayer = ({initialGeoJSON, onSave}) => {
                     draw={{
                         circlemarker: false,
                         circle: false,
+                        polyline: disable && disable.includes('line') ? false : {},
+                        polygon: disable && disable.includes('polygon') ? false : {},
+                        rectangle: disable && disable.includes('rectangle') ? false : {},
                     }}
                     edit = {{
                         edit:false
