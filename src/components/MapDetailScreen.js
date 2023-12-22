@@ -32,6 +32,7 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import mapApi from '../api/mapApi';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ColorLayer from './ColorLayer.js';
+import PointMap from './PointMap/PointMap.js';
 const Comment = ({ comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
@@ -545,6 +546,7 @@ const MapDetailScreen = () => {
                                 ) : null
 
                             )}
+                            {geojsonData && type === "Point" ? (<PointMap addressPoints={points} setFeatures={()=>null} setGeo={()=>null} render={render}/>) : null}
                             {geojsonData && type === "HeatMap" ? (<HeatMap addressPoints={points} setFeatures={()=>null} setGeo={()=>null} render={render}/>) : null}
                             {geojsonData && type === "HeatMap" ? (points.map((position, idx) => 
                                     <Marker key={`marker-${idx}`} position={position}>

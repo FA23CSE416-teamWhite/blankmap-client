@@ -10,6 +10,7 @@ import MyMapScreen from './MyMapScreen'
 import MyInfoScreen from './MyInfoScreen'
 import MessageCenter from './MessageCenter'
 import MapEdit from './MapEdit'
+import MapEditPoint from './PointMap/MapEditPoint'
 import MapEditHeat from './HeatMap/MapEditHeat'
 import RegionalEdit from './RegionalMap/RegionalEdit'
 import MainPage from './MainPage'
@@ -33,6 +34,7 @@ export {
     MessageCenter,
     MapEdit,
     MapEditHeat,
+    MapEditPoint,
     RegionalEdit,
     MainPage,
     MapInfoEditPage

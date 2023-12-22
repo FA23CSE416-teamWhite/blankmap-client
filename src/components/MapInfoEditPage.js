@@ -158,6 +158,8 @@ const MapInfoEditPage = () => {
                     ? 'edit-heat'
                     : selectedValue === 'Regional'
                         ? 'regional-edit'
+                        : selectedValue === 'Point'
+                            ? 'point-edit'
                         : 'edit';
         setSelectedCategory(selectedValue);
         setRouterAdd(editValue);
@@ -339,6 +341,7 @@ const MapInfoEditPage = () => {
                                 {/* <MenuItem value="">-- Select --</MenuItem> */}
                                 <MenuItem value="Choropleth">Choropleth</MenuItem>
                                 <MenuItem value="HeatMap">Heat Map</MenuItem>
+                                <MenuItem value="Point">Point Map</MenuItem>
                                 <MenuItem value="Regional">Regional Map</MenuItem>
                                 {/* Add more categories as needed */}
                             </Select>

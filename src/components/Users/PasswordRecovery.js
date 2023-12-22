@@ -20,6 +20,7 @@ export default function PasswordRecovery() {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [recoveryQuestion, setRecoveryQuestion] = useState("");
     const [recoveryAnswer, setRecoveryAnswer] = useState("");
+    const [answer, setAnswer] = useState("");
     const [reset, setReset] = useState(false);
     const { auth } = useContext(AuthContext);
 
@@ -48,7 +49,7 @@ export default function PasswordRecovery() {
             alert("Please fill all fields");
             return;
         }
-        if (recoveryAnswer !== recoveryQuestion) {
+        if (recoveryAnswer !== answer) {
             alert("incorrect answer!")
             return;
         }
@@ -96,7 +97,7 @@ export default function PasswordRecovery() {
                                     <Typography>{recoveryQuestion}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", paddingY: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                    <TextField label="Answer to Question" fullWidth onChange={(e) => setRecoveryAnswer(e.target.value)} />
+                                    <TextField label="Answer to Question" fullWidth onChange={(e) => setAnswer(e.target.value)} />
                                 </Box>
                                 <Box sx={{ display: 'flex', flexGrow: 1, paddingX: "60px", paddingY: 1, alignItems: 'center', justifyContent: 'center' }}>
                                     <TextField label="New Password" fullWidth onChange={(e) => setPassword(e.target.value)} />

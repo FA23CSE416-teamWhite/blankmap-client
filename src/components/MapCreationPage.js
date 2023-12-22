@@ -82,7 +82,7 @@ const MapCreationPage = () => {
 
         const parsedContent = JSON.parse(fileContent)
         //prevent non points from being in heat maps
-        if (selectedCategory == "HeatMap" && parsedContent["features"]) {
+        if ((selectedCategory == "HeatMap" || selectedCategory == "Point" )&& parsedContent["features"]) {
             parsedContent["features"].forEach(function (feature) {
                 if (feature["geometry"]["type"] != "Point") {
                     setError("Invalid File Type!")
@@ -116,7 +116,7 @@ const MapCreationPage = () => {
                
             ]
         };
-        if(selectedCategory==="HeatMap"){
+        if(selectedCategory==="HeatMap" || selectedCategory==="Point"){
             defaultMap = {
                 "type": "FeatureCollection",
                 "features": [
@@ -334,6 +334,8 @@ const MapCreationPage = () => {
                     ? 'edit-heat'
                     : selectedValue === 'Regional'
                         ? 'regional-edit'
+                        : selectedValue === 'Point'
+                            ? 'point-edit'
                         : 'edit';
         setSelectedCategory(selectedValue);
         setRouterAdd(editValue);
@@ -516,6 +518,7 @@ const MapCreationPage = () => {
                                 <MenuItem value="Choropleth">Choropleth</MenuItem>
                                 <MenuItem value="HeatMap">Heat Map</MenuItem>
                                 <MenuItem value="Regional">Regional Map</MenuItem>
+                                <MenuItem value="Point">Point Map</MenuItem>
                                 {/* Add more categories as needed */}
                             </Select>
                         </Box>
