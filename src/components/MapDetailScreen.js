@@ -25,13 +25,14 @@ import { useNavigate } from 'react-router';
 import { GlobalStoreContext } from '../store/index';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import AuthContext from '../auth';
-import Choropleth from './Choropleth';
+import Choropleth from './ChoroplethMap/Choropleth.js';
 import HeatMap from './HeatMap/HeatMap.js';
 import SendIcon from '@mui/icons-material/Send';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import mapApi from '../api/mapApi';
 import ReplyIcon from '@mui/icons-material/Reply';
-import ColorLayer from './ColorLayer.js';
+import ColorLayer from './RegionalMap/ColorLayer.js';
+import PathLayer from './PathMap/PathLayer.js';
 const Comment = ({ comment, updateReplies, updateComment }) => {
     const { auth } = useContext(AuthContext);
     const [likes, setLikes] = useState(comment.likes);
@@ -536,9 +537,15 @@ const MapDetailScreen = () => {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {choroplethAdded ? (
-                                geojsonData && geojsonData.features.length > 0 && type === "Choropleth" ? (
-                                    <Choropleth color={choroplethAdded.color} geojsonData={geojsonData} step={choroplethAdded.step} featureForChoropleth={choroplethAdded.featureChoropleth} setError={setError} />
-                                ) : null
+                                geojsonData && geojsonData.features.length > 0 ? (
+                                    type === "Path" ? (
+                                      // Render Heatmap component
+                                      <PathLayer geojsonData={geojsonData} color={choroplethAdded.color} weight={choroplethAdded.weight} opacity={choroplethAdded.opacity} dashArray={choroplethAdded.dashArray}/>
+                                    ) : type === "Choropleth" ? (
+                                      // Render Choropleth component
+                                      <Choropleth color={choroplethAdded.color} geojsonData={geojsonData} step={choroplethAdded.step} featureForChoropleth={choroplethAdded.featureChoropleth} setError={setError} />
+                                    ) : null
+                                  ) : null
                             ) : (
                                 geojsonData && geojsonData.features.length > 0 && type === "Choropleth" ? (
                                     <Choropleth geojsonData={geojsonData} color="red" step={5} featureForChoropleth="None" setError={setError} />
