@@ -159,10 +159,10 @@ const PathEdit = () => {
                         }
                         console.log("geojsonData", geojsonData);
                         setGeojsonData(geojsonData);
-                        if (!addedFeatures.find((f) => f.name === 'color')) {
+                        if (!addedFeatures.find((f) => f.name === 'name')) {
                             setFeatures([
                                 ...addedFeatures,
-                                { type: 'String', name: 'color' },
+                                { type: 'string', name: 'name' },
                             ]);
 
                             const updatedGeojsonData = {
@@ -170,7 +170,7 @@ const PathEdit = () => {
                                 features: geojsonData.features.map((feature) => {
                                     const newProperties = {
                                         ...feature.properties,
-                                        color: 'gray',
+                                        name: '',
                                     };
 
                                     return {
@@ -186,11 +186,11 @@ const PathEdit = () => {
                     } catch (error) {
                         console.error("Error parsing GeoJSON:", error);
                         setError("Error parsing GeoJSON", error);
-                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
+                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "string", name: "color" }] });
                     }
                 } else {
                     console.log("default")
-                    setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
+                    setGeojsonData({ type: 'FeatureCollection', features: [{ type: "string", name: "color" }] });
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
@@ -457,46 +457,35 @@ const PathEdit = () => {
                 attribution: '&copy; OpenStreetMap contributors',
             }).addTo(map);
             const defaultStyle = {
-                fillColor: "green",
-                weight: 2,
-                opacity: 1,
-                color: "white",
-                dashArray: "3",
+                fillColor: pickColor,
+                weight: weight,
+                opacity: opacity,
+                color: pickColor,
+                dashArray: dashArray,
                 fillOpacity: 0.5
             };
-            const getColor = (value) => {
-                switch (value) {
-                    case 'green':
-                        return 'green';
-                    case 'blue':
-                        return 'blue';
-                    default:
-                        return value;
-                }
-            };
+
             const colorLayer = L.geoJson(geojsonData, {
                 style: (feature) => {
-                    const colorValue = feature.properties["color"];
-                    return {
-                        ...defaultStyle,
-                        fillColor: getColor(colorValue),
-                    };
+                  return {
+                    ...defaultStyle,
+                  };
                 },
                 onEachFeature: function (feature, layer) {
-
-                    const formattedProperties = Object.entries(feature.properties)
-                        .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-                        .join('<br>');
-
-                    // Display the formatted string in the popup
-                    layer.bindPopup(`
+          
+                  const formattedProperties = Object.entries(feature.properties)
+                    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+                    .join('<br>');
+          
+                  // Display the formatted string in the popup
+                  layer.bindPopup(`
                       <div>
                         ${formattedProperties}
                         <br>        
                       </div>
                     `);
                 }
-            });
+              });
 
             colorLayer.addTo(map);
             map.fitBounds(colorLayer.getBounds());

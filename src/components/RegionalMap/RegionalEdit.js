@@ -156,7 +156,7 @@ const RegionalEdit = () => {
                         if (!addedFeatures.find((f) => f.name === 'color')) {
                             setFeatures([
                                 ...addedFeatures,
-                                { type: 'String', name: 'color' },
+                                { type: 'string', name: 'color' },
                             ]);
 
                             const updatedGeojsonData = {
@@ -180,11 +180,11 @@ const RegionalEdit = () => {
                     } catch (error) {
                         console.error("Error parsing GeoJSON:", error);
                         setError("Error parsing GeoJSON", error);
-                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
+                        setGeojsonData({ type: 'FeatureCollection', features: [{ type: "string", name: "color" }] });
                     }
                 } else {
                     console.log("default")
-                    setGeojsonData({ type: 'FeatureCollection', features: [{ type: "String", name: "color" }] });
+                    setGeojsonData({ type: 'FeatureCollection', features: [{ type: "string", name: "color" }] });
                 }
             } catch (error) {
                 console.error('Error fetching map:', error);
